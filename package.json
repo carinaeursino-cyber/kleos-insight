@@ -1,31 +1,10 @@
 {
   "name": "kleos-insight",
   "version": "1.0.0",
-  "description": "KLEOS INSIGHT™ - Premium Intelligence Analysis Platform",
-  "main": "src/index.html",
+  "description": "KLEOS INSIGHT™ — KIP-001 · Diagnóstico de Percepción. Micro Activo Inteligente de KLEOS Digital Studio.",
+  "private": true,
   "scripts": {
-    "start": "cd src && python -m http.server 8000",
-    "serve": "cd src && npx http-server",
-    "dev-backend": "cd backend && npm run dev",
-    "build-backend": "cd backend && npm install",
-    "dev": "concurrently \"npm run serve\" \"npm run dev-backend\""
-  },
-  "keywords": [
-    "AI",
-    "business",
-    "insight",
-    "perception",
-    "analysis",
-    "premium",
-    "luxury-tech"
-  ],
-  "author": "KLEOS Team",
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/kleos/insight.git"
-  },
-  "engines": {
-    "node": ">=18.0.0"
+    "dev": "npx -y serve src -l 3000",
+    "start": "npx -y serve src -l 3000"
   }
 }
