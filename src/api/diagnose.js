@@ -1,12 +1,16 @@
 /* =========================================================
    KLEOS INSIGHT™ — KIP-001 · Función serverless (Vercel)
-   Genera la lectura personalizada vía Gemini API.
+   Genera la lectura personalizada vía IA.
 
-   La API key vive en la variable de entorno GEMINI_API_KEY
-   (Vercel → Settings → Environment Variables).
-   Nunca se expone al navegador.
+   PROVEEDORES SOPORTADOS (usa el primero disponible):
+   1. GROQ_API_KEY    → Groq (Llama 3.3 70B) · gratis, sin tarjeta
+   2. GEMINI_API_KEY  → Google Gemini 2.5 Flash
+
+   Las keys viven en Vercel → Settings → Environment Variables.
+   Nunca se exponen al navegador.
    ========================================================= */
 
+const GROQ_MODEL = "llama-3.3-70b-versatile";
 const GEMINI_MODEL = "gemini-2.5-flash";
 
 const SYSTEM_VOICE = `
@@ -17,6 +21,7 @@ TONO OBLIGATORIO:
 - Tratamiento de "usted", siempre.
 - Observaciones inteligentes, nunca lenguaje vendedor.
 - Autoridad sin arrogancia. Nada de entusiasmo artificial.
+- Español impecable, sin anglicismos innecesarios.
 
 PROHIBIDO ABSOLUTAMENTE:
 - "El problema no es..." / "La clave está en..." / "Transforma tu negocio..."
@@ -28,7 +33,7 @@ PROHIBIDO ABSOLUTAMENTE:
 ESTILO DE REFERENCIA:
 "Mientras otros compiten por atención, algunas marcas generan confianza antes de pronunciar una sola palabra."
 
-Respondes únicamente con JSON válido, sin markdown ni texto adicional.
+Respondes únicamente con JSON válido, sin markdown, sin backticks, sin texto adicional.
 `.trim();
 
 function buildPrompt(d) {
@@ -73,15 +78,75 @@ Todo en español. Solo el JSON.
 `.trim();
 }
 
+/* ---------- Proveedor: Groq (OpenAI-compatible) ---------- */
+async function callGroq(key, prompt) {
+  const r = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${key}`,
+    },
+    body: JSON.stringify({
+      model: GROQ_MODEL,
+      temperature: 0.8,
+      max_tokens: 1024,
+      response_format: { type: "json_object" },
+      messages: [
+        { role: "system", content: SYSTEM_VOICE },
+        { role: "user", content: prompt },
+      ],
+    }),
+  });
+  if (!r.ok) {
+    const errText = await r.text();
+    console.error("Groq error:", r.status, errText.slice(0, 300));
+    return null;
+  }
+  const json = await r.json();
+  return json?.choices?.[0]?.message?.content || null;
+}
+
+/* ---------- Proveedor: Google Gemini ---------- */
+async function callGemini(key, prompt) {
+  const r = await fetch(
+    `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+    {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-goog-api-key": key,
+      },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: SYSTEM_VOICE }] },
+        contents: [{ role: "user", parts: [{ text: prompt }] }],
+        generationConfig: {
+          temperature: 0.8,
+          maxOutputTokens: 1024,
+          responseMimeType: "application/json",
+        },
+      }),
+    }
+  );
+  if (!r.ok) {
+    const errText = await r.text();
+    console.error("Gemini error:", r.status, errText.slice(0, 300));
+    return null;
+  }
+  const json = await r.json();
+  return json?.candidates?.[0]?.content?.parts?.[0]?.text || null;
+}
+
+/* ---------- Handler ---------- */
 module.exports = async (req, res) => {
-  // Solo POST
   if (req.method !== "POST") {
     res.status(405).json({ error: "method_not_allowed" });
     return;
   }
 
-  const key = process.env.GEMINI_API_KEY;
-  if (!key) {
+  const groqKey = process.env.GROQ_API_KEY;
+  const geminiKey = process.env.GEMINI_API_KEY;
+
+  if (!groqKey && !geminiKey) {
     res.status(503).json({ error: "missing_key" });
     return;
   }
@@ -89,13 +154,12 @@ module.exports = async (req, res) => {
   try {
     const d = req.body || {};
 
-    // Validación mínima
     if (typeof d.index !== "number" || !Array.isArray(d.dimensions)) {
       res.status(400).json({ error: "bad_request" });
       return;
     }
 
-    // Sanitizar entradas de texto (longitud máxima defensiva)
+    // Sanitizar entradas (longitud máxima defensiva)
     const clean = (s, max) => String(s || "").slice(0, max).trim();
     const data = {
       company: clean(d.company, 80),
@@ -111,42 +175,22 @@ module.exports = async (req, res) => {
       })),
     };
 
-        const r = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": key, // header: compatible con keys nuevas (AQ.) y clásicas (AIza)
-        },
-        body: JSON.stringify({
-          systemInstruction: { parts: [{ text: SYSTEM_VOICE }] },
-          contents: [{ role: "user", parts: [{ text: buildPrompt(data) }] }],
-          generationConfig: {
-            temperature: 0.8,
-            maxOutputTokens: 1024,
-            responseMimeType: "application/json",
-          },
-        }),
-      }
-    );
+    const prompt = buildPrompt(data);
 
-    if (!r.ok) {
-      const errText = await r.text();
-      console.error("Gemini error:", r.status, errText.slice(0, 300));
-      res.status(502).json({ error: "gemini_error" });
+    // Cadena de proveedores: Groq primero, Gemini como respaldo
+    let text = null;
+    if (groqKey) text = await callGroq(groqKey, prompt);
+    if (!text && geminiKey) text = await callGemini(geminiKey, prompt);
+
+    if (!text) {
+      res.status(502).json({ error: "provider_error" });
       return;
     }
-
-    const json = await r.json();
-    const text =
-      json?.candidates?.[0]?.content?.parts?.[0]?.text || "";
 
     let reading;
     try {
       reading = JSON.parse(text);
     } catch {
-      // A veces el modelo envuelve el JSON; intento de rescate
       const m = text.match(/\{[\s\S]*\}/);
       reading = m ? JSON.parse(m[0]) : null;
     }
