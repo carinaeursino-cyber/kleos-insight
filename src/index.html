@@ -239,12 +239,70 @@
         </div>
       </div>
 
-      <!-- CTA desbloqueo -->
-      <div class="result-block r-in unlock-cta" style="--d:.95s">
+            <!-- CTA desbloqueo -->
+      <div class="result-block r-in unlock-cta" style="--d:.95s" id="unlock-cta-block">
         <button class="btn-gold" id="btn-unlock">Acceder a la lectura completa</button>
-        <p class="micro mono">CINCO DIMENSIONES &nbsp;·&nbsp; LECTURA ÍNTEGRA &nbsp;·&nbsp; SECUENCIA DE CORRECCIÓN</p>
+        <p class="micro mono">CINCO DIMENSIONES &nbsp;·&nbsp; LECTURA ÍNTEGRA &nbsp;·&nbsp; SECUENCIA DE CORRECCIÓN &nbsp;·&nbsp; USD 29</p>
         <button class="btn-ghost mono" id="btn-restart">Ejecutar de nuevo</button>
       </div>
+
+      <!-- ============ LECTURA COMPLETA (post-desbloqueo) ============ -->
+      <div id="full-reading" class="full-reading" hidden>
+
+        <div class="full-divider">
+          <span class="mono">KIP-001/C &nbsp;·&nbsp; LECTURA COMPLETA &nbsp;·&nbsp; ACCESO CONFIRMADO</span>
+        </div>
+
+        <div class="result-block">
+          <p class="block-label mono">DIMENSIONES RESERVADAS — INTERPRETACIÓN</p>
+          <div class="full-dims">
+            <div class="full-dim">
+              <p class="full-dim-name mono">D3 &nbsp;·&nbsp; CONFIANZA</p>
+              <p class="sans" id="full-trust"></p>
+            </div>
+            <div class="full-dim">
+              <p class="full-dim-name mono">D4 &nbsp;·&nbsp; DIFERENCIACIÓN</p>
+              <p class="sans" id="full-differentiation"></p>
+            </div>
+            <div class="full-dim">
+              <p class="full-dim-name mono">D5 &nbsp;·&nbsp; RECORRIDO</p>
+              <p class="sans" id="full-journey"></p>
+            </div>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <p class="block-label mono">OBSERVACIÓN CRÍTICA — ÍNTEGRA</p>
+          <div class="truth-box">
+            <p class="truth-visible" id="full-truth"></p>
+          </div>
+        </div>
+
+        <div class="result-block">
+          <p class="block-label mono">DIAGNÓSTICO CENTRAL</p>
+          <p class="perception" id="full-diagnosis"></p>
+        </div>
+
+        <div class="result-block">
+          <p class="block-label mono">SECUENCIA DE CORRECCIÓN — TRES MOVIMIENTOS</p>
+          <div class="sequence-list" id="full-sequence"></div>
+        </div>
+
+        <div class="result-block">
+          <p class="block-label mono">EL ERROR QUE NO DEBE COMETER PRIMERO</p>
+          <div class="error-box">
+            <p class="sans" id="full-error"></p>
+          </div>
+        </div>
+
+        <div class="result-block unlock-cta" style="margin-top:3rem">
+          <p class="micro mono">KIP-001/C &nbsp;·&nbsp; LECTURA GENERADA PARA ESTA EJECUCIÓN &nbsp;·&nbsp; KLEOS DIGITAL STUDIO</p>
+          <button class="btn-ghost mono" id="btn-restart-2">Ejecutar de nuevo</button>
+        </div>
+
+      </div>
+
+    </div>
 
     </div>
 
@@ -254,26 +312,35 @@
     </footer>
   </section>
 
-  <!-- ================= PIEZA · ACCESO RESERVADO ================= -->
+    <!-- ================= PIEZA · ACCESO RESERVADO ================= -->
   <div id="modal-unlock" class="modal" role="dialog" aria-modal="true" aria-hidden="true">
     <div class="modal-veil" data-modal-close></div>
     <div class="modal-card">
       <p class="modal-seal mono">KIP-001/C &nbsp;·&nbsp; LECTURA COMPLETA</p>
-      <h3 class="modal-title">Acceso reservado.</h3>
+      <h3 class="modal-title">Acceso a la lectura completa.</h3>
       <p class="modal-body sans">
-        La lectura completa de este protocolo — las cinco dimensiones, la observación
-        íntegra y la secuencia de corrección — se habilita en la próxima fase de
-        KLEOS Insight.
+        Las cinco dimensiones interpretadas, la observación crítica íntegra,
+        el diagnóstico central y la secuencia de corrección en tres movimientos —
+        generados específicamente para su ejecución del protocolo.
       </p>
-      <p class="modal-body sans">
-        Su ejecución ha quedado registrada en esta sesión. El índice y el nivel
-        que acaba de ver no cambian: lo que cambia es cuánto de la lectura
-        decide conocer.
-      </p>
-      <div class="modal-actions">
-        <button class="btn-gold" data-modal-close>Entendido</button>
+      <div class="modal-price-row">
+        <span class="modal-price">USD 29</span>
+        <span class="micro mono">PAGO ÚNICO &nbsp;·&nbsp; ACCESO INMEDIATO</span>
       </div>
+      <div class="modal-actions stacked">
+        <a class="btn-gold" id="btn-checkout" href="#" target="_blank" rel="noopener">Continuar al pago</a>
+        <p class="micro mono">RECIBIRÁ SU CLAVE DE ACCESO POR CORREO AL COMPLETAR EL PAGO</p>
+      </div>
+
+      <div class="modal-divider mono"><span>CLAVE DE ACCESO</span></div>
+
+      <div class="unlock-form">
+        <input type="text" id="license-input" class="q-input mono" placeholder="XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX" autocomplete="off" spellcheck="false" />
+        <button class="btn-gold" id="btn-redeem">Desbloquear</button>
+      </div>
+      <p class="unlock-status mono" id="unlock-status"></p>
     </div>
+  </div>
   </div>
 
   <script src="assets/js/protocol.js"></script>

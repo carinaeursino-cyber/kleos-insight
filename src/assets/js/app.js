@@ -7,10 +7,15 @@
 (() => {
   "use strict";
 
+    // ---------- Configuración de checkout ----------
+  // URL del producto en Lemon Squeezy (reemplazar al crear la tienda)
+  const CHECKOUT_URL = "https://TUTIENDA.lemonsqueezy.com/buy/PRODUCT_UUID";
+
   // ---------- Estado ----------
   const state = {
     current: 0,
     answers: {}, // { [id]: optionIndex | string }
+    reading: null, // último resultado (para el desbloqueo)
   };
 
   // ---------- Referencias ----------
@@ -301,8 +306,9 @@
     );
   }
 
-  // ---------- Pantalla 4 · Lectura ----------
+    // ---------- Pantalla 4 · Lectura ----------
   function showReading(r) {
+    state.reading = r; // guardar para el desbloqueo
     el.resultLevel.textContent = `${r.level.code} — ${r.level.name}`;
     el.resultPerception.textContent = r.perception;
     el.resultTruth.textContent = r.truth;
@@ -372,12 +378,15 @@
     showScreen("landing");
   });
 
-  // ---------- Modal de acceso reservado ----------
+   // ---------- Modal de acceso / checkout ----------
   const modal = document.getElementById("modal-unlock");
+  const licenseInput = document.getElementById("license-input");
+  const unlockStatus = document.getElementById("unlock-status");
 
   function openModal() {
     modal.classList.add("is-open");
     modal.setAttribute("aria-hidden", "false");
+    document.getElementById("btn-checkout").href = CHECKOUT_URL;
   }
   function closeModal() {
     modal.classList.remove("is-open");
@@ -390,5 +399,124 @@
   );
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && modal.classList.contains("is-open")) closeModal();
+  });
+
+  // ---------- Desbloqueo con clave de acceso ----------
+  function setStatus(msg, cls) {
+    unlockStatus.textContent = msg;
+    unlockStatus.className = "unlock-status mono" + (cls ? " " + cls : "");
+  }
+
+  async function redeemLicense() {
+    const key = licenseInput.value.trim();
+    if (key.length < 10) {
+      setStatus("INGRESE LA CLAVE RECIBIDA POR CORREO", "error");
+      return;
+    }
+    if (!state.reading) {
+      setStatus("EJECUTE EL PROTOCOLO ANTES DE DESBLOQUEAR", "error");
+      return;
+    }
+
+    const r = state.reading;
+    const weakest = [...r.dimensions].sort((a, b) => a.score - b.score)[0];
+
+    setStatus("VALIDANDO CLAVE · COMPONIENDO LECTURA COMPLETA", "loading");
+    document.getElementById("btn-redeem").disabled = true;
+
+    try {
+      const resp = await fetch("/api/unlock", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          license_key: key,
+          company: state.answers.company,
+          self_perception: state.answers.self_perception,
+          client_perception: state.answers.client_perception,
+          differentiator: state.answers.differentiator,
+          index: r.index,
+          level: `${r.level.code} — ${r.level.name}`,
+          weakest: weakest.name,
+          dimensions: r.dimensions.map((d) => ({ name: d.name, score: d.score })),
+        }),
+      });
+
+      if (resp.status === 403) {
+        setStatus("CLAVE NO VÁLIDA O YA UTILIZADA", "error");
+        return;
+      }
+      if (!resp.ok) {
+        setStatus("ERROR AL GENERAR LA LECTURA — INTENTE DE NUEVO", "error");
+        return;
+      }
+
+      const full = await resp.json();
+      setStatus("ACCESO CONFIRMADO", "ok");
+      setTimeout(() => {
+        closeModal();
+        revealFullReading(full, r);
+      }, 700);
+    } catch {
+      setStatus("ERROR DE CONEXIÓN — INTENTE DE NUEVO", "error");
+    } finally {
+      document.getElementById("btn-redeem").disabled = false;
+    }
+  }
+
+  document.getElementById("btn-redeem").addEventListener("click", redeemLicense);
+  licenseInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") redeemLicense();
+  });
+
+  // ---------- Revelación de la lectura completa ----------
+  function revealFullReading(full, r) {
+    // Poblar contenidos
+    document.getElementById("full-trust").textContent = full.dim_readings.trust;
+    document.getElementById("full-differentiation").textContent = full.dim_readings.differentiation;
+    document.getElementById("full-journey").textContent = full.dim_readings.journey;
+    document.getElementById("full-truth").textContent = full.truth_full;
+    document.getElementById("full-diagnosis").textContent = full.diagnosis_full;
+    document.getElementById("full-error").textContent = full.first_error;
+
+    const seqEl = document.getElementById("full-sequence");
+    seqEl.innerHTML = "";
+    full.sequence.forEach((s, i) => {
+      const item = document.createElement("div");
+      item.className = "sequence-item";
+      item.innerHTML = `<span class="num">0${i + 1}</span><p>${s}</p>`;
+      seqEl.appendChild(item);
+    });
+
+    // Desbloquear dimensiones del tablero (puntajes reales)
+    el.dimsBoard.querySelectorAll(".dim-result.locked").forEach((row, idx) => {
+      const dim = r.dimensions.filter((d) => d.state === "locked")[idx];
+      if (!dim) return;
+      row.classList.remove("locked");
+      const score = row.querySelector(".score");
+      const bar = row.querySelector(".bar-fill");
+      if (score) score.textContent = `${pad(dim.score)} / ${dim.max}`;
+      if (bar) bar.style.width = Math.round((dim.score / dim.max) * 100) + "%";
+    });
+
+    // Quitar velos de los bloques bloqueados
+    document.querySelectorAll(".lock-veil").forEach((v) => (v.style.display = "none"));
+    document.querySelectorAll(".locked-text p").forEach((p) => (p.style.filter = "none"));
+    const badge = document.querySelector(".lock-badge");
+    if (badge) badge.style.display = "none";
+    const note = document.querySelector(".dims-note");
+    if (note) note.textContent = "CINCO DE CINCO DIMENSIONES DESBLOQUEADAS";
+
+    // Ocultar CTA de compra, mostrar lectura completa
+    document.getElementById("unlock-cta-block").style.display = "none";
+    const fr = document.getElementById("full-reading");
+    fr.hidden = false;
+    fr.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  document.getElementById("btn-restart-2").addEventListener("click", () => {
+    resetProtocol();
+    document.getElementById("full-reading").hidden = true;
+    document.getElementById("unlock-cta-block").style.display = "";
+    showScreen("landing");
   });
 })();
