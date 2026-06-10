@@ -1,0 +1,546 @@
+# KLEOS INSIGHT™ — Project Reference
+
+**Complete Reference Guide for Developers**
+
+---
+
+## 📁 Complete Project Structure
+
+```
+kleos-insight-v1/
+│
+├── 📄 README.md                          # Project overview
+├── 📄 QUICKSTART.md                      # ⭐ Start here! (5 min setup)
+├── 📄 package.json                       # Project metadata
+├── 📄 .gitignore                         # Git ignore patterns
+│
+├── 📂 src/                               # ⭐ Frontend Application
+│   ├── 📄 index.html                     # ⭐ Main entry point (open this)
+│   ├── 📄 README.md                      # Frontend documentation
+│   │
+│   ├── 📂 assets/
+│   │   ├── 📂 css/
+│   │   │   └── 📄 styles.css            # ⭐ Complete design system (~1000 lines)
+│   │   │                                  # Colors, Typography, Components
+│   │   └── 📂 js/
+│   │       └── 📄 main.js               # ⭐ Application logic (~600 lines)
+│   │                                      # SPA, Forms, Analysis, Results
+│   │
+│   └── 📂 pages/                         # Reference only (all in index.html)
+│       ├── landing.html
+│       ├── questions.html
+│       ├── analysis.html
+│       └── results.html
+│
+├── 📂 backend/                           # Backend (optional, for real API)
+│   ├── 📄 server.js                      # Express server
+│   ├── 📄 .env.example                   # Environment template
+│   ├── 📄 package.json                   # Backend dependencies
+│   │
+│   ├── 📂 services/
+│   │   └── 📄 geminiService.js          # Gemini API integration
+│   │
+│   ├── 📂 middleware/
+│   │   ├── 📄 errorHandler.js
+│   │   ├── 📄 rateLimiter.js
+│   │   └── 📄 validation.js
+│   │
+│   └── 📂 routes/
+│       └── 📄 api.js                    # API endpoints
+│
+├── 📂 design/                            # Design Documentation
+│   └── 📄 KLEOS_INSIGHT_Experience_Design.md
+│       # Complete design system specification
+│       # (16 sections, visual hierarchy, animations, etc)
+│
+├── 📂 docs/                              # Developer Documentation
+│   └── 📄 API_INTEGRATION.md            # Gemini API integration guide
+│       # Setup, Architecture, Implementation, Testing
+│
+└── 📂 assets/ (project-level)
+    └── 📂 design/                        # Design files (Figma exports, etc)
+```
+
+---
+
+## 🎯 Quick Navigation
+
+### For First Time
+1. **QUICKSTART.md** ← Start here
+2. **src/index.html** ← Open in browser
+3. Test complete flow
+
+### For Understanding Design
+1. **design/KLEOS_INSIGHT_Experience_Design.md** ← Visual specs
+2. **src/assets/css/styles.css** ← Implementation
+
+### For Understanding Code
+1. **src/assets/js/main.js** ← Main logic
+2. **src/index.html** ← Structure
+
+### For API Integration
+1. **docs/API_INTEGRATION.md** ← Complete guide
+2. **backend/.env.example** ← Configuration
+3. Copy example code to backend/
+
+---
+
+## 🚀 4 Application Screens Explained
+
+### Screen 1: Landing Page (HOME)
+- **Path:** `#home`
+- **Element:** `<main data-page-content="home">`
+- **Sections:**
+  - Hero with CTA
+  - 3 Principles (Philosophy)
+  - 4 Steps (Process)
+  - CTA Final
+- **File:** `src/index.html` lines 48-247
+
+**Animations:**
+- H1/Subtitle/CTA: Staggered fade-in + slide-up (0ms, 200ms, 400ms)
+- Principles: Stagger animation (0-300ms)
+- Steps: Stagger animation (0-450ms)
+
+---
+
+### Screen 2: Questions Form (QUESTIONS)
+- **Path:** `#questions`
+- **Element:** `<main data-page-content="questions">`
+- **12 Questions:**
+  1. Company name (text)
+  2. Industry (select)
+  3. Value proposition (textarea)
+  4. Target audience (textarea)
+  5. Sales challenge (radio)
+  6. Client perception (text)
+  7. Self perception (text)
+  8. Main competitor (text)
+  9. Differentiation (textarea)
+  10. Sales channels (checkboxes)
+  11. Marketing budget (select)
+  12. Objectives (textarea)
+- **File:** `src/index.html` lines 248-438
+
+**Features:**
+- Progress indicator (4 steps, updates as you answer)
+- Form validation (all fields required)
+- Data stored in `window.kleosApp.userAnswers`
+
+---
+
+### Screen 3: Analysis (ANALYSIS)
+- **Path:** `#analysis`
+- **Element:** `<main data-page-content="analysis">`
+- **Components:**
+  - Title + description
+  - Progress bar (0-95% animation)
+  - Spinner (rotating)
+  - Loading text
+- **File:** `src/index.html` lines 439-477
+
+**Animation:**
+- Progress bar: 0-95% over 2-3 seconds (pauses at 95)
+- Spinner: Continuous 360° rotation
+- Auto-transitions to results after ~2-3 seconds
+
+---
+
+### Screen 4: Results (RESULTS)
+- **Path:** `#results`
+- **Element:** `<main data-page-content="results">`
+- **Sections:**
+  1. Progress indicator (all completed)
+  2. Main insight card (with animated counter)
+  3. Dimensions grid (4 cards)
+  4. Perception comparison (cloud words)
+  5. Recommendations (3 cards with priority)
+  6. Action buttons (download, share, new analysis)
+- **File:** `src/index.html` lines 478-550
+
+**JavaScript Population:**
+- All content generated by JS based on `window.kleosApp.analysisData`
+- See `js/main.js` functions:
+  - `displayResults()`
+  - `displayDimensions()`
+  - `displayRecommendations()`
+  - `displayPerceptionComparison()`
+
+---
+
+## 🔄 Data Flow Architecture
+
+```
+User Input (Questions Form)
+    ↓
+window.kleosApp.collectAnswers()
+    ↓
+window.kleosApp.userAnswers = {
+  company_name: 'X',
+  industry: 'Y',
+  // ... 10 more fields
+}
+    ↓
+window.kleosApp.handleFormSubmit()
+    ↓ [Navigate to analysis page]
+    ↓
+window.kleosApp.startAnalysis()
+    ↓ [Simulate/call API]
+    ↓
+window.kleosApp.generateAnalysisResults()
+    ↓ [Populate analysisData]
+window.kleosApp.analysisData = {
+  businessName: 'X',
+  mainInsight: 98,
+  perception: {...},
+  dimensions: [...],
+  recommendations: [...]
+}
+    ↓
+window.kleosApp.loadPage('results')
+    ↓
+window.kleosApp.displayResults()
+    ↓ [Populate DOM with data]
+Results Page Rendered ✓
+```
+
+---
+
+## 🎨 Design System Reference
+
+### Colors
+```css
+--color-black: #050505                  /* Main bg */
+--color-black-90: #0A0A0A              /* Subtle dark */
+--color-gold: #C5A059                   /* Primary accent */
+--color-white: #F5F5F5                  /* Main text */
+--color-gray-dark: #1A1A1A             /* Card bg */
+--color-gray-medium: #2D2D2D           /* Borders, labels */
+--color-success: #4ADE80               /* Green */
+--color-error: #EF4444                 /* Red */
+--color-warning: #FBBF24               /* Orange */
+```
+
+### Typography Sizes
+```
+H1: 56px (desktop), 40px (tablet), 28px (mobile)
+H2: 42px (desktop), 32px (tablet), 24px (mobile)
+H3: 28px (desktop), 24px (tablet), 18px (mobile)
+Body: 16px (desktop), 16px (tablet), 14px (mobile)
+Small: 14px (desktop), 14px (tablet), 12px (mobile)
+Mono: 14px-16px (JetBrains Mono)
+```
+
+### Spacing Units (8px base)
+```
+Size 2: 16px
+Size 3: 24px
+Size 4: 32px
+Size 6: 48px
+Size 8: 64px
+```
+
+### Transition Timings
+```
+Fast: 200ms cubic-bezier(0.4, 0, 0.2, 1)
+Medium: 300ms cubic-bezier(0.4, 0, 0.2, 1)
+Slow: 600ms cubic-bezier(0.4, 0, 0.2, 1)
+```
+
+---
+
+## 💻 JavaScript Class Reference
+
+### Main Class: `KleosInsight`
+
+```javascript
+window.kleosApp                    // Global instance
+
+// Properties
+.currentPage                       // 'home'|'questions'|'analysis'|'results'
+.userAnswers                       // Form responses
+.analysisData                      // Parsed analysis results
+
+// Page Navigation
+.loadPage(page, updateHistory)     // Switch screens with animation
+.animatePageEntry()                // Stagger animation
+
+// Form Handling
+.initQuestionsPage()               // Setup form
+.handleFormSubmit()                // Validate & process
+.collectAnswers()                  // Extract form data
+
+// Analysis Flow
+.startAnalysis()                   // Show progress bar
+.completeAnalysis()                // Auto-redirect to results
+.generateAnalysisResults()         // Fetch or mock data
+.generateMockAnalysis()            // Return simulated data
+
+// Results Display
+.initResultsPage()                 // Setup results
+.displayResults()                  // Render all sections
+.displayDimensions()               // Grid of 4 cards
+.displayRecommendations()          // 3 priority cards
+.displayPerceptionComparison()     // Word clouds
+
+// Utilities
+.animateCountUp(id, start, end, duration)  // Number animation
+.showToast(msg, type)              // Notification popup
+.downloadResults()                 // Generate & download .txt
+.shareResults()                    // Share via native or clipboard
+.startNewAnalysis()                // Reset & go home
+```
+
+---
+
+## 🔌 How to Connect Gemini API
+
+### Simple Method: Replace Mock Data
+
+**In `src/assets/js/main.js`, find `generateAnalysisResults()` method:**
+
+```javascript
+// Current (lines ~320-330):
+async generateAnalysisResults() {
+  this.analysisData = this.generateMockAnalysis();
+}
+
+// Change to:
+async generateAnalysisResults() {
+  try {
+    const response = await fetch('http://localhost:3001/api/analyze', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(this.userAnswers)
+    });
+    const data = await response.json();
+    this.analysisData = data;  // Backend returns structured data
+  } catch (error) {
+    console.error('API error:', error);
+    this.analysisData = this.generateMockAnalysis();  // Fallback
+  }
+}
+```
+
+### Required Backend Response Format
+
+```json
+{
+  "businessName": "Company Name",
+  "mainInsight": 78,
+  "mainInsightText": "De cada 100...",
+  "confidence": 92,
+  "perception": {
+    "marketPerception": ["Word1", "Word2", ...],
+    "businessReality": ["Word1", "Word2", ...],
+    "gapScore": 65
+  },
+  "dimensions": [
+    {
+      "name": "Dimension Name",
+      "score": 75,
+      "trend": "+12%"
+    }
+  ],
+  "recommendations": [
+    {
+      "priority": "P1",
+      "title": "Action Title",
+      "description": "Details",
+      "impact": "↑ 34%",
+      "timeline": "30 días"
+    }
+  ]
+}
+```
+
+### Full Implementation
+
+See: **docs/API_INTEGRATION.md**
+
+---
+
+## 📱 Responsive Breakpoints
+
+```css
+/* Desktop: > 1024px */
+Default styles apply
+
+/* Tablet: 768px - 1024px */
+@media (max-width: 768px) {
+  h1: 40px (was 56px)
+  h2: 32px (was 42px)
+  Grid: 1 column (was 3)
+  Padding: 32px (was 48px)
+}
+
+/* Mobile: < 768px */
+@media (max-width: 480px) {
+  h1: 28px (was 40px)
+  h2: 24px (was 32px)
+  Padding: 16px (was 32px)
+  Buttons: 100% width
+}
+```
+
+---
+
+## 🧪 Common Tasks
+
+### How to Add a New Question
+
+1. Open `src/index.html`
+2. Find form section (line ~350)
+3. Add new form-group:
+   ```html
+   <div class="form-group">
+     <label>Pregunta X de 12</label>
+     <h3>Your question?</h3>
+     <input type="text" name="field_name" required>
+   </div>
+   ```
+4. Update form-group count (must be 12)
+5. Update validation logic in `main.js`
+
+### How to Change a Color
+
+1. Open `src/assets/css/styles.css`
+2. Find `:root { }` section (top of file)
+3. Change variable:
+   ```css
+   --color-gold: #C5A059;  /* Change this */
+   ```
+4. All elements using that variable update automatically
+
+### How to Change Timing
+
+1. Open `src/assets/css/styles.css`
+2. Find transition variables:
+   ```css
+   --transition-fast: 200ms;      /* Change this */
+   --transition-medium: 300ms;    /* or this */
+   ```
+3. Also in `main.js` methods like `startAnalysis()`
+
+### How to Add an Animation
+
+1. Define in `src/assets/css/styles.css`:
+   ```css
+   @keyframes myAnimation {
+     from { /* ... */ }
+     to { /* ... */ }
+   }
+   ```
+2. Apply to element:
+   ```css
+   .my-element {
+     animation: myAnimation 600ms ease-out;
+   }
+   ```
+
+### How to Test Locally
+
+```bash
+# Terminal 1: Frontend
+cd src
+python -m http.server 8000
+
+# Terminal 2: Backend (if connected)
+cd backend
+npm start
+
+# Browser
+http://localhost:8000
+```
+
+---
+
+## 🔍 File Size Reference
+
+| File | Lines | Size | Purpose |
+|------|-------|------|---------|
+| index.html | 550 | ~25KB | All 4 screens + HTML structure |
+| styles.css | 800 | ~35KB | Complete design system |
+| main.js | 600 | ~28KB | Application logic |
+| Total Frontend | 1950 | ~88KB | All frontend code |
+
+---
+
+## ✅ Pre-Launch Checklist
+
+- [ ] All 4 screens render correctly
+- [ ] Animations are smooth
+- [ ] Form validates properly
+- [ ] Mobile responsive (test on phone)
+- [ ] No console errors (F12)
+- [ ] Accessibility (Tab navigation works)
+- [ ] Colors contrast pass WCAG AA
+- [ ] Links work (no 404s)
+- [ ] Performance acceptable (< 2s load)
+- [ ] Ready for API integration
+
+---
+
+## 🆘 Quick Debugging
+
+### "Page doesn't load"
+- Check browser console (F12)
+- Verify file paths (CSS, JS, fonts)
+- Check internet connection (fonts from Google)
+
+### "Styling looks broken"
+- Hard refresh (Ctrl+Shift+R)
+- Check CSS imports
+- Verify custom fonts loaded
+
+### "Form doesn't submit"
+- Check all 12 fields have values
+- Verify required attributes
+- Check JS is loaded and running
+
+### "Analysis page stalls"
+- Check browser console for errors
+- Verify JS logic in `startAnalysis()`
+- Check if backend is running (if using API)
+
+---
+
+## 📚 Additional Resources
+
+- **Design Spec:** `design/KLEOS_INSIGHT_Experience_Design.md`
+- **API Guide:** `docs/API_INTEGRATION.md`
+- **Quick Start:** `QUICKSTART.md`
+- **Frontend Docs:** `src/README.md`
+- **CSS Variables:** `src/assets/css/styles.css` (top section)
+- **JS Classes:** `src/assets/js/main.js` (top comments)
+
+---
+
+## 🎓 Learning Path
+
+### For Designers
+1. Read `design/KLEOS_INSIGHT_Experience_Design.md`
+2. Check colors/spacing in `styles.css`
+3. Test animations in browser
+
+### For Frontend Devs
+1. Open `src/index.html` and read structure
+2. Check `styles.css` for design tokens
+3. Study `main.js` class methods
+
+### For Backend Devs
+1. Read `docs/API_INTEGRATION.md`
+2. Copy backend code from docs
+3. Update frontend fetch endpoint
+
+### For Full Stack
+1. Start with `QUICKSTART.md`
+2. Complete all 4 screens locally
+3. Set up backend per integration guide
+4. Deploy to production
+
+---
+
+**KLEOS INSIGHT™ — Reference Complete**
+
+*Everything you need to understand, modify, and deploy the application.*
