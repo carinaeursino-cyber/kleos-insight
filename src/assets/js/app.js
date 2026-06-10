@@ -48,47 +48,58 @@
     window.scrollTo(0, 0);
   }
 
-  // ---------- Partículas doradas (canvas · casi imperceptibles) ----------
-  (function initParticles() {
-    const canvas = document.getElementById("hero-particles");
+  // ---------- Cielo estrellado dorado (canvas global · estilo KLEOS) ----------
+  (function initStarfield() {
+    const canvas = document.getElementById("bg-stars");
     if (!canvas) return;
     const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (reduced) return;
 
     const ctx = canvas.getContext("2d");
-    let particles = [];
+    let stars = [];
     let raf;
 
     function resize() {
-      canvas.width = canvas.offsetWidth;
-      canvas.height = canvas.offsetHeight;
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
 
     function spawn() {
-      const count = Math.min(26, Math.floor(canvas.width / 60));
-      particles = Array.from({ length: count }, () => ({
+      // Densidad tipo cielo: ~1 estrella por cada 11.000 px²
+      const count = Math.min(160, Math.floor((canvas.width * canvas.height) / 11000));
+      stars = Array.from({ length: count }, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,
-        r: 0.4 + Math.random() * 1.1,
-        vx: (Math.random() - 0.5) * 0.08,
-        vy: -0.03 - Math.random() * 0.07,
-        a: 0.04 + Math.random() * 0.12,
-        ph: Math.random() * Math.PI * 2,
+        r: 0.3 + Math.random() * 1.0,          // diminutas
+        a: 0.05 + Math.random() * 0.3,         // brillo base variado
+        tw: 0.4 + Math.random() * 0.6,         // amplitud del titileo
+        sp: 0.4 + Math.random() * 1.2,         // velocidad del titileo
+        ph: Math.random() * Math.PI * 2,       // fase aleatoria
+        gold: Math.random() < 0.7,             // 70% doradas, 30% blancas tenues
       }));
+    }
+
+    function paintStatic() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      for (const s of stars) {
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = s.gold
+          ? `rgba(197, 160, 89, ${s.a})`
+          : `rgba(245, 245, 245, ${s.a * 0.5})`;
+        ctx.fill();
+      }
     }
 
     function frame(t) {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (const p of particles) {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.y < -4) { p.y = canvas.height + 4; p.x = Math.random() * canvas.width; }
-        if (p.x < -4) p.x = canvas.width + 4;
-        if (p.x > canvas.width + 4) p.x = -4;
-        const tw = p.a * (0.6 + 0.4 * Math.sin(t / 1900 + p.ph));
+      for (const s of stars) {
+        const k = 1 - s.tw * 0.5 * (1 + Math.sin((t / 1000) * s.sp + s.ph)) * 0.5;
+        const alpha = s.a * k;
         ctx.beginPath();
-        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
-        ctx.fillStyle = `rgba(197, 160, 89, ${tw})`;
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fillStyle = s.gold
+          ? `rgba(197, 160, 89, ${alpha})`
+          : `rgba(245, 245, 245, ${alpha * 0.5})`;
         ctx.fill();
       }
       raf = requestAnimationFrame(frame);
@@ -96,20 +107,27 @@
 
     resize();
     spawn();
-    raf = requestAnimationFrame(frame);
-    window.addEventListener("resize", () => { resize(); spawn(); });
+    if (reduced) {
+      paintStatic(); // sin animación: cielo fijo
+    } else {
+      raf = requestAnimationFrame(frame);
+    }
+    window.addEventListener("resize", () => {
+      resize();
+      spawn();
+      if (reduced) paintStatic();
+    });
 
-    // Pausar cuando el hero no es visible (rendimiento)
-    new IntersectionObserver((entries) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          if (!raf) raf = requestAnimationFrame(frame);
-        } else {
-          cancelAnimationFrame(raf);
-          raf = null;
-        }
-      });
-    }).observe(canvas);
+    // Pausar cuando la pestaña no está visible (rendimiento)
+    document.addEventListener("visibilitychange", () => {
+      if (reduced) return;
+      if (document.hidden) {
+        cancelAnimationFrame(raf);
+        raf = null;
+      } else if (!raf) {
+        raf = requestAnimationFrame(frame);
+      }
+    });
   })();
 
   // ---------- Reveal por scroll (landing) ----------
