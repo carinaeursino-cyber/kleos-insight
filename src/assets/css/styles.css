@@ -789,6 +789,36 @@ sup { font-size: 0.45em; color: var(--gold); }
   padding: 2rem;
 }
 .error-box p { font-size: 0.98rem; line-height: 1.85; color: var(--text-60); }
+
+/* Asesoría directa (siguiente nivel) */
+.advisory-box {
+  border: 1px solid var(--gold-15);
+  background: var(--obsidian-card);
+  padding: 2.4rem 2.2rem;
+  position: relative;
+}
+.advisory-box::before {
+  content: "";
+  position: absolute;
+  top: 0; left: 2.2rem; right: 2.2rem;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--gold), transparent);
+}
+.advisory-text {
+  font-family: var(--serif);
+  font-size: 1.3rem;
+  font-weight: 500;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+.advisory-sub { font-size: 0.95rem; line-height: 1.85; color: var(--text-60); }
+.advisory-link {
+  color: var(--gold);
+  text-decoration: none;
+  border-bottom: 1px solid var(--gold-15);
+  transition: border-color 0.3s var(--ease);
+}
+.advisory-link:hover { border-color: var(--gold); }
 /* =========================================================
    RESPONSIVE
    ========================================================= */

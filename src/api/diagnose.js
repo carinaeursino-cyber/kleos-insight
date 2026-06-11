@@ -41,6 +41,10 @@ function buildPrompt(d) {
     .map((x) => `- ${x.name}: ${x.score}/20`)
     .join("\n");
 
+  const decls = (d.declarations || [])
+    .map((x, i) => `${i + 1}. ${x.q} → "${x.a}"`)
+    .join("\n");
+
   return `
 DATOS DE LA EJECUCIÓN DEL PROTOCOLO:
 
@@ -54,6 +58,9 @@ Nivel: ${d.level}
 Medición por dimensión:
 ${dims}
 Dimensión más débil: ${d.weakest}
+
+DECLARACIONES DEL CLIENTE (respuestas exactas que eligió):
+${decls || "(no disponibles)"}
 
 GENERA EXACTAMENTE ESTE JSON:
 
@@ -169,10 +176,13 @@ module.exports = async (req, res) => {
       index: Math.max(0, Math.min(100, Math.round(d.index))),
       level: clean(d.level, 80),
       weakest: clean(d.weakest, 40),
-      dimensions: d.dimensions.slice(0, 5).map((x) => ({
+            dimensions: d.dimensions.slice(0, 5).map((x) => ({
         name: clean(x.name, 30),
         score: Math.max(0, Math.min(20, Math.round(x.score || 0))),
       })),
+      declarations: (Array.isArray(d.declarations) ? d.declarations : [])
+        .slice(0, 12)
+        .map((x) => ({ q: clean(x.q, 200), a: clean(x.a, 200) })),
     };
 
     const prompt = buildPrompt(data);

@@ -436,8 +436,9 @@
           differentiator: state.answers.differentiator,
           index: r.index,
           level: `${r.level.code} — ${r.level.name}`,
-          weakest: weakest.name,
+                    weakest: weakest.name,
           dimensions: r.dimensions.map((d) => ({ name: d.name, score: d.score })),
+          declarations: r.declarations || [],
         }),
       });
 

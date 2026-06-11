@@ -98,6 +98,19 @@ const KleosEngine = (() => {
 
   /* ---------- Ejecución del protocolo ---------- */
 
+    /* Declaraciones textuales: las 8 respuestas cerradas tal como el
+     usuario las eligió. Son el "dolor activo" declarado — el insumo
+     que hace que la lectura hable de SU caso y no de un caso. */
+  function buildDeclarations(answers) {
+    return KIP_PROTOCOL
+      .filter((q) => q.type === "choice" && answers[q.id] != null)
+      .map((q) => ({
+        q: q.text,
+        a: q.options[answers[q.id]] ? q.options[answers[q.id]].label : "",
+      }))
+      .filter((d) => d.a);
+  }
+
   /* Capa Gemini: pide los textos personalizados a /api/diagnose.
      Si falla (sin conexión, sin key, error del modelo), retorna null
      y la experiencia continúa con los textos del motor local. */
@@ -173,8 +186,9 @@ const KleosEngine = (() => {
       differentiator: answers.differentiator,
       index,
       level: `${level.code} — ${level.name}`,
-      weakest: weakest.name,
+            weakest: weakest.name,
       dimensions: dimensions.map((d) => ({ name: d.name, score: d.score })),
+      declarations: buildDeclarations(answers),
     });
 
     const texts = ai || local;
@@ -183,9 +197,10 @@ const KleosEngine = (() => {
       index,
       level: { code: level.code, name: level.name },
       dimensions,
-      perception: texts.perception,
+            perception: texts.perception,
       truth: texts.truth,
       diagnosis: texts.diagnosis,
+      declarations: buildDeclarations(answers),
       source: ai ? "gemini" : "local",
     };
   }
