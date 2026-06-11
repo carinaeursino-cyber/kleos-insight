@@ -76,30 +76,30 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-    function spawn() {
-      // Densidad tipo cielo: ~1 estrella por cada 9.000 px²
-      const count = Math.min(180, Math.floor((W * H) / 9000));
+        function spawn() {
+      // Densidad tipo cielo: ~1 estrella por cada 12.000 px²
+      const count = Math.min(140, Math.floor((W * H) / 12000));
       stars = Array.from({ length: count }, () => ({
         x: Math.random() * W,
         y: Math.random() * H,
-        r: 0.6 + Math.random() * 1.4,          // visibles pero finas
-        a: 0.25 + Math.random() * 0.55,        // brillo base notorio
+        r: 0.5 + Math.random() * 1.1,          // finas
+        a: 0.08 + Math.random() * 0.22,        // brillo sutil — presencia, no protagonismo
         tw: 0.5 + Math.random() * 0.5,         // amplitud del titileo
         sp: 0.6 + Math.random() * 1.6,         // velocidad del titileo
         ph: Math.random() * Math.PI * 2,       // fase aleatoria
         gold: Math.random() < 0.7,             // 70% doradas, 30% blancas tenues
-        halo: Math.random() < 0.18,            // 18% con halo suave
+        halo: Math.random() < 0.08,            // 8% con halo muy suave
       }));
     }
 
     function drawStar(s, alpha) {
       if (s.halo) {
-        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 5);
+                const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
         const c = s.gold ? "197, 160, 89" : "245, 245, 245";
-        g.addColorStop(0, `rgba(${c}, ${alpha * 0.5})`);
+                g.addColorStop(0, `rgba(${c}, ${alpha * 0.3})`);
         g.addColorStop(1, `rgba(${c}, 0)`);
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r * 5, 0, Math.PI * 2);
+                ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
         ctx.fillStyle = g;
         ctx.fill();
       }
@@ -120,7 +120,7 @@
       ctx.clearRect(0, 0, W, H);
       for (const s of stars) {
         const k = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin((t / 1000) * s.sp + s.ph)) * s.tw + (1 - s.tw) * 0.7;
-        drawStar(s, Math.min(s.a * k, 0.85));
+                drawStar(s, Math.min(s.a * k, 0.4));
       }
       raf = requestAnimationFrame(frame);
     }
