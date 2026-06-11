@@ -2,10 +2,9 @@
    KLEOS INSIGHT™ — Motor del protocolo KIP-001
    Modelo de cinco dimensiones · 0–20 por dimensión · Índice 0–100
 
-   El índice y las dimensiones se calculan localmente
-   (deterministas y justos). Los textos de la lectura se
-   generan vía Gemini (/api/diagnose) con respaldo local
-   garantizado si la API no responde.
+   El índice y las dimensiones se calculan localmente.
+   Los textos se generan vía /api/diagnose (IA) con respaldo
+   local garantizado.
    ========================================================= */
 
 const KleosEngine = (() => {
@@ -27,8 +26,7 @@ const KleosEngine = (() => {
 
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-  /* Densidad informativa de un campo abierto (0–8).
-     No premia la longitud: premia la presencia de sustancia. */
+  /* Densidad informativa de un campo abierto (0–8). */
   function textScore(text) {
     const t = String(text || "").trim();
     if (!t) return 0;
@@ -37,8 +35,7 @@ const KleosEngine = (() => {
     return clamp(Math.round(words * 0.9) + specific, 1, 8);
   }
 
-  /* Alineación entre autopercepción y percepción externa (0–6).
-     Coincidencia de vocabulario = recorrido coherente. */
+  /* Alineación entre autopercepción y percepción externa (0–6). */
   function alignmentScore(selfWords, clientWords) {
     const norm = (s) =>
       String(s || "")
@@ -98,9 +95,8 @@ const KleosEngine = (() => {
 
   /* ---------- Ejecución del protocolo ---------- */
 
-    /* Declaraciones textuales: las 8 respuestas cerradas tal como el
-     usuario las eligió. Son el "dolor activo" declarado — el insumo
-     que hace que la lectura hable de SU caso y no de un caso. */
+  /* Declaraciones textuales: las respuestas cerradas tal como el
+     usuario las eligió — el dolor activo declarado. */
   function buildDeclarations(answers) {
     return KIP_PROTOCOL
       .filter((q) => q.type === "choice" && answers[q.id] != null)
@@ -111,9 +107,7 @@ const KleosEngine = (() => {
       .filter((d) => d.a);
   }
 
-  /* Capa Gemini: pide los textos personalizados a /api/diagnose.
-     Si falla (sin conexión, sin key, error del modelo), retorna null
-     y la experiencia continúa con los textos del motor local. */
+  /* Capa IA: si falla, la experiencia continúa con textos locales. */
   async function fetchAiReading(payload) {
     try {
       const ctrl = new AbortController();
@@ -148,7 +142,11 @@ const KleosEngine = (() => {
       0, 20
     );
     const differentiation = clamp(
-      weightOf("diff_1", answers.diff_1) + textScore(answers.differentiator),
+      Math.round(
+        weightOf("diff_1", answers.diff_1) +
+          weightOf("differentiator_type", answers.differentiator_type) +
+          textScore(answers.differentiator) * 0.5
+      ),
       0, 20
     );
     const journey = clamp(
@@ -178,7 +176,7 @@ const KleosEngine = (() => {
       diagnosis: buildDiagnosis(dimensions),
     };
 
-    // Intento de lectura generada por Gemini
+    // Intento de lectura generada por IA
     const ai = await fetchAiReading({
       company: answers.company,
       self_perception: answers.self_perception,
@@ -186,7 +184,7 @@ const KleosEngine = (() => {
       differentiator: answers.differentiator,
       index,
       level: `${level.code} — ${level.name}`,
-            weakest: weakest.name,
+      weakest: weakest.name,
       dimensions: dimensions.map((d) => ({ name: d.name, score: d.score })),
       declarations: buildDeclarations(answers),
     });
@@ -197,7 +195,7 @@ const KleosEngine = (() => {
       index,
       level: { code: level.code, name: level.name },
       dimensions,
-            perception: texts.perception,
+      perception: texts.perception,
       truth: texts.truth,
       diagnosis: texts.diagnosis,
       declarations: buildDeclarations(answers),

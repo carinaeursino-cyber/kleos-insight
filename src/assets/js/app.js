@@ -7,7 +7,7 @@
 (() => {
   "use strict";
 
-    // ---------- Configuración de checkout ----------
+  // ---------- Configuración de checkout ----------
   // URL del producto en Lemon Squeezy (reemplazar al crear la tienda)
   const CHECKOUT_URL = "https://TUTIENDA.lemonsqueezy.com/buy/PRODUCT_UUID";
 
@@ -62,50 +62,65 @@
     const ctx = canvas.getContext("2d");
     let stars = [];
     let raf;
+    let W = 0, H = 0;
 
     function resize() {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
+      // Compensación de pantallas Retina/alta densidad (clave para móvil)
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      W = window.innerWidth;
+      H = window.innerHeight;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + "px";
+      canvas.style.height = H + "px";
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
     function spawn() {
-      // Densidad tipo cielo: ~1 estrella por cada 11.000 px²
-      const count = Math.min(160, Math.floor((canvas.width * canvas.height) / 11000));
+      // Densidad tipo cielo: ~1 estrella por cada 9.000 px²
+      const count = Math.min(180, Math.floor((W * H) / 9000));
       stars = Array.from({ length: count }, () => ({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        r: 0.3 + Math.random() * 1.0,          // diminutas
-        a: 0.05 + Math.random() * 0.3,         // brillo base variado
-        tw: 0.4 + Math.random() * 0.6,         // amplitud del titileo
-        sp: 0.4 + Math.random() * 1.2,         // velocidad del titileo
+        x: Math.random() * W,
+        y: Math.random() * H,
+        r: 0.6 + Math.random() * 1.4,          // visibles pero finas
+        a: 0.25 + Math.random() * 0.55,        // brillo base notorio
+        tw: 0.5 + Math.random() * 0.5,         // amplitud del titileo
+        sp: 0.6 + Math.random() * 1.6,         // velocidad del titileo
         ph: Math.random() * Math.PI * 2,       // fase aleatoria
         gold: Math.random() < 0.7,             // 70% doradas, 30% blancas tenues
+        halo: Math.random() < 0.18,            // 18% con halo suave
       }));
     }
 
-    function paintStatic() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      for (const s of stars) {
+    function drawStar(s, alpha) {
+      if (s.halo) {
+        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 5);
+        const c = s.gold ? "197, 160, 89" : "245, 245, 245";
+        g.addColorStop(0, `rgba(${c}, ${alpha * 0.5})`);
+        g.addColorStop(1, `rgba(${c}, 0)`);
         ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = s.gold
-          ? `rgba(197, 160, 89, ${s.a})`
-          : `rgba(245, 245, 245, ${s.a * 0.5})`;
+        ctx.arc(s.x, s.y, s.r * 5, 0, Math.PI * 2);
+        ctx.fillStyle = g;
         ctx.fill();
       }
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = s.gold
+        ? `rgba(197, 160, 89, ${alpha})`
+        : `rgba(245, 245, 245, ${alpha * 0.6})`;
+      ctx.fill();
+    }
+
+    function paintStatic() {
+      ctx.clearRect(0, 0, W, H);
+      for (const s of stars) drawStar(s, s.a);
     }
 
     function frame(t) {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, W, H);
       for (const s of stars) {
-        const k = 1 - s.tw * 0.5 * (1 + Math.sin((t / 1000) * s.sp + s.ph)) * 0.5;
-        const alpha = s.a * k;
-        ctx.beginPath();
-        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
-        ctx.fillStyle = s.gold
-          ? `rgba(197, 160, 89, ${alpha})`
-          : `rgba(245, 245, 245, ${alpha * 0.5})`;
-        ctx.fill();
+        const k = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin((t / 1000) * s.sp + s.ph)) * s.tw + (1 - s.tw) * 0.7;
+        drawStar(s, Math.min(s.a * k, 0.85));
       }
       raf = requestAnimationFrame(frame);
     }
@@ -113,7 +128,7 @@
     resize();
     spawn();
     if (reduced) {
-      paintStatic(); // sin animación: cielo fijo
+      paintStatic();
     } else {
       raf = requestAnimationFrame(frame);
     }
@@ -123,7 +138,6 @@
       if (reduced) paintStatic();
     });
 
-    // Pausar cuando la pestaña no está visible (rendimiento)
     document.addEventListener("visibilitychange", () => {
       if (reduced) return;
       if (document.hidden) {
@@ -174,9 +188,11 @@
           const btn = document.createElement("button");
           btn.className = "q-option" + (state.answers[q.id] === i ? " selected" : "");
           btn.innerHTML = `<span class="marker">▸</span><span>${opt.label}</span>`;
-          btn.addEventListener("click", () => selectOption(q.id, i, btn));
+          btn.addEventListener("click", () => selectOption(q.id, i, btn, q));
           el.qBody.appendChild(btn);
         });
+      } else if (q.type === "chips") {
+        renderChips(q);
       } else {
         const input = document.createElement(q.multiline ? "textarea" : "input");
         input.className = q.multiline ? "q-textarea" : "q-input";
@@ -244,8 +260,135 @@
     }, 500);
   }
 
+  // ---------- Fichas de selección (3 palabras, sin tipear) ----------
+  function renderChips(q) {
+    const picked = String(state.answers[q.id] || "")
+      .split(",").map((s) => s.trim()).filter(Boolean);
+
+    const board = document.createElement("div");
+    board.className = "chips-board";
+
+    const counter = document.createElement("p");
+    counter.className = "chips-counter mono";
+
+    const continueRow = document.createElement("div");
+    continueRow.className = "q-submit-row";
+    const btnGo = document.createElement("button");
+    btnGo.className = "btn-gold";
+    btnGo.textContent = "Registrar selección";
+    continueRow.appendChild(btnGo);
+
+    const updateUI = () => {
+      counter.textContent = `${picked.length} / ${q.pick} SELECCIONADAS`;
+      btnGo.style.opacity = picked.length === q.pick ? "1" : "0.35";
+      board.querySelectorAll(".chip").forEach((c) => {
+        c.classList.toggle("selected", picked.includes(c.dataset.word));
+        c.classList.toggle("disabled", picked.length >= q.pick && !picked.includes(c.dataset.word));
+      });
+    };
+
+    q.words.forEach((w) => {
+      const chip = document.createElement("button");
+      chip.className = "chip";
+      chip.dataset.word = w;
+      chip.textContent = w;
+      chip.addEventListener("click", () => {
+        const idx = picked.indexOf(w);
+        if (idx >= 0) picked.splice(idx, 1);
+        else if (picked.length < q.pick) picked.push(w);
+        updateUI();
+      });
+      board.appendChild(chip);
+    });
+
+    // Opción discreta: agregar palabra propia
+    const customRow = document.createElement("div");
+    customRow.className = "chip-custom-row";
+    const customBtn = document.createElement("button");
+    customBtn.className = "btn-ghost mono";
+    customBtn.textContent = "+ otra palabra";
+    const customInput = document.createElement("input");
+    customInput.className = "q-input chip-custom-input";
+    customInput.type = "text";
+    customInput.maxLength = 20;
+    customInput.placeholder = "escriba y presione Enter";
+    customInput.style.display = "none";
+    customBtn.addEventListener("click", () => {
+      customInput.style.display = "block";
+      customInput.focus();
+    });
+    customInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        const w = customInput.value.trim().toLowerCase();
+        if (w && !picked.includes(w) && picked.length < q.pick) {
+          picked.push(w);
+          const chip = document.createElement("button");
+          chip.className = "chip selected";
+          chip.dataset.word = w;
+          chip.textContent = w;
+          chip.addEventListener("click", () => {
+            const idx = picked.indexOf(w);
+            if (idx >= 0) picked.splice(idx, 1);
+            else if (picked.length < q.pick) picked.push(w);
+            updateUI();
+          });
+          board.appendChild(chip);
+          customInput.value = "";
+          customInput.style.display = "none";
+          updateUI();
+        }
+      }
+    });
+    customRow.appendChild(customBtn);
+    customRow.appendChild(customInput);
+
+    btnGo.addEventListener("click", () => {
+      if (picked.length !== q.pick) return;
+      state.answers[q.id] = picked.join(", ");
+      advance();
+    });
+
+    el.qBody.appendChild(counter);
+    el.qBody.appendChild(board);
+    el.qBody.appendChild(customRow);
+    el.qBody.appendChild(continueRow);
+    updateUI();
+  }
+
+  // ---------- Señales del sistema (lectura en tiempo real) ----------
+  const SYSTEM_SIGNALS = [
+    { after: "clarity_2", check: (a) => a.clarity_2 >= 2, signal: "SEÑAL REGISTRADA · PROPUESTA SIN ANCLAJE DOCUMENTAL" },
+    { after: "client_perception", check: () => true, signal: "CONTRASTE D-PERCEPTIVO EN ANÁLISIS" },
+    { after: "value_2", check: (a) => a.value_2 >= 2, signal: "SEÑAL REGISTRADA · TECHO DE PRECIO AUTOIMPUESTO" },
+    { after: "value_2", check: (a) => a.value_2 < 2, signal: "SEÑAL REGISTRADA · POSICIÓN DE PRECIO ACTIVA" },
+    { after: "trust_2", check: (a) => a.trust_1 >= 2 || a.trust_2 >= 2, signal: "TENSIÓN DETECTADA ENTRE D2 Y D3" },
+    { after: "trust_2", check: (a) => a.trust_1 < 2 && a.trust_2 < 2, signal: "SEÑAL REGISTRADA · D3 EN RANGO ESTABLE" },
+    { after: "diff_1", check: (a) => a.diff_1 >= 2, signal: "SEÑAL REGISTRADA · MENSAJE INTERCAMBIABLE DETECTADO" },
+    { after: "journey_1", check: () => true, signal: "ENTRADAS COMPLETAS · PREPARANDO ANÁLISIS DIMENSIONAL" },
+  ];
+
+  function getSignal(questionId) {
+    const candidates = SYSTEM_SIGNALS.filter((s) => s.after === questionId);
+    for (const c of candidates) {
+      try { if (c.check(state.answers)) return c.signal; } catch { /* noop */ }
+    }
+    return null;
+  }
+
+  function flashSignal(text, then) {
+    const sig = document.createElement("div");
+    sig.className = "system-signal mono";
+    sig.textContent = text;
+    document.getElementById("screen-protocol").appendChild(sig);
+    requestAnimationFrame(() => sig.classList.add("visible"));
+    setTimeout(() => {
+      sig.classList.remove("visible");
+      setTimeout(() => { sig.remove(); then(); }, 300);
+    }, 1100);
+  }
+
   let advancing = false;
-  function selectOption(id, i, btn) {
+  function selectOption(id, i, btn, q) {
     if (advancing) return;
     advancing = true;
 
@@ -253,20 +396,75 @@
     el.qBody.querySelectorAll(".q-option").forEach((b) => b.classList.remove("selected"));
     btn.classList.add("selected");
 
+    // Follow-up opcional (precisión del diferenciador)
+    if (q && q.followUp && i !== q.options.length - 1) {
+      setTimeout(() => {
+        advancing = false;
+        renderFollowUp(q.followUp);
+      }, 450);
+      return;
+    }
+
     setTimeout(() => {
       advancing = false;
       advance();
     }, 450);
   }
 
+  // ---------- Follow-up: línea opcional tras una elección ----------
+  function renderFollowUp(fu) {
+    el.qBody.innerHTML = "";
+    el.qHint.textContent = "";
+    el.qText.textContent = fu.text;
+
+    const input = document.createElement("input");
+    input.className = "q-input";
+    input.type = "text";
+    input.maxLength = fu.maxLength || 160;
+    input.placeholder = fu.placeholder || "";
+
+    const row = document.createElement("div");
+    row.className = "q-submit-row";
+    const btnOk = document.createElement("button");
+    btnOk.className = "btn-gold";
+    btnOk.textContent = "Registrar";
+    const btnSkip = document.createElement("button");
+    btnSkip.className = "btn-ghost mono";
+    btnSkip.textContent = "Omitir →";
+
+    const submit = (value) => {
+      state.answers[fu.id] = value;
+      advance();
+    };
+    btnOk.addEventListener("click", () => submit(input.value.trim()));
+    btnSkip.addEventListener("click", () => submit(""));
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") { e.preventDefault(); submit(input.value.trim()); }
+    });
+
+    row.appendChild(btnOk);
+    row.appendChild(btnSkip);
+    el.qBody.appendChild(input);
+    el.qBody.appendChild(row);
+    setTimeout(() => input.focus(), 80);
+  }
+
   function advance() {
-    if (state.current < KIP_PROTOCOL.length - 1) {
-      state.current++;
-      renderEntry();
-    } else {
-      el.progressFill.style.width = "100%";
-      setTimeout(startAnalysis, 350);
-    }
+    const currentId = KIP_PROTOCOL[state.current].id;
+    const signal = getSignal(currentId);
+
+    const go = () => {
+      if (state.current < KIP_PROTOCOL.length - 1) {
+        state.current++;
+        renderEntry();
+      } else {
+        el.progressFill.style.width = "100%";
+        setTimeout(startAnalysis, 350);
+      }
+    };
+
+    if (signal) flashSignal(signal, go);
+    else go();
   }
 
   el.btnPrev.addEventListener("click", () => {
@@ -306,7 +504,7 @@
     );
   }
 
-    // ---------- Pantalla 4 · Lectura ----------
+  // ---------- Pantalla 4 · Lectura ----------
   function showReading(r) {
     state.reading = r; // guardar para el desbloqueo
     el.resultLevel.textContent = `${r.level.code} — ${r.level.name}`;
@@ -378,7 +576,7 @@
     showScreen("landing");
   });
 
-   // ---------- Modal de acceso / checkout ----------
+  // ---------- Modal de acceso / checkout ----------
   const modal = document.getElementById("modal-unlock");
   const licenseInput = document.getElementById("license-input");
   const unlockStatus = document.getElementById("unlock-status");
@@ -436,7 +634,7 @@
           differentiator: state.answers.differentiator,
           index: r.index,
           level: `${r.level.code} — ${r.level.name}`,
-                    weakest: weakest.name,
+          weakest: weakest.name,
           dimensions: r.dimensions.map((d) => ({ name: d.name, score: d.score })),
           declarations: r.declarations || [],
         }),
