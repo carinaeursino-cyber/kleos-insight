@@ -647,7 +647,6 @@ sup { font-size: 0.45em; color: var(--gold); }
 .perception {
   font-size: clamp(1.35rem, 3vw, 1.9rem);
   font-weight: 400;
-  font-style: italic;
   line-height: 1.55;
 }
 /* Causa raíz detectada */
