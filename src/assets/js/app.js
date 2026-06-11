@@ -16,6 +16,8 @@
     current: 0,
     answers: {}, // { [id]: optionIndex | string }
     reading: null, // último resultado (para el desbloqueo)
+    lead: { nombre: "", email: "" }, // captura del gate
+    recordId: null, // id del registro guardado
   };
 
   // ---------- Referencias ----------
@@ -23,6 +25,7 @@
     landing: document.getElementById("screen-landing"),
     protocol: document.getElementById("screen-protocol"),
     analysis: document.getElementById("screen-analysis"),
+    gate: document.getElementById("screen-gate"),
     reading: document.getElementById("screen-reading"),
   };
 
@@ -521,7 +524,7 @@
 
     const minDelay = new Promise((r) => setTimeout(r, 5300));
     Promise.all([KleosEngine.run(state.answers), minDelay])
-      .then(([reading]) => showReading(reading))
+      .then(([reading]) => showGate(reading))
       .catch((err) => {
         // Red de seguridad: nunca dejar la rueda girando
         console.error("KIP-001 error en análisis:", err);
@@ -529,6 +532,73 @@
         alert("Ocurrió un error al componer la lectura. Por favor, intente de nuevo.");
       });
   }
+
+  // ---------- Pantalla 3.5 · Diagnóstico listo (captura de lead) ----------
+  function showGate(r) {
+    state.reading = r;
+    document.getElementById("gate-index").textContent = r.index;
+    document.getElementById("gate-level").textContent = r.level.name
+      .toLowerCase()
+      .replace(/^./, (c) => c.toUpperCase());
+    const weakest = r.weakestFinding ? r.weakestFinding.name.toLowerCase() : "posicionamiento";
+    document.getElementById("gate-gap").innerHTML =
+      `Detectamos una brecha importante en su <span class="gold">${weakest}</span>`;
+    showScreen("gate");
+  }
+
+  // Validación y envío del gate
+  function gateStatus(msg, cls) {
+    const n = document.getElementById("gate-status");
+    n.textContent = msg;
+    n.className = "gate-status mono" + (cls ? " " + cls : "");
+  }
+
+  async function captureRecord() {
+    // Captura silenciosa: nunca bloquea la experiencia
+    try {
+      const r = state.reading;
+      const resp = await fetch("/api/capture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          nombre: state.lead.nombre,
+          email: state.lead.email,
+          empresa: state.answers.company || "",
+          respuestas: state.answers,
+          declaraciones: r.declarations || [],
+          kleosIndex: r.index,
+          perceptionLevel: `${r.level.code} — ${r.level.name}`,
+          pattern: r.pattern ? r.pattern.name : "",
+          mainDiagnosis: r.prescription ? r.prescription.cause : "",
+          priorityNumberOne: r.prescription ? r.prescription.priority : "",
+          insightDetected: r.insight || "",
+          dimensions: r.dimensions.map((d) => ({ name: d.name, score: d.score })),
+        }),
+      });
+      const j = await resp.json().catch(() => null);
+      if (j && j.id) state.recordId = j.id;
+    } catch { /* silencioso */ }
+  }
+
+  document.getElementById("btn-gate").addEventListener("click", async () => {
+    const nombre = document.getElementById("gate-name").value.trim();
+    const email = document.getElementById("gate-email").value.trim();
+    if (nombre.length < 2) {
+      gateStatus("INGRESE SU NOMBRE", "error");
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) {
+      gateStatus("INGRESE UN EMAIL VÁLIDO", "error");
+      return;
+    }
+    state.lead = { nombre, email };
+    gateStatus("DESBLOQUEANDO INFORME", "loading");
+    captureRecord(); // en paralelo, sin esperar
+    setTimeout(() => {
+      gateStatus("");
+      showReading(state.reading);
+    }, 600);
+  });
 
   // ---------- Pantalla 4 · Lectura ----------
   function showReading(r) {
@@ -625,10 +695,16 @@
   function resetProtocol() {
     state.current = 0;
     state.answers = {};
+    state.reading = null;
+    state.recordId = null;
     discoveryShown = 0;
     if (el.discoveryValue) el.discoveryValue.textContent = "0%";
     el.indexNumber.textContent = "0";
     el.idxArc.style.strokeDashoffset = "565.48";
+    const gn = document.getElementById("gate-name");
+    const ge = document.getElementById("gate-email");
+    if (gn) gn.value = "";
+    if (ge) ge.value = "";
   }
 
   document.querySelectorAll("[data-start]").forEach((btn) =>
@@ -725,6 +801,14 @@
 
       const full = await resp.json();
       setStatus("ACCESO CONFIRMADO", "ok");
+      // Marcar el registro como pagado (silencioso)
+      if (state.recordId) {
+        fetch("/api/capture", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ action: "mark_paid", id: state.recordId }),
+        }).catch(() => {});
+      }
       setTimeout(() => {
         closeModal();
         revealFullReading(full, r);
@@ -837,56 +921,4 @@
     showScreen("landing");
   });
 
-  /* ---------- MODO PREVIEW (solo para revisión interna) ----------
-     Activar con: insight.carinaursino.com/?preview=kleos2026
-     Doble click en el botón dorado del CTA = simular el desbloqueo
-     con textos de muestra, SIN pagar y SIN llamar a la IA.
-     Inofensivo: no toca la validación real de licencias. */
-  const PREVIEW_KEY = "kleos2026";
-  if (new URLSearchParams(location.search).get("preview") === PREVIEW_KEY) {
-    const badge = document.createElement("div");
-    badge.textContent = "MODO PREVIEW";
-    badge.style.cssText =
-      "position:fixed;top:10px;right:10px;z-index:9999;font-family:monospace;" +
-      "font-size:10px;letter-spacing:2px;color:#C5A059;border:1px solid #C5A059;" +
-      "padding:4px 10px;background:rgba(5,5,5,.8);pointer-events:none;";
-    document.body.appendChild(badge);
-
-    // Botón de simulación dentro del modal de pago (solo en preview)
-    const simBtn = document.createElement("button");
-    simBtn.textContent = "[PREVIEW] SIMULAR DESBLOQUEO";
-    simBtn.className = "btn-ghost mono";
-    simBtn.style.cssText =
-      "margin-top:1.2rem;border:1px dashed #C5A059;padding:0.7rem 1.4rem;color:#C5A059;width:100%;";
-    document.querySelector(".modal-card").appendChild(simBtn);
-
-    simBtn.addEventListener("click", () => {
-      if (!state.reading) return;
-      const r = state.reading;
-      const lockedDims = r.dimensions.filter((d) => d.state === "locked");
-      const fakeReadings = {};
-      lockedDims.forEach((d) => {
-        fakeReadings[d.key] =
-          `[PREVIEW] Lectura de ${d.name} (${d.score}/20): aquí la IA explicará el mecanismo detectado en esta dimensión y la dirección de corrección para su caso específico.`;
-      });
-      closeModal();
-      revealFullReading(
-        {
-          dim_readings: fakeReadings,
-          truth_full:
-            "[PREVIEW] Aquí aparecerá la observación crítica completa generada por la IA: la cadena causal que el cliente no ve, el principio de percepción detrás y su costo económico concreto.",
-          diagnosis_full:
-            "[PREVIEW] Aquí aparecerá el diagnóstico central: la categoría mental que ocupa hoy el negocio, por qué fija un techo a su precio y a qué categoría debe migrar.",
-          sequence: [
-            "[PREVIEW] Primer movimiento de corrección, accionable esta semana.",
-            "[PREVIEW] Segundo movimiento, que se apoya en el primero.",
-            "[PREVIEW] Tercer movimiento, que consolida la secuencia.",
-          ],
-          first_error:
-            "[PREVIEW] Aquí aparecerá el error que no debe cometer primero — el movimiento tentador que profundizaría la brecha.",
-        },
-        r
-      );
-    });
-  }
 })();
