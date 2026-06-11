@@ -233,6 +233,77 @@ const KleosEngine = (() => {
 
     return { name: p.name, text: p.text, match };
   }
+    /* ---------- Insight detectado: el momento eureka ----------
+     generateInsight() cruza respuestas entre sí buscando la
+     CONTRADICCIÓN más reveladora del caso. Reglas en orden de
+     prioridad: la primera que aplica, gana. ---------- */
+  function generateInsight(answers, dimensions) {
+    const a = answers;
+    const norm = (s) =>
+      String(s || "").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+    const selfW = norm(a.self_perception).split(/[\s,]+/).filter(Boolean);
+    const clientW = norm(a.client_perception).split(/[\s,]+/).filter(Boolean);
+    const overlap = selfW.filter((w) => clientW.includes(w)).length;
+    const negClient = ["caro", "lento", "distante", "impreciso", "comun", "complicado", "frio"]
+      .some((w) => clientW.includes(w));
+    const aspSelf = ["exclusivo", "premium", "precision", "innovador", "profesional"]
+      .some((w) => selfW.includes(w));
+
+    const RULES = [
+      {
+        // Declara afirmación única pero su mensaje es intercambiable
+        when: () => (a.differentiator_type === 0 || a.differentiator_type === 1) && a.diff_1 >= 2,
+        text: "Usted posee una afirmación que ningún competidor puede hacer — y sin embargo su mensaje podría firmarlo cualquiera de ellos. La ventaja existe; el mercado nunca la recibió. Está pagando el costo de ser común teniendo los argumentos para no serlo.",
+      },
+      {
+        // Aceptan su precio pero no lo sube por miedo
+        when: () => a.value_2 === 2 && (a.value_1 === 0 || a.value_1 === 1),
+        text: "El mercado acepta su precio con menos resistencia de la que usted imagina, y aun así no lo ha subido por percepción de riesgo. La resistencia que teme no proviene de sus clientes: proviene de su propia lectura del mercado. El techo es interno.",
+      },
+      {
+        // Le piden descuento + su presencia no respalda el precio
+        when: () => a.value_1 >= 2 && a.trust_2 >= 2,
+        text: "La negociación de precio que enfrenta en cada venta no es una discusión sobre el precio. Es la respuesta del mercado a una presencia que comunica un nivel inferior a su tarifa. Mientras esa señal no cambie, cada descuento solicitado es predecible.",
+      },
+      {
+        // Autopercepción aspiracional vs mercado que lo describe en negativo
+        when: () => aspSelf && negClient && overlap === 0,
+        text: "Existe una contradicción directa entre cómo define su negocio y cómo el mercado lo interpreta — y ambas descripciones no pueden ser ciertas a la vez para el comprador. Hoy, en cada decisión de compra, está ganando la versión del mercado.",
+      },
+      {
+        // Llegan comparando + prospectos que se enfrían: conversión, no demanda
+        when: () => a.journey_1 >= 1 && a.trust_1 >= 2,
+        text: "Su principal obstáculo no parece ser la generación de demanda, sino la conversión de la demanda que ya existe. Atraer más interesados con el recorrido actual solo aumentaría el volumen de oportunidades que se enfrían en el mismo punto.",
+      },
+      {
+        // Propuesta sin documentar + el interlocutor no entiende rápido
+        when: () => a.clarity_2 >= 2 && a.clarity_1 >= 1,
+        text: "Su propuesta de valor vive en su cabeza, y eso tiene una consecuencia medible: cada conversación comercial empieza desde cero. El mercado no está rechazando su oferta — está recibiendo una versión distinta de ella cada vez.",
+      },
+      {
+        // Sin afirmación única (lo confesó)
+        when: () => a.differentiator_type === 3,
+        text: "Su negocio todavía no posee una afirmación que nadie más pueda hacer — y ese dato explica más de su situación comercial que cualquier otro. Sin esa afirmación, el mercado solo dispone de una variable para decidir: el precio.",
+      },
+    ];
+
+    for (const rule of RULES) {
+      try {
+        if (rule.when()) return rule.text;
+      } catch { /* noop */ }
+    }
+
+    // Respaldo: insight desde la dimensión crítica
+    const lowest = [...dimensions].sort((x, y) => x.score - y.score)[0];
+    const fallback = {
+      clarity: "La fricción que percibe en sus ventas comienza antes de la venta: en los segundos en que el mercado intenta entender qué ofrece y a qué categoría pertenece. Lo que parece un problema comercial es un problema de interpretación.",
+      value: "El mercado no está evaluando su trabajo: está evaluando las señales que llegan antes que su trabajo. La brecha entre lo que entrega y lo que le pagan se abre en esa antesala.",
+      trust: "Las decisiones que se enfrían después de la primera conversación no se pierden en la conversación: se pierden en lo que el prospecto verifica después de ella. Ese momento, que usted no presencia, es donde hoy se define su tasa de cierre.",
+      differentiation: "El mercado entiende lo que hace, pero no logra nombrar por qué elegirlo. Y lo que el comprador no puede nombrar, no puede defender frente a otras opciones — ni frente a su propio presupuesto.",
+      journey: "La demanda que necesita probablemente ya lo encontró. El punto crítico no está en ser descubierto: está en el trayecto entre el interés y la decisión, donde hoy se filtran compradores que ya estaban convencidos.",
+    };
+    return fallback[lowest.key] || fallback.clarity;
+  }
   /* ---------- Ejecución del protocolo ---------- */
 
   /* Declaraciones textuales: las respuestas cerradas tal como el
@@ -340,6 +411,7 @@ const KleosEngine = (() => {
       diagnosis: texts.diagnosis,
       prescription: buildPrescription(dimensions),
       pattern: buildPattern(dimensions),
+      insight: generateInsight(answers, dimensions),
       hiddenFragment: buildHiddenFragment(dimensions, answers),
       declarations: buildDeclarations(answers),
       source: ai ? "gemini" : "local",

@@ -545,6 +545,10 @@
         list.appendChild(row);
       });
     }
+        // Insight detectado: el momento eureka
+    if (r.insight) {
+      document.getElementById("insight-text").textContent = r.insight;
+    }
     // Patrón detectado: identidad reconocible
     if (r.pattern) {
       document.getElementById("pattern-name").textContent = r.pattern.name.toUpperCase();
