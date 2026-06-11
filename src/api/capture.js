@@ -52,6 +52,43 @@ module.exports = async (req, res) => {
   const clean = (s, n) => String(s == null ? "" : s).slice(0, n).trim();
 
   try {
+    /* ---- Eventos de negocio (embudo de conversión) ---- */
+    if (d.action === "event" && d.event) {
+      const ALLOWED = [
+        "startedProtocol",
+        "completedProtocol",
+        "openedResults",
+        "clickedUnlock",
+        "paid",
+        "downloadedPdf",
+        "abandonedProtocol",
+      ];
+      const ev = clean(d.event, 30);
+      if (ALLOWED.includes(ev)) {
+        await redis(["HINCRBY", "kip001:events", ev, "1"]);
+      }
+      res.status(200).json({ ok: true });
+      return;
+    }
+
+    /* ---- Estado parcial (abandono a mitad del protocolo) ---- */
+    if (d.action === "partial") {
+      const partial = {
+        fecha: new Date().toISOString(),
+        empresa: clean(d.empresa, 80),
+        entrada: Math.max(0, Math.min(12, Math.round(d.entrada || 0))),
+        respuestas:
+          d.respuestas && typeof d.respuestas === "object" ? d.respuestas : {},
+      };
+      const json = JSON.stringify(partial);
+      if (json.length <= 8000) {
+        await redis(["LPUSH", "kip001:partials", json]);
+        await redis(["LTRIM", "kip001:partials", "0", "499"]); // máx 500
+      }
+      res.status(200).json({ ok: true });
+      return;
+    }
+
     /* ---- Marcar un registro como pagado (tras desbloqueo) ---- */
     if (d.action === "mark_paid" && d.id) {
       const id = clean(d.id, 40);
@@ -64,6 +101,7 @@ module.exports = async (req, res) => {
           await redis(["SET", `kip001:rec:${id}`, JSON.stringify(rec)]);
         } catch { /* noop */ }
       }
+      await redis(["HINCRBY", "kip001:events", "paid", "1"]);
       res.status(200).json({ ok: true });
       return;
     }

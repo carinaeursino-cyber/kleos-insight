@@ -60,11 +60,21 @@ module.exports = async (req, res) => {
       return;
     }
 
+    /* ---- Embudo de conversión ---- */
+    const evRes = await redis(["HGETALL", "kip001:events"]);
+    const evArr = (evRes && evRes.result) || [];
+    const events = {};
+    for (let i = 0; i < evArr.length; i += 2) {
+      events[evArr[i]] = parseInt(evArr[i + 1], 10) || 0;
+    }
+    const partialsRes = await redis(["LLEN", "kip001:partials"]);
+    const partials = (partialsRes && partialsRes.result) || 0;
+
     /* ---- Lista resumida (últimos 200) ---- */
     const idsRes = await redis(["LRANGE", "kip001:ids", "0", "199"]);
     const ids = (idsRes && idsRes.result) || [];
     if (!ids.length) {
-      res.status(200).json({ total: 0, records: [] });
+      res.status(200).json({ total: 0, records: [], events, partials });
       return;
     }
 
@@ -92,7 +102,7 @@ module.exports = async (req, res) => {
       })
       .filter(Boolean);
 
-    res.status(200).json({ total: rows.length, records: rows });
+    res.status(200).json({ total: rows.length, records: rows, events, partials });
   } catch (e) {
     console.error("admin-data error:", e && e.message);
     res.status(500).json({ error: "internal" });

@@ -16,7 +16,7 @@
     current: 0,
     answers: {}, // { [id]: optionIndex | string }
     reading: null, // último resultado (para el desbloqueo)
-    lead: { nombre: "", email: "" }, // captura del gate
+    lead: { nombre: "", email: "", empresa: "" }, // captura del gate
     recordId: null, // id del registro guardado
   };
 
@@ -55,6 +55,39 @@
     screens[name].classList.add("is-active");
     window.scrollTo(0, 0);
   }
+
+  // ---------- Eventos de negocio (embudo de conversión) ----------
+  function trackEvent(event) {
+    try {
+      fetch("/api/capture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "event", event }),
+        keepalive: true, // sobrevive al cierre de pestaña
+      }).catch(() => {});
+    } catch { /* silencioso */ }
+  }
+
+  // Abandono: si cierra la pestaña a mitad del protocolo, guardar estado parcial
+  let protocolActive = false;
+  window.addEventListener("pagehide", () => {
+    if (!protocolActive || state.current >= KIP_PROTOCOL.length - 1) return;
+    try {
+      navigator.sendBeacon(
+        "/api/capture",
+        new Blob(
+          [JSON.stringify({
+            action: "partial",
+            empresa: state.lead.empresa || state.answers.company || "",
+            entrada: state.current + 1,
+            respuestas: state.answers,
+          })],
+          { type: "application/json" }
+        )
+      );
+      trackEvent("abandonedProtocol");
+    } catch { /* noop */ }
+  });
 
   // ---------- Cielo estrellado dorado (canvas global · estilo KLEOS) ----------
   (function initStarfield() {
@@ -483,6 +516,8 @@
       } else {
         el.progressFill.style.width = "100%";
         animateDiscovery(100);
+        protocolActive = false;
+        trackEvent("completedProtocol");
         setTimeout(startAnalysis, 350);
       }
     };
@@ -543,6 +578,8 @@
     const weakest = r.weakestFinding ? r.weakestFinding.name.toLowerCase() : "posicionamiento";
     document.getElementById("gate-gap").innerHTML =
       `Detectamos una brecha importante en su <span class="gold">${weakest}</span>`;
+    const gc = document.getElementById("gate-company");
+    if (gc && !gc.value) gc.value = state.answers.company || "";
     showScreen("gate");
   }
 
@@ -563,7 +600,7 @@
         body: JSON.stringify({
           nombre: state.lead.nombre,
           email: state.lead.email,
-          empresa: state.answers.company || "",
+          empresa: state.lead.empresa || state.answers.company || "",
           respuestas: state.answers,
           declaraciones: r.declarations || [],
           kleosIndex: r.index,
@@ -583,6 +620,7 @@
   document.getElementById("btn-gate").addEventListener("click", async () => {
     const nombre = document.getElementById("gate-name").value.trim();
     const email = document.getElementById("gate-email").value.trim();
+    const empresa = document.getElementById("gate-company").value.trim();
     if (nombre.length < 2) {
       gateStatus("INGRESE SU NOMBRE", "error");
       return;
@@ -591,8 +629,13 @@
       gateStatus("INGRESE UN EMAIL VÁLIDO", "error");
       return;
     }
-    state.lead = { nombre, email };
+    if (empresa.length < 2) {
+      gateStatus("INGRESE SU EMPRESA", "error");
+      return;
+    }
+    state.lead = { nombre, email, empresa };
     gateStatus("DESBLOQUEANDO INFORME", "loading");
+    trackEvent("openedResults");
     captureRecord(); // en paralelo, sin esperar
     setTimeout(() => {
       gateStatus("");
@@ -703,13 +746,17 @@
     el.idxArc.style.strokeDashoffset = "565.48";
     const gn = document.getElementById("gate-name");
     const ge = document.getElementById("gate-email");
+    const gc = document.getElementById("gate-company");
     if (gn) gn.value = "";
     if (ge) ge.value = "";
+    if (gc) gc.value = "";
   }
 
   document.querySelectorAll("[data-start]").forEach((btn) =>
     btn.addEventListener("click", () => {
       resetProtocol();
+      protocolActive = true;
+      trackEvent("startedProtocol");
       showScreen("protocol");
       renderEntry(false);
       el.progressFill.style.width = "0%";
@@ -736,7 +783,10 @@
     modal.setAttribute("aria-hidden", "true");
   }
 
-  document.getElementById("btn-unlock").addEventListener("click", openModal);
+  document.getElementById("btn-unlock").addEventListener("click", () => {
+    trackEvent("clickedUnlock");
+    openModal();
+  });
   modal.querySelectorAll("[data-modal-close]").forEach((n) =>
     n.addEventListener("click", closeModal)
   );

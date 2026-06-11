@@ -164,10 +164,16 @@
         const total = data.records.length;
         const paid = data.records.filter((x) => x.paid).length;
         const avg = total ? Math.round(data.records.reduce((s, x) => s + (x.kleosIndex || 0), 0) / total) : 0;
+        const ev = data.events || {};
         $("stats").innerHTML =
-          `<div class="stat"><p class="n">${total}</p><p class="l">DIAGNÓSTICOS</p></div>` +
-          `<div class="stat"><p class="n">${paid}</p><p class="l">PAGADOS</p></div>` +
-          `<div class="stat"><p class="n">${avg}</p><p class="l">ÍNDICE PROMEDIO</p></div>`;
+          `<div class="stat"><p class="n">${ev.startedProtocol || 0}</p><p class="l">INICIARON</p></div>` +
+          `<div class="stat"><p class="n">${ev.completedProtocol || 0}</p><p class="l">COMPLETARON</p></div>` +
+          `<div class="stat"><p class="n">${ev.openedResults || 0}</p><p class="l">VIERON RESULTADO</p></div>` +
+          `<div class="stat"><p class="n">${ev.clickedUnlock || 0}</p><p class="l">CLICK DESBLOQUEO</p></div>` +
+          `<div class="stat"><p class="n">${paid}</p><p class="l">PAGARON</p></div>` +
+          `<div class="stat"><p class="n">${total}</p><p class="l">LEADS</p></div>` +
+          `<div class="stat"><p class="n">${avg}</p><p class="l">ÍNDICE PROM.</p></div>` +
+          `<div class="stat"><p class="n">${data.partials || 0}</p><p class="l">ABANDONOS</p></div>`;
 
         const tbody = $("rows");
         tbody.innerHTML = "";
@@ -216,5 +222,5 @@
       else show("login");
     })();
   </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a3f6aeae1fa777',t:'MTc4MTIxNjAxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
