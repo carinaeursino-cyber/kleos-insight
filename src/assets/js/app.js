@@ -9,7 +9,7 @@
 
   // ---------- Configuración de checkout ----------
   // URL del producto en Lemon Squeezy (reemplazar al crear la tienda)
-  const CHECKOUT_URL = "https://TUTIENDA.lemonsqueezy.com/buy/PRODUCT_UUID";
+  const CHECKOUT_URL = "https://kleosstudio.lemonsqueezy.com/buy/PRODUCT_UUID";
 
   // ---------- Estado ----------
   const state = {
@@ -837,6 +837,17 @@
             locked: d.state === "locked",
           })),
           declarations: r.declarations || [],
+          // Datos para el informe permanente + email (Instrucciones 11+12)
+          lead_name: state.lead.nombre,
+          lead_email: state.lead.email,
+          pattern: r.pattern ? r.pattern.name : "",
+          perception: r.perception || "",
+          insight: r.insight || "",
+          cause: r.prescription ? r.prescription.cause : "",
+          priority: r.prescription ? r.prescription.priority : "",
+          next_code: r.nextProtocol ? r.nextProtocol.code : "",
+          next_name: r.nextProtocol ? r.nextProtocol.name : "",
+          next_objective: r.nextProtocol ? r.nextProtocol.objective : "",
         }),
       });
 
@@ -951,6 +962,15 @@
           <span class="route-status">${k.done ? "COMPLETADO" : k.recommended ? "RECOMENDADO" : "EN RUTA"}</span>`;
         routeEl.appendChild(row);
       });
+    }
+
+    // Enlace permanente al informe (si el servidor lo generó)
+    if (full.report_token) {
+      const br = document.getElementById("btn-report");
+      const rn = document.getElementById("report-note");
+      br.href = "/informe.html?t=" + encodeURIComponent(full.report_token);
+      br.style.display = "inline-block";
+      rn.style.display = "block";
     }
 
     // Ocultar CTA de compra y sección de hallazgos ocultos, mostrar lectura completa

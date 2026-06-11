@@ -288,15 +288,140 @@ module.exports = async (req, res) => {
       dimReadings[String(k).slice(0, 20)] = String(full.dim_readings[k] || "").trim();
     }
 
-    res.status(200).json({
+    const reading = {
       dim_readings: dimReadings,
       truth_full: full.truth_full.trim(),
       diagnosis_full: full.diagnosis_full.trim(),
       sequence: full.sequence.slice(0, 3).map((s) => String(s).trim()),
       first_error: String(full.first_error || "").trim(),
-    });
+    };
+
+    // 3. Guardar el informe con token seguro + enviar email (no bloqueante)
+    let reportToken = null;
+    try {
+      reportToken = await saveReportAndEmail(d, data, reading);
+    } catch (e) {
+      console.error("report/email error:", e && e.message);
+    }
+
+    res.status(200).json({ ...reading, report_token: reportToken });
   } catch (e) {
     console.error("unlock error:", e && e.message);
     res.status(500).json({ error: "internal" });
   }
 };
+
+/* =========================================================
+   Informe permanente + email de entrega (Instrucciones 11+12)
+   ========================================================= */
+
+function redisCreds() {
+  const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+  const token = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+  return url && token ? { url, token } : null;
+}
+
+async function redisCmd(cmd) {
+  const c = redisCreds();
+  if (!c) return null;
+  const r = await fetch(c.url, {
+    method: "POST",
+    headers: { Authorization: `Bearer ${c.token}`, "Content-Type": "application/json" },
+    body: JSON.stringify(cmd),
+  });
+  return r.ok ? r.json() : null;
+}
+
+async function saveReportAndEmail(d, data, reading) {
+  const clean = (s, n) => String(s == null ? "" : s).slice(0, n).trim();
+  const nombre = clean(d.lead_name, 80);
+  const email = clean(d.lead_email, 120);
+
+  // Token seguro e impredecible
+  const token =
+    Date.now().toString(36) +
+    Array.from({ length: 24 }, () =>
+      "abcdefghijklmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 36)]
+    ).join("");
+
+  // Informe completo para re-descarga
+  const report = {
+    token,
+    fecha: new Date().toISOString(),
+    nombre,
+    email,
+    empresa: data.company,
+    index: data.index,
+    level: data.level,
+    pattern: clean(d.pattern, 60),
+    perception: clean(d.perception, 1000),
+    insight: clean(d.insight, 1000),
+    cause: clean(d.cause, 1000),
+    priority: clean(d.priority, 800),
+    nextProtocol: {
+      code: clean(d.next_code, 20),
+      name: clean(d.next_name, 80),
+      objective: clean(d.next_objective, 300),
+    },
+    dimensions: data.dimensions.map((x) => ({ name: x.name, score: x.score })),
+    reading,
+  };
+
+  // Guardar (sin expiración: el cliente pagó, su informe es permanente)
+  const saved = await redisCmd(["SET", `kip001:report:${token}`, JSON.stringify(report)]);
+  if (!saved) return null;
+
+  // Enviar email de entrega (si Resend está configurado y hay email)
+  const resendKey = process.env.RESEND_API_KEY;
+  if (resendKey && email) {
+    const base = process.env.SITE_URL || "https://insight.carinaursino.com";
+    const link = `${base}/informe.html?t=${token}`;
+    const firstName = nombre.split(/\s+/)[0] || "";
+
+    const html = `
+<div style="background:#050505;padding:40px 20px;font-family:Georgia,serif;color:#F5F5F5">
+  <div style="max-width:560px;margin:0 auto">
+    <p style="font-family:monospace;font-size:11px;letter-spacing:4px;color:#C5A059;text-align:center;margin:0 0 30px">KLEOS&nbsp;INSIGHT&trade;</p>
+    <div style="border:1px solid rgba(197,160,89,.25);background:#0B0B0C;padding:36px 32px">
+      <p style="font-size:22px;margin:0 0 20px;color:#F5F5F5">Hola ${firstName || "—"},</p>
+      <p style="font-size:15px;line-height:1.8;color:rgba(245,245,245,.7);margin:0 0 16px">Su protocolo KLEOS Insight ha sido procesado.</p>
+      <p style="font-size:15px;line-height:1.8;color:rgba(245,245,245,.7);margin:0 0 24px">Su informe estratégico completo está disponible en el siguiente enlace. Este documento contiene:</p>
+      <p style="font-family:monospace;font-size:12px;line-height:2.2;color:#C5A059;margin:0 0 28px">
+        ✓ Diagnóstico completo<br>
+        ✓ Dimensiones analizadas<br>
+        ✓ Insight detectado<br>
+        ✓ Plan de acción<br>
+        ✓ Próximo paso recomendado
+      </p>
+      <div style="text-align:center;margin:0 0 24px">
+        <a href="${link}" style="display:inline-block;background:#C5A059;color:#050505;font-family:monospace;font-size:12px;letter-spacing:2px;text-transform:uppercase;text-decoration:none;padding:15px 36px;border-radius:999px">Ver mi informe</a>
+      </div>
+      <p style="font-size:13px;line-height:1.7;color:rgba(245,245,245,.45);margin:0;text-align:center">Puede volver a este enlace cuando lo desee.<br>Desde el informe podrá descargarlo en PDF.</p>
+    </div>
+    <p style="font-family:monospace;font-size:10px;letter-spacing:2px;color:rgba(245,245,245,.35);text-align:center;margin:26px 0 0">EQUIPO KLEOS &nbsp;·&nbsp; KIP-001 &nbsp;·&nbsp; LA PERCEPCIÓN DETERMINA EL VALOR</p>
+  </div>
+</div>`;
+
+    try {
+      const er = await fetch("https://api.resend.com/emails", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${resendKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          from: "KLEOS Insight <insight@carinaursino.com>",
+          to: [email],
+          reply_to: "carina@carinaursino.com",
+          subject: "Tu Informe Estratégico KLEOS está listo",
+          html,
+        }),
+      });
+      if (!er.ok) console.error("resend error:", er.status, (await er.text()).slice(0, 200));
+    } catch (e) {
+      console.error("resend send error:", e && e.message);
+    }
+  }
+
+  return token;
+}

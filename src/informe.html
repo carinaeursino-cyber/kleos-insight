@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KLEOS INSIGHT™ — Informe Estratégico</title>
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --obsidian: #050505; --card: #0B0B0C; --gold: #C5A059;
+      --gold-15: rgba(197,160,89,.15); --gold-07: rgba(197,160,89,.07);
+      --text: #F5F5F5; --text-60: rgba(245,245,245,.6); --text-40: rgba(245,245,245,.4);
+      --serif: "Playfair Display", Georgia, serif;
+      --sans: "Inter", system-ui, sans-serif;
+      --mono: "JetBrains Mono", Consolas, monospace;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box;
+        -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    body { background: var(--obsidian); color: var(--text); font-family: var(--sans); font-weight: 300; }
+    .mono { font-family: var(--mono); }
+
+    .page { max-width: 760px; margin: 0 auto; padding: 0 clamp(1.2rem, 4vw, 2.5rem); }
+
+    /* Barra de acciones (no se imprime) */
+    .actions {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(5,5,5,.92); backdrop-filter: blur(8px);
+      border-bottom: 1px solid var(--gold-15);
+      padding: 1rem clamp(1.2rem, 4vw, 2.5rem);
+      display: flex; justify-content: space-between; align-items: center; gap: 1rem;
+    }
+    .actions .brand { font-family: var(--mono); font-size: .7rem; letter-spacing: .3em; color: var(--gold); }
+    .btn-pdf {
+      font-family: var(--mono); font-size: .68rem; letter-spacing: .2em; text-transform: uppercase;
+      background: var(--gold); color: var(--obsidian); border: none; border-radius: 999px;
+      padding: .8rem 1.8rem; cursor: pointer;
+    }
+
+    /* Portada */
+    .cover {
+      min-height: 88vh; display: flex; flex-direction: column;
+      justify-content: center; align-items: center; text-align: center;
+      padding: 4rem 0 3rem; position: relative;
+    }
+    .cover .seal { font-family: var(--mono); font-size: .68rem; letter-spacing: .5em; color: var(--gold); margin-bottom: 3rem; }
+    .cover h1 { font-family: var(--serif); font-size: clamp(2.4rem, 7vw, 4rem); font-weight: 500; line-height: 1.15; margin-bottom: 1rem; }
+    .cover .sub { font-family: var(--serif); font-size: clamp(1.2rem, 3vw, 1.7rem); font-style: italic; color: var(--gold); margin-bottom: 4rem; }
+    .cover .company { font-family: var(--serif); font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 500; margin-bottom: .6rem; }
+    .cover .date { font-family: var(--mono); font-size: .62rem; letter-spacing: .3em; color: var(--text-40); margin-bottom: 3.5rem; }
+    .cover .index-ring { position: relative; width: 190px; height: 190px; margin-bottom: 1rem; }
+    .cover .index-ring svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+    .cover .idx-bg { fill: none; stroke: var(--gold-15); stroke-width: 1.5; }
+    .cover .idx-arc { fill: none; stroke: var(--gold); stroke-width: 2.5; stroke-linecap: round; }
+    .cover .idx-num {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      font-family: var(--serif); font-size: 3.6rem; font-weight: 600;
+    }
+    .cover .idx-label { font-family: var(--mono); font-size: .58rem; letter-spacing: .4em; color: var(--gold); }
+    .cover .level { font-family: var(--mono); font-size: .66rem; letter-spacing: .3em; color: var(--gold);
+                    border: 1px solid var(--gold-15); padding: .8rem 1.6rem; margin-top: 1.6rem; }
+
+    /* Secciones */
+    .section { padding: 3.2rem 0 0; }
+    .sec-num { font-family: var(--mono); font-size: .58rem; letter-spacing: .4em; color: var(--gold); margin-bottom: .6rem; }
+    .sec-title { font-family: var(--serif); font-size: 1.65rem; font-weight: 500; margin-bottom: 1.6rem;
+                 padding-bottom: .9rem; border-bottom: 1px solid var(--gold-15); }
+    .sec-body { font-size: .98rem; line-height: 1.9; color: var(--text-60); }
+    .sec-body.serif { font-family: var(--serif); font-size: 1.15rem; color: var(--text); }
+
+    .box { border: 1px solid var(--gold-15); background: var(--card); padding: 1.8rem 1.9rem; }
+    .box + .box { margin-top: 1rem; }
+    .box .lab { font-family: var(--mono); font-size: .56rem; letter-spacing: .3em; color: var(--gold); margin-bottom: .8rem; }
+
+    /* Dimensiones */
+    .dim { padding: 1.2rem 0; border-bottom: 1px solid var(--gold-07); }
+    .dim-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .6rem; }
+    .dim-name { font-family: var(--serif); font-size: 1.1rem; font-weight: 500; }
+    .dim-score { font-family: var(--mono); font-size: .78rem; color: var(--gold); }
+    .dim-barrow { height: 3px; background: var(--gold-07); margin-bottom: .8rem; }
+    .dim-barfill { height: 100%; background: var(--gold); }
+    .dim-text { font-size: .92rem; line-height: 1.8; color: var(--text-60); }
+
+    /* Secuencia */
+    .seq { display: flex; gap: 1.3rem; padding: 1.3rem 0; border-bottom: 1px solid var(--gold-07); }
+    .seq .n { font-family: var(--serif); font-size: 1.7rem; font-weight: 500; color: var(--gold); flex-shrink: 0; width: 2.2rem; }
+    .seq p { font-size: .96rem; line-height: 1.8; padding-top: .35rem; }
+
+    .error-box { border: 1px solid rgba(176,96,77,.4); background: var(--card); padding: 1.8rem 1.9rem; }
+    .error-box .lab { color: #B0604D; }
+
+    /* Próximo protocolo */
+    .next { text-align: center; border: 1px solid var(--gold-15);
+            background: radial-gradient(ellipse at top, rgba(197,160,89,.08), transparent 65%), var(--card);
+            padding: 2.6rem 2rem; }
+    .next .code { font-family: var(--mono); font-size: .72rem; letter-spacing: .4em; color: var(--gold); margin-bottom: .6rem; }
+    .next .name { font-family: var(--serif); font-size: 1.7rem; font-weight: 500; margin-bottom: .9rem; }
+    .next .obj { font-size: .94rem; line-height: 1.8; color: var(--text-60); max-width: 44ch; margin: 0 auto; }
+
+    .foot { text-align: center; padding: 4rem 0 3rem; }
+    .foot .line { width: 60px; height: 1px; background: var(--gold); margin: 0 auto 1.6rem; }
+    .foot p { font-family: var(--mono); font-size: .58rem; letter-spacing: .3em; color: var(--text-40); line-height: 2.2; }
+
+    .loading { min-height: 70vh; display: flex; flex-direction: column; gap: 1.4rem;
+               align-items: center; justify-content: center; font-family: var(--mono);
+               font-size: .68rem; letter-spacing: .3em; color: var(--text-40); text-align: center; }
+
+    /* Impresión / PDF */
+    @media print {
+      .actions { display: none; }
+      body { background: var(--obsidian); }
+      .cover { min-height: 95vh; page-break-after: always; }
+      .section { page-break-inside: avoid; }
+      @page { background: #050505; margin: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="actions" id="actions" style="display:none">
+    <span class="brand">KLEOS&nbsp;INSIGHT™</span>
+    <button class="btn-pdf" onclick="window.print()">Descargar PDF</button>
+  </div>
+
+  <div class="loading" id="loading">
+    <span>RECUPERANDO INFORME</span>
+  </div>
+
+  <div class="page" id="report" style="display:none">
+
+    <!-- Portada -->
+    <div class="cover">
+      <p class="seal">KLEOS&nbsp;INSIGHT™</p>
+      <h1>Informe Estratégico</h1>
+      <p class="sub">Diagnóstico de Percepción · KIP-001</p>
+      <p class="company" id="r-empresa"></p>
+      <p class="date" id="r-fecha"></p>
+      <div class="index-ring">
+        <svg viewBox="0 0 200 200">
+          <circle class="idx-bg" cx="100" cy="100" r="90" />
+          <circle class="idx-arc" id="r-arc" cx="100" cy="100" r="90" stroke-dasharray="565.48" stroke-dashoffset="565.48" />
+        </svg>
+        <span class="idx-num" id="r-index"></span>
+      </div>
+      <p class="idx-label">ÍNDICE KLEOS — 0 A 100</p>
+      <p class="level" id="r-level"></p>
+    </div>
+
+    <!-- 1. Percepción detectada -->
+    <div class="section">
+      <p class="sec-num">SECCIÓN 01</p>
+      <h2 class="sec-title">Percepción Detectada</h2>
+      <p class="sec-body serif" id="r-perception"></p>
+    </div>
+
+    <!-- 2. Insight -->
+    <div class="section">
+      <p class="sec-num">SECCIÓN 02</p>
+      <h2 class="sec-title">Insight Detectado</h2>
+      <p class="sec-body serif" id="r-insight"></p>
+    </div>
+
+    <!-- 3. Diagnóstico principal -->
+    <div class="section">
+      <p class="sec-num">SECCIÓN 03</p>
+      <h2 class="sec-title">Diagnóstico Principal</h2>
+      <div class="box"><p class="lab">PATRÓN DETECTADO · <span id="r-pattern"></span></p><p class="sec-body" id="r-cause"></p></div>
+      <div class="box"><p class="lab">OBSERVACIÓN CRÍTICA</p><p class="sec-body" id="r-truth"></p></div>
+      <div class="box"><p class="lab">DIAGNÓSTICO CENTRAL</p><p class="sec-body" id="r-diagnosis"></p></div>
+    </div>
+
+    <!-- 4. Dimensiones -->
+    <div class="section">
+      <p class="sec-num">SECCIÓN 04</p>
+      <h2 class="sec-title">Dimensiones Analizadas</h2>
+      <div id="r-dims"></div>
+    </div>
+
+    <!-- 5. Prioridad -->
+    <div class="section">
+      <p class="sec-num">SECCIÓN 05</p>
+      <h2 class="sec-title">Prioridad Número 1</h2>
+      <div class="box"><p class="sec-body" id="r-priority"></p></div>
+    </div>
+
+    <!-- 6. Plan de acción -->
+    <div class="section">
+      <p class="sec-num">SECCIÓN 06</p>
+      <h2 class="sec-title">Plan de Acción</h2>
+      <div id="r-sequence"></div>
+      <div class="error-box" style="margin-top:1.2rem">
+        <p class="lab">EL ERROR QUE NO DEBE COMETER PRIMERO</p>
+        <p class="sec-body" id="r-error"></p>
+      </div>
+    </div>
+
+    <!-- 7. Próximo protocolo -->
+    <div class="section">
+      <p class="sec-num">SECCIÓN 07</p>
+      <h2 class="sec-title">Próximo Protocolo Recomendado</h2>
+      <div class="next">
+        <p class="code" id="r-next-code"></p>
+        <p class="name" id="r-next-name"></p>
+        <p class="obj" id="r-next-obj"></p>
+      </div>
+    </div>
+
+    <div class="foot">
+      <div class="line"></div>
+      <p>KLEOS DIGITAL STUDIO · KIP-001<br>LA PERCEPCIÓN DETERMINA EL VALOR<br><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="355654475c5b54755654475c5b544047465c5b5a1b565a58">[email&#160;protected]</a></p>
+    </div>
+  </div>
+
+  <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    (async () => {
+      const $ = (id) => document.getElementById(id);
+      const t = new URLSearchParams(location.search).get("t") || "";
+
+      const fail = (msg) => {
+        $("loading").innerHTML = "<span>" + msg + "</span><span style='color:#C5A059'>KLEOS INSIGHT™</span>";
+      };
+
+      if (!t) { fail("ENLACE INVÁLIDO"); return; }
+
+      try {
+        const r = await fetch("/api/report?t=" + encodeURIComponent(t));
+        if (!r.ok) { fail(r.status === 404 ? "INFORME NO ENCONTRADO" : "ERROR AL RECUPERAR EL INFORME"); return; }
+        const d = await r.json();
+
+        $("r-empresa").textContent = d.empresa || "—";
+        $("r-fecha").textContent = d.fecha
+          ? new Date(d.fecha).toLocaleDateString("es-AR", { day: "2-digit", month: "long", year: "numeric" }).toUpperCase()
+          : "";
+        $("r-index").textContent = d.index ?? "—";
+        $("r-arc").style.strokeDashoffset = 565.48 * (1 - (d.index || 0) / 100);
+        $("r-level").textContent = d.level || "";
+        $("r-perception").textContent = d.perception || "—";
+        $("r-insight").textContent = d.insight || "—";
+        $("r-pattern").textContent = (d.pattern || "—").toUpperCase();
+        $("r-cause").textContent = d.cause || "—";
+        $("r-truth").textContent = (d.reading && d.reading.truth_full) || "—";
+        $("r-diagnosis").textContent = (d.reading && d.reading.diagnosis_full) || "—";
+        $("r-priority").textContent = d.priority || "—";
+        $("r-error").textContent = (d.reading && d.reading.first_error) || "—";
+
+        const dimsEl = $("r-dims");
+        (d.dimensions || []).forEach((x) => {
+          const reading = (d.reading && d.reading.dim_readings && d.reading.dim_readings[
+            { "Comprensión": "clarity", "Autoridad": "value", "Confianza": "trust",
+              "Diferenciación": "differentiation", "Conversión": "journey" }[x.name]
+          ]) || "";
+          const div = document.createElement("div");
+          div.className = "dim";
+          div.innerHTML =
+            '<div class="dim-head"><span class="dim-name">' + x.name + '</span>' +
+            '<span class="dim-score">' + String(x.score).padStart(2, "0") + ' / 20</span></div>' +
+            '<div class="dim-barrow"><div class="dim-barfill" style="width:' + Math.round((x.score / 20) * 100) + '%"></div></div>' +
+            (reading ? '<p class="dim-text">' + reading + '</p>' : '');
+          dimsEl.appendChild(div);
+        });
+
+        const seqEl = $("r-sequence");
+        ((d.reading && d.reading.sequence) || []).forEach((s, i) => {
+          const div = document.createElement("div");
+          div.className = "seq";
+          div.innerHTML = '<span class="n">0' + (i + 1) + '</span><p>' + s + '</p>';
+          seqEl.appendChild(div);
+        });
+
+        if (d.nextProtocol && d.nextProtocol.code) {
+          $("r-next-code").textContent = d.nextProtocol.code;
+          $("r-next-name").textContent = d.nextProtocol.name;
+          $("r-next-obj").textContent = d.nextProtocol.objective;
+        }
+
+        $("loading").style.display = "none";
+        $("actions").style.display = "flex";
+        $("report").style.display = "block";
+        document.title = "KLEOS INSIGHT™ — Informe Estratégico — " + (d.empresa || "");
+      } catch {
+        fail("ERROR DE CONEXIÓN");
+      }
+    })();
+  </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a4201d1956db70',t:'MTc4MTIxNzcwOQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
