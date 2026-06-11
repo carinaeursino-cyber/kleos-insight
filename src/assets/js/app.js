@@ -31,7 +31,7 @@
     qText: document.getElementById("q-text"),
     qHint: document.getElementById("q-hint"),
     qBody: document.getElementById("q-body"),
-    qCurrent: document.getElementById("q-current"),
+    discoveryValue: document.getElementById("discovery-value"),
     progressFill: document.getElementById("progress-fill"),
     quizCard: document.getElementById("quiz-card"),
     btnPrev: document.getElementById("btn-prev"),
@@ -163,22 +163,38 @@
   );
   document.querySelectorAll(".reveal").forEach((n) => observer.observe(n));
 
-  // ---------- Pantalla 2 · Protocolo ----------
+    // ---------- Pantalla 2 · Protocolo ----------
   const pad = (n) => String(n).padStart(2, "0");
+
+  // Nivel de descubrimiento: métrica de investigación, no progreso.
+  // No lineal: arranca lento y acelera — la revelación se profundiza.
+  let discoveryShown = 0;
+  function discoveryTarget() {
+    const p = state.current / KIP_PROTOCOL.length;
+    return Math.round(Math.pow(p, 1.25) * 100);
+  }
+  function animateDiscovery(target) {
+    const start = discoveryShown;
+    const t0 = performance.now();
+    const dur = 700;
+    const easeOut = (t) => 1 - Math.pow(1 - t, 3);
+    function step(now) {
+      const p = Math.min((now - t0) / dur, 1);
+      discoveryShown = Math.round(start + (target - start) * easeOut(p));
+      if (el.discoveryValue) el.discoveryValue.textContent = discoveryShown + "%";
+      if (p < 1) requestAnimationFrame(step);
+    }
+    requestAnimationFrame(step);
+  }
 
   function renderEntry(animated = true) {
     const q = KIP_PROTOCOL[state.current];
 
     const paint = () => {
-      el.qCategory.textContent = `${q.category} · ENTRADA ${pad(state.current + 1)}`;
+      el.qCategory.textContent = `${q.category}`;
       el.qText.textContent = q.text;
       el.qHint.textContent = q.hint || "";
-      // Micro-fade del contador
-      el.qCurrent.classList.add("tick");
-      setTimeout(() => {
-        el.qCurrent.textContent = pad(state.current + 1);
-        el.qCurrent.classList.remove("tick");
-      }, 130);
+      animateDiscovery(discoveryTarget());
       el.progressFill.style.width = `${(state.current / KIP_PROTOCOL.length) * 100}%`;
       el.btnPrev.disabled = state.current === 0;
       el.qBody.innerHTML = "";
@@ -457,8 +473,9 @@
       if (state.current < KIP_PROTOCOL.length - 1) {
         state.current++;
         renderEntry();
-      } else {
+            } else {
         el.progressFill.style.width = "100%";
+        animateDiscovery(100);
         setTimeout(startAnalysis, 350);
       }
     };
@@ -555,9 +572,11 @@
   }
 
   // ---------- Acciones globales ----------
-  function resetProtocol() {
+    function resetProtocol() {
     state.current = 0;
     state.answers = {};
+    discoveryShown = 0;
+    if (el.discoveryValue) el.discoveryValue.textContent = "0%";
     el.indexNumber.textContent = "0";
     el.idxArc.style.strokeDashoffset = "565.48";
   }
