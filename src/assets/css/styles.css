@@ -1136,6 +1136,68 @@ sup { font-size: 0.45em; color: var(--gold); }
 }
 .error-box p { font-size: 0.98rem; line-height: 1.85; color: var(--text-60); }
 
+/* Próximo protocolo recomendado — la puerta al ecosistema */
+.next-box {
+  border: 1px solid var(--gold-15);
+  background:
+    radial-gradient(ellipse at top, rgba(197,160,89,0.08), transparent 65%),
+    var(--obsidian-card);
+  padding: 3rem 2.4rem;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.9rem;
+}
+.next-based { font-size: 0.56rem; letter-spacing: 0.32em; color: var(--text-40); }
+.next-code { font-size: 0.78rem; letter-spacing: 0.4em; color: var(--gold); }
+.next-name {
+  font-family: var(--serif);
+  font-size: clamp(1.6rem, 4vw, 2.3rem);
+  font-weight: 500;
+  line-height: 1.25;
+}
+.next-objective {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text-60);
+  max-width: 44ch;
+  margin-bottom: 0.8rem;
+}
+.next-box .btn-gold { text-decoration: none; display: inline-block; }
+
+/* Ruta KLEOS */
+.route-list { border-top: 1px solid var(--gold-15); }
+.route-item {
+  display: grid;
+  grid-template-columns: 28px 90px 1fr auto;
+  align-items: baseline;
+  gap: 1.1rem;
+  padding: 1.1rem 0;
+  border-bottom: 1px solid var(--gold-07);
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--text-40);
+}
+.route-item .route-mark { color: var(--text-40); }
+.route-item .route-code { letter-spacing: 0.2em; }
+.route-item .route-status { font-size: 0.56rem; letter-spacing: 0.25em; }
+.route-item.done { color: var(--text-60); }
+.route-item.done .route-mark { color: var(--gold); }
+.route-item.done .route-status { color: var(--gold); }
+.route-item.recommended {
+  color: var(--text);
+  background: linear-gradient(to right, rgba(197,160,89,0.06), transparent 75%);
+  border-left: 2px solid var(--gold);
+  padding-left: 0.9rem;
+}
+.route-item.recommended .route-mark,
+.route-item.recommended .route-status { color: var(--gold); }
+@media (max-width: 600px) {
+  .route-item { grid-template-columns: 24px 76px 1fr; }
+  .route-item .route-status { grid-column: 2 / -1; }
+}
+
 /* Asesoría directa (siguiente nivel) */
 .advisory-box {
   border: 1px solid var(--gold-15);

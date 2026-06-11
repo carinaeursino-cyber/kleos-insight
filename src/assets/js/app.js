@@ -789,6 +789,36 @@
     const note = document.querySelector(".dims-note");
     if (note) note.textContent = "CINCO DE CINCO DIMENSIONES DESBLOQUEADAS";
 
+    // Próximo protocolo recomendado + Ruta KLEOS
+    if (r.nextProtocol) {
+      const np = r.nextProtocol;
+      document.getElementById("next-code").textContent = np.code;
+      document.getElementById("next-name").textContent = np.name;
+      document.getElementById("next-objective").textContent = np.objective;
+      const btn = document.getElementById("btn-next-protocol");
+      const subject = encodeURIComponent(`Acceso prioritario ${np.code} — ${np.name}`);
+      const body = encodeURIComponent(
+        `Hola, acabo de completar KIP-001 (Índice Kleos: ${r.index}) y quiero reservar acceso prioritario a ${np.code}.`
+      );
+      btn.href = `mailto:carina@carinaursino.com?subject=${subject}&body=${body}`;
+
+      const routeEl = document.getElementById("route-list");
+      routeEl.innerHTML = "";
+      np.route.forEach((k) => {
+        const row = document.createElement("div");
+        row.className =
+          "route-item mono" +
+          (k.done ? " done" : "") +
+          (k.recommended ? " recommended" : "");
+        row.innerHTML = `
+          <span class="route-mark">${k.done ? "✓" : "○"}</span>
+          <span class="route-code">${k.code}</span>
+          <span class="route-name">${k.name}</span>
+          <span class="route-status">${k.done ? "COMPLETADO" : k.recommended ? "RECOMENDADO" : "EN RUTA"}</span>`;
+        routeEl.appendChild(row);
+      });
+    }
+
     // Ocultar CTA de compra y sección de hallazgos ocultos, mostrar lectura completa
     document.getElementById("unlock-cta-block").style.display = "none";
     const hf = document.getElementById("hidden-findings-block");

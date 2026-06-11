@@ -289,6 +289,57 @@ const KleosEngine = (() => {
     };
   }
 
+  /* ---------- Ruta KLEOS: el siguiente protocolo recomendado ----------
+     KIP-001 no vende información: vende el siguiente paso. */
+  const KIP_ROUTE = [
+    { code: "KIP-001", name: "Percepción" },
+    { code: "KIP-002", name: "Conversión" },
+    { code: "KIP-003", name: "Oferta" },
+    { code: "KIP-004", name: "Operaciones" },
+    { code: "KIP-005", name: "Escalabilidad" },
+  ];
+
+  const NEXT_PROTOCOL = {
+    journey: {
+      code: "KIP-002",
+      name: "Diagnóstico de Conversión",
+      objective: "Detectar por qué los prospectos no se transforman en clientes.",
+    },
+    trust: {
+      code: "KIP-002",
+      name: "Diagnóstico de Conversión",
+      objective: "Detectar en qué punto del recorrido sus prospectos dejan de avanzar — y qué señal lo provoca.",
+    },
+    clarity: {
+      code: "KIP-003",
+      name: "Diagnóstico de Oferta",
+      objective: "Detectar por qué su propuesta no se comprende con la velocidad que el mercado exige.",
+    },
+    differentiation: {
+      code: "KIP-003",
+      name: "Diagnóstico de Oferta",
+      objective: "Detectar por qué su propuesta no genera preferencia frente a alternativas similares.",
+    },
+    value: {
+      code: "KIP-003",
+      name: "Diagnóstico de Oferta",
+      objective: "Detectar por qué el mercado no traduce su nivel real en disposición a pagar.",
+    },
+  };
+
+  function buildNextProtocol(dimensions) {
+    const lowest = [...dimensions].sort((a, b) => a.score - b.score)[0];
+    const next = NEXT_PROTOCOL[lowest.key] || NEXT_PROTOCOL.journey;
+    return {
+      ...next,
+      route: KIP_ROUTE.map((k) => ({
+        ...k,
+        done: k.code === "KIP-001",
+        recommended: k.code === next.code,
+      })),
+    };
+  }
+
   function buildPattern(dimensions) {
     const sorted = [...dimensions].sort((a, b) => a.score - b.score);
     const lowest = sorted[0];
@@ -495,6 +546,7 @@ const KleosEngine = (() => {
       prescription: buildPrescription(dimensions),
       pattern: buildPattern(dimensions),
       weakestFinding: buildWeakestFinding(dimensions),
+      nextProtocol: buildNextProtocol(dimensions),
       insight: generateInsight(answers, dimensions),
       hiddenFragment: buildHiddenFragment(dimensions, answers),
       declarations: buildDeclarations(answers),
