@@ -167,7 +167,28 @@ const KleosEngine = (() => {
     };
   }
   }
+  /* ---------- Fragmento oculto: "lo que el protocolo detectó" ----------
+     Frases reales del caso, cortadas en el punto de máxima tensión.
+     Construidas con la dimensión más débil + datos declarados. */
+  const HIDDEN_FRAGMENTS = {
+    clarity: (ctx) =>
+      `Su principal punto de fuga no está en la visibilidad. Está en lo que ocurre dentro de la mente de su prospecto durante los primeros segundos: el protocolo identificó el momento exacto en que ${ctx.company} pierde la atención calificada, y la palabra específica de su propuesta que lo está provocando`,
+    value: (ctx) =>
+      `Su principal punto de fuga no está en el precio. Está en el orden en que ${ctx.company} presenta la evidencia de su valor: el protocolo identificó qué señal falta antes de la conversación de precio, y por qué su ausencia convierte cada tarifa en un número negociable`,
+    trust: (ctx) =>
+      `Su principal punto de fuga no está en la adquisición. Está en la forma en que el mercado interpreta las señales que ${ctx.company} emite antes de cualquier conversación: el protocolo identificó cuál de esas señales está contradiciendo su nivel real, y en qué punto del recorrido`,
+    differentiation: (ctx) =>
+      `Su principal punto de fuga no está en la competencia. Está en que el mercado archivó a ${ctx.company} en una categoría mental donde la única variable de decisión es el precio: el protocolo identificó qué afirmación podría sacarlo de esa categoría, y qué la está bloqueando hoy`,
+    journey: (ctx) =>
+      `Su principal punto de fuga no está en el interés. Está en un punto específico entre la intención y la decisión donde ${ctx.company} pierde compradores que ya estaban convencidos: el protocolo identificó ese punto, y el patrón de fricción que lo produce`,
+  };
 
+  function buildHiddenFragment(dimensions, answers) {
+    const lowest = [...dimensions].sort((a, b) => a.score - b.score)[0];
+    const ctx = { company: String(answers.company || "su negocio").trim() };
+    const builder = HIDDEN_FRAGMENTS[lowest.key] || HIDDEN_FRAGMENTS.clarity;
+    return builder(ctx);
+  }
   /* ---------- Ejecución del protocolo ---------- */
 
   /* Declaraciones textuales: las respuestas cerradas tal como el
@@ -274,6 +295,7 @@ const KleosEngine = (() => {
       truth: texts.truth,
       diagnosis: texts.diagnosis,
       prescription: buildPrescription(dimensions),
+      hiddenFragment: buildHiddenFragment(dimensions, answers),
       declarations: buildDeclarations(answers),
       source: ai ? "gemini" : "local",
     };

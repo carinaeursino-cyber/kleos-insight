@@ -541,9 +541,14 @@
         const row = document.createElement("p");
         row.className = "impact-item mono";
         row.style.animationDelay = `${1.2 + i * 0.18}s`;
-        row.textContent = imp;
+                row.textContent = imp;
         list.appendChild(row);
       });
+    }
+
+    // Fragmento oculto: corta en máxima tensión, el resto queda velado
+    if (r.hiddenFragment) {
+      document.getElementById("hidden-fragment").textContent = r.hiddenFragment + "…";
     }
 
     // Tablero de dimensiones: 2 visibles, 3 reservadas
@@ -741,8 +746,10 @@
     const note = document.querySelector(".dims-note");
     if (note) note.textContent = "CINCO DE CINCO DIMENSIONES DESBLOQUEADAS";
 
-    // Ocultar CTA de compra, mostrar lectura completa
+        // Ocultar CTA de compra y sección de hallazgos ocultos, mostrar lectura completa
     document.getElementById("unlock-cta-block").style.display = "none";
+    const hf = document.getElementById("hidden-findings-block");
+    if (hf) hf.style.display = "none";
     const fr = document.getElementById("full-reading");
     fr.hidden = false;
     fr.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -752,6 +759,8 @@
     resetProtocol();
     document.getElementById("full-reading").hidden = true;
     document.getElementById("unlock-cta-block").style.display = "";
+    const hf = document.getElementById("hidden-findings-block");
+    if (hf) hf.style.display = "";
     showScreen("landing");
   });
 })();
