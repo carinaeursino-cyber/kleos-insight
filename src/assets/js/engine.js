@@ -189,6 +189,50 @@ const KleosEngine = (() => {
     const builder = HIDDEN_FRAGMENTS[lowest.key] || HIDDEN_FRAGMENTS.clarity;
     return builder(ctx);
   }
+    /* ---------- Patrón detectado: identidad reconocible ----------
+     5 patrones memorables asignados por la dimensión dominante.
+     Sin números, sin cálculos visibles: interpretación. */
+  const PATTERNS = {
+    clarity: {
+      name: "Señal Dispersa",
+      text:
+        "Su negocio emite varias señales a la vez, y el mercado no logra componer una sola idea con ellas. Lo que ofrece es sólido, pero llega fragmentado: cada canal cuenta una versión ligeramente distinta, y esa dispersión obliga al prospecto a hacer un esfuerzo de interpretación que la mayoría no está dispuesta a hacer.",
+    },
+    value: {
+      name: "Experto Invisible",
+      text:
+        "Su negocio parece tener capacidad real para generar resultados, pero el mercado no percibe esa capacidad con suficiente claridad. El problema no parece estar en la calidad de lo que hace, sino en cómo esa calidad llega a los demás.",
+    },
+    trust: {
+      name: "Autoridad Frágil",
+      text:
+        "El mercado muestra señales de interés, pero todavía existen dudas suficientes como para retrasar o bloquear decisiones de compra. La atención se consigue; la convicción se pierde en el camino.",
+    },
+    differentiation: {
+      name: "Oferta Diluida",
+      text:
+        "Su propuesta compite en un espacio donde muchas alternativas parecen similares. El mercado entiende lo que hace, pero no identifica rápidamente por qué debería elegirlo.",
+    },
+    journey: {
+      name: "Crecimiento con Fricción",
+      text:
+        "Existen señales de demanda, pero el recorrido entre el interés y la conversión contiene demasiados puntos de fuga. La oportunidad no se pierde por falta de atracción: se desgasta en el trayecto.",
+    },
+  };
+
+  function buildPattern(dimensions) {
+    const sorted = [...dimensions].sort((a, b) => a.score - b.score);
+    const lowest = sorted[0];
+    const second = sorted[1];
+    const p = PATTERNS[lowest.key] || PATTERNS.clarity;
+
+    // Nivel de coincidencia: qué tan dominante es el patrón
+    // (distancia entre la dimensión crítica y la siguiente — nunca porcentajes)
+    const gap = second.score - lowest.score;
+    const match = gap >= 4 ? "Alta" : gap >= 2 ? "Elevada" : "Significativa";
+
+    return { name: p.name, text: p.text, match };
+  }
   /* ---------- Ejecución del protocolo ---------- */
 
   /* Declaraciones textuales: las respuestas cerradas tal como el
@@ -295,6 +339,7 @@ const KleosEngine = (() => {
       truth: texts.truth,
       diagnosis: texts.diagnosis,
       prescription: buildPrescription(dimensions),
+      pattern: buildPattern(dimensions),
       hiddenFragment: buildHiddenFragment(dimensions, answers),
       declarations: buildDeclarations(answers),
       source: ai ? "gemini" : "local",

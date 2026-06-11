@@ -545,7 +545,12 @@
         list.appendChild(row);
       });
     }
-
+    // Patrón detectado: identidad reconocible
+    if (r.pattern) {
+      document.getElementById("pattern-name").textContent = r.pattern.name.toUpperCase();
+      document.getElementById("pattern-text").textContent = r.pattern.text;
+      document.getElementById("pattern-match").textContent = r.pattern.match.toUpperCase();
+    }
     // Fragmento oculto: corta en máxima tensión, el resto queda velado
     if (r.hiddenFragment) {
       document.getElementById("hidden-fragment").textContent = r.hiddenFragment + "…";
