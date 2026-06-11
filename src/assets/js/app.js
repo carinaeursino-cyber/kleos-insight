@@ -572,6 +572,12 @@
       document.getElementById("hidden-fragment").textContent = r.hiddenFragment + "…";
     }
 
+    // Hallazgo central del CTA: la dimensión más baja y su costo
+    if (r.weakestFinding) {
+      document.getElementById("weakest-name").textContent = r.weakestFinding.name.toUpperCase();
+      document.getElementById("weakest-meaning").textContent = r.weakestFinding.meaning;
+    }
+
     // Tablero de dimensiones: solo la fortaleza visible, 4 reservadas
     el.dimsBoard.innerHTML = "";
     r.dimensions.forEach((d, i) => {

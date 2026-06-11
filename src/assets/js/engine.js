@@ -267,6 +267,28 @@ const KleosEngine = (() => {
     },
   };
 
+  /* ---------- Hallazgo central: la dimensión más baja y su significado ---------- */
+  const WEAKEST_MEANINGS = {
+    clarity:
+      "Esto significa que probablemente está perdiendo oportunidades antes de que el mercado termine de entender qué ofrece.",
+    value:
+      "Esto significa que probablemente el mercado está pagando por su trabajo menos de lo que su nivel real justifica.",
+    trust:
+      "Esto significa que probablemente está perdiendo decisiones de compra en el momento de la verificación — cuando el prospecto evalúa si puede creerle.",
+    differentiation:
+      "Esto significa que probablemente está compitiendo por precio en decisiones que podría ganar por preferencia.",
+    journey:
+      "Esto significa que probablemente está perdiendo oportunidades antes de llegar al cierre.",
+  };
+
+  function buildWeakestFinding(dimensions) {
+    const lowest = [...dimensions].sort((a, b) => a.score - b.score)[0];
+    return {
+      name: lowest.name,
+      meaning: WEAKEST_MEANINGS[lowest.key] || WEAKEST_MEANINGS.clarity,
+    };
+  }
+
   function buildPattern(dimensions) {
     const sorted = [...dimensions].sort((a, b) => a.score - b.score);
     const lowest = sorted[0];
@@ -472,6 +494,7 @@ const KleosEngine = (() => {
       diagnosis: texts.diagnosis,
       prescription: buildPrescription(dimensions),
       pattern: buildPattern(dimensions),
+      weakestFinding: buildWeakestFinding(dimensions),
       insight: generateInsight(answers, dimensions),
       hiddenFragment: buildHiddenFragment(dimensions, answers),
       declarations: buildDeclarations(answers),

@@ -912,6 +912,62 @@ sup { font-size: 0.45em; color: var(--gold); }
 .unlock-cta { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.2rem; margin-top: 5.5rem; }
 .is-active .unlock-cta.r-in { animation-delay: 2.4s; }
 
+/* Lo que KLEOS encontró */
+.found-box {
+  width: 100%;
+  max-width: 560px;
+  border: 1px solid var(--gold-15);
+  background: var(--obsidian-card);
+  padding: 2.2rem 2rem;
+  text-align: center;
+  margin-bottom: 0.6rem;
+}
+.found-box .block-label { text-align: center; }
+.found-intro { font-size: 0.92rem; color: var(--text-60); margin-bottom: 0.9rem; }
+.found-dim {
+  font-family: var(--serif);
+  font-size: clamp(1.7rem, 4vw, 2.4rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  color: var(--gold);
+  margin-bottom: 1.1rem;
+}
+.found-meaning {
+  font-size: 0.95rem;
+  line-height: 1.8;
+  color: var(--text-60);
+  max-width: 46ch;
+  margin: 0 auto;
+}
+
+/* Lo que todavía no vio */
+.notseen-box {
+  width: 100%;
+  max-width: 560px;
+  text-align: left;
+  margin-bottom: 1.4rem;
+}
+.notseen-box .block-label { text-align: center; margin-bottom: 1.3rem; }
+.notseen-list { display: flex; flex-direction: column; gap: 0.8rem; }
+.notseen-item {
+  font-size: 0.72rem;
+  letter-spacing: 0.12em;
+  color: var(--text-60);
+  display: flex;
+  align-items: baseline;
+  gap: 0.9rem;
+}
+.notseen-item .f-mark { color: var(--gold); font-size: 0.65rem; flex-shrink: 0; }
+
+/* Urgencia psicológica — verdad estratégica, sin presión */
+.urgency-note {
+  font-size: 0.9rem;
+  line-height: 1.9;
+  color: var(--text-40);
+  margin-top: 0.6rem;
+}
+.urgency-note br + * { color: var(--text-60); }
+
 /* =========================================================
    PIEZA · ACCESO RESERVADO (modal)
    ========================================================= */
