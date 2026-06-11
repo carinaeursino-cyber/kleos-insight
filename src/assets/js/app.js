@@ -9,7 +9,7 @@
 
   // ---------- Configuración de checkout ----------
   // URL del producto en Lemon Squeezy (reemplazar al crear la tienda)
-  const CHECKOUT_URL = "https://kleosstudio.lemonsqueezy.com/buy/PRODUCT_UUID";
+  const CHECKOUT_URL = "https://TUTIENDA.lemonsqueezy.com/buy/PRODUCT_UUID";
 
   // ---------- Estado ----------
   const state = {
@@ -395,10 +395,11 @@
   }
 
   function flashSignal(text, then) {
+    const slot = document.getElementById("signal-slot");
     const sig = document.createElement("div");
     sig.className = "system-signal mono";
     sig.textContent = text;
-    document.getElementById("screen-protocol").appendChild(sig);
+    slot.appendChild(sig);
     requestAnimationFrame(() => sig.classList.add("visible"));
     setTimeout(() => {
       sig.classList.remove("visible");
