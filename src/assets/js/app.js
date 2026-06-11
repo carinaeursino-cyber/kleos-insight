@@ -9,7 +9,7 @@
 
   // ---------- Configuración de checkout ----------
   // URL del producto en Lemon Squeezy (reemplazar al crear la tienda)
-  const CHECKOUT_URL = "https://kleosstudio.lemonsqueezy.com/buy/PRODUCT_UUID";
+  const CHECKOUT_URL = "https://TUTIENDA.lemonsqueezy.com/buy/PRODUCT_UUID";
 
   // ---------- Estado ----------
   const state = {
@@ -852,7 +852,15 @@
       "padding:4px 10px;background:rgba(5,5,5,.8);pointer-events:none;";
     document.body.appendChild(badge);
 
-    document.getElementById("btn-unlock").addEventListener("dblclick", () => {
+    // Botón de simulación dentro del modal de pago (solo en preview)
+    const simBtn = document.createElement("button");
+    simBtn.textContent = "[PREVIEW] SIMULAR DESBLOQUEO";
+    simBtn.className = "btn-ghost mono";
+    simBtn.style.cssText =
+      "margin-top:1.2rem;border:1px dashed #C5A059;padding:0.7rem 1.4rem;color:#C5A059;width:100%;";
+    document.querySelector(".modal-card").appendChild(simBtn);
+
+    simBtn.addEventListener("click", () => {
       if (!state.reading) return;
       const r = state.reading;
       const lockedDims = r.dimensions.filter((d) => d.state === "locked");
