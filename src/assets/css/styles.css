@@ -321,7 +321,13 @@ sup { font-size: 0.45em; color: var(--gold); }
 .quiz-meta { display: flex; align-items: center; gap: 1.6rem; }
 .dim-tag { font-size: 0.58rem; letter-spacing: 0.28em; color: var(--text-40); }
 
-/* Nivel de descubrimiento: métrica de investigación */
+/* Nivel de descubrimiento: métrica de investigación
+   Ubicado al pie del protocolo, entre las opciones y "Anterior" */
+.discovery-bar {
+  display: flex;
+  justify-content: center;
+  padding: 0.4rem clamp(1.5rem, 5vw, 4rem) 0;
+}
 .discovery-meter { display: flex; align-items: baseline; gap: 0.9rem; }
 .discovery-label { font-size: 0.56rem; letter-spacing: 0.3em; color: var(--text-40); }
 .discovery-value {
@@ -1105,6 +1111,11 @@ sup { font-size: 0.45em; color: var(--gold); }
    ========================================================= */
 @media (max-width: 820px) {
   .topbar .protocol-seal { display: none; }
+  /* Cabecera del protocolo en móvil: compacta, sin desbordes */
+  .quiz-meta { gap: 1rem; }
+  .protocol-live { display: none; }
+  .discovery-label { font-size: 0.5rem; letter-spacing: 0.22em; }
+  .discovery-value { font-size: 0.88rem; }
   .steps { flex-direction: column; gap: 2.5rem; }
   .step-line { width: 40%; height: 1px; background: linear-gradient(to right, var(--gold-15), transparent); }
   .dim-row { grid-template-columns: 44px 1fr; }
