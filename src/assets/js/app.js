@@ -9,7 +9,7 @@
 
   // ---------- Configuración de checkout ----------
   // URL del producto en Lemon Squeezy (reemplazar al crear la tienda)
-  const CHECKOUT_URL = "https://TUTIENDA.lemonsqueezy.com/buy/PRODUCT_UUID";
+  const CHECKOUT_URL = "https://kleosstudio.lemonsqueezy.com/buy/PRODUCT_UUID";
 
   // ---------- Estado ----------
   const state = {
@@ -76,7 +76,7 @@
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     }
 
-        function spawn() {
+    function spawn() {
       // Densidad tipo cielo: ~1 estrella por cada 12.000 px²
       const count = Math.min(140, Math.floor((W * H) / 12000));
       stars = Array.from({ length: count }, () => ({
@@ -93,13 +93,14 @@
     }
 
     function drawStar(s, alpha) {
+      // Halo de brillo en las estrellas destacadas
       if (s.halo) {
-                const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
+        const g = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
         const c = s.gold ? "197, 160, 89" : "245, 245, 245";
-                g.addColorStop(0, `rgba(${c}, ${alpha * 0.3})`);
+        g.addColorStop(0, `rgba(${c}, ${alpha * 0.3})`);
         g.addColorStop(1, `rgba(${c}, 0)`);
         ctx.beginPath();
-                ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
+        ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
         ctx.fillStyle = g;
         ctx.fill();
       }
@@ -119,8 +120,9 @@
     function frame(t) {
       ctx.clearRect(0, 0, W, H);
       for (const s of stars) {
+        // Titileo: oscila entre ~30% y 100% del brillo base
         const k = 0.3 + 0.7 * (0.5 + 0.5 * Math.sin((t / 1000) * s.sp + s.ph)) * s.tw + (1 - s.tw) * 0.7;
-                drawStar(s, Math.min(s.a * k, 0.4));
+        drawStar(s, Math.min(s.a * k, 0.4));
       }
       raf = requestAnimationFrame(frame);
     }
@@ -128,7 +130,7 @@
     resize();
     spawn();
     if (reduced) {
-      paintStatic();
+      paintStatic(); // sin animación: cielo fijo
     } else {
       raf = requestAnimationFrame(frame);
     }
@@ -138,6 +140,7 @@
       if (reduced) paintStatic();
     });
 
+    // Pausar cuando la pestaña no está visible (rendimiento)
     document.addEventListener("visibilitychange", () => {
       if (reduced) return;
       if (document.hidden) {
@@ -163,7 +166,7 @@
   );
   document.querySelectorAll(".reveal").forEach((n) => observer.observe(n));
 
-    // ---------- Pantalla 2 · Protocolo ----------
+  // ---------- Pantalla 2 · Protocolo ----------
   const pad = (n) => String(n).padStart(2, "0");
 
   // Nivel de descubrimiento: métrica de investigación, no progreso.
@@ -256,7 +259,7 @@
         row.appendChild(count);
         el.qBody.appendChild(input);
         el.qBody.appendChild(row);
-        setTimeout(() => input.focus(), animated ? 520 : 50);
+        setTimeout(() => input.focus(), animated ? 420 : 50);
       }
     };
 
@@ -473,7 +476,7 @@
       if (state.current < KIP_PROTOCOL.length - 1) {
         state.current++;
         renderEntry();
-            } else {
+      } else {
         el.progressFill.style.width = "100%";
         animateDiscovery(100);
         setTimeout(startAnalysis, 350);
@@ -516,9 +519,14 @@
       .forEach(([t, w]) => setTimeout(() => (el.procBar.style.width = w), t));
 
     const minDelay = new Promise((r) => setTimeout(r, 5300));
-    Promise.all([KleosEngine.run(state.answers), minDelay]).then(([reading]) =>
-      showReading(reading)
-    );
+    Promise.all([KleosEngine.run(state.answers), minDelay])
+      .then(([reading]) => showReading(reading))
+      .catch((err) => {
+        // Red de seguridad: nunca dejar la rueda girando
+        console.error("KIP-001 error en análisis:", err);
+        showScreen("landing");
+        alert("Ocurrió un error al componer la lectura. Por favor, intente de nuevo.");
+      });
   }
 
   // ---------- Pantalla 4 · Lectura ----------
@@ -526,7 +534,7 @@
     state.reading = r; // guardar para el desbloqueo
     el.resultLevel.textContent = `${r.level.code} — ${r.level.name}`;
     el.resultPerception.textContent = r.perception;
-        el.resultTruth.textContent = r.truth;
+    el.resultTruth.textContent = r.truth;
     el.resultDiagnosis.textContent = r.diagnosis;
 
     // Prescripción: causa raíz, prioridad #1 e impacto potencial
@@ -541,46 +549,50 @@
         const row = document.createElement("p");
         row.className = "impact-item mono";
         row.style.animationDelay = `${1.2 + i * 0.18}s`;
-                row.textContent = imp;
+        row.textContent = imp;
         list.appendChild(row);
       });
     }
-        // Insight detectado: el momento eureka
+
+    // Insight detectado: el momento eureka
     if (r.insight) {
       document.getElementById("insight-text").textContent = r.insight;
     }
+
     // Patrón detectado: identidad reconocible
     if (r.pattern) {
       document.getElementById("pattern-name").textContent = r.pattern.name.toUpperCase();
       document.getElementById("pattern-text").textContent = r.pattern.text;
       document.getElementById("pattern-match").textContent = r.pattern.match.toUpperCase();
     }
+
     // Fragmento oculto: corta en máxima tensión, el resto queda velado
     if (r.hiddenFragment) {
       document.getElementById("hidden-fragment").textContent = r.hiddenFragment + "…";
     }
 
-    // Tablero de dimensiones: 2 visibles, 3 reservadas
+    // Tablero de dimensiones: solo la fortaleza visible, 4 reservadas
     el.dimsBoard.innerHTML = "";
     r.dimensions.forEach((d, i) => {
       const row = document.createElement("div");
-      row.className = "dim-result" + (d.state === "locked" ? " locked" : "");
+      row.className = "dim-result" + (d.state === "locked" ? " locked" : " strength");
       const pct = d.state === "locked" ? 100 : Math.round((d.score / d.max) * 100);
       const scoreLabel =
         d.state === "locked"
           ? `RESERVADA<span class="lock-mark">◆</span>`
           : `${pad(d.score)} / ${d.max}`;
       row.innerHTML = `
-        <span class="code">D${i + 1}</span>
-        <span class="name">${d.name}</span>
+        <span class="code">D${pad(i + 1)}</span>
+        <span class="name">${d.name}<span class="dim-q sans">${d.question}</span></span>
         <span class="bar"><span class="bar-fill" data-w="${pct}"></span></span>
-        <span class="score">${scoreLabel}</span>`;
+        <span class="score">${scoreLabel}</span>
+        ${d.reading ? `<p class="dim-reading sans">${d.reading}</p>` : ""}`;
       el.dimsBoard.appendChild(row);
     });
 
     showScreen("reading");
 
-    // Animaciones de entrada: anillo, contador (1.5s) y barras (1s)
+    // Animaciones de entrada: anillo, contador y barras
     const CIRC = 565.48; // 2πr, r = 90
     setTimeout(() => {
       el.idxArc.style.strokeDashoffset = CIRC * (1 - r.index / 100);
@@ -603,7 +615,7 @@
   }
 
   // ---------- Acciones globales ----------
-    function resetProtocol() {
+  function resetProtocol() {
     state.current = 0;
     state.answers = {};
     discoveryShown = 0;
@@ -685,7 +697,12 @@
           index: r.index,
           level: `${r.level.code} — ${r.level.name}`,
           weakest: weakest.name,
-          dimensions: r.dimensions.map((d) => ({ name: d.name, score: d.score })),
+          dimensions: r.dimensions.map((d) => ({
+            key: d.key,
+            name: d.name,
+            score: d.score,
+            locked: d.state === "locked",
+          })),
           declarations: r.declarations || [],
         }),
       });
@@ -719,10 +736,20 @@
 
   // ---------- Revelación de la lectura completa ----------
   function revealFullReading(full, r) {
-    // Poblar contenidos
-    document.getElementById("full-trust").textContent = full.dim_readings.trust;
-    document.getElementById("full-differentiation").textContent = full.dim_readings.differentiation;
-    document.getElementById("full-journey").textContent = full.dim_readings.journey;
+    // Poblar interpretaciones de las dimensiones reservadas
+    const fdc = document.getElementById("full-dims-container");
+    fdc.innerHTML = "";
+    r.dimensions.forEach((d, i) => {
+      if (d.state !== "locked") return;
+      const reading = (full.dim_readings && full.dim_readings[d.key]) || "";
+      if (!reading) return;
+      const div = document.createElement("div");
+      div.className = "full-dim";
+      div.innerHTML = `
+        <p class="full-dim-name mono">D${pad(i + 1)} &nbsp;·&nbsp; ${d.name.toUpperCase()}</p>
+        <p class="sans">${reading}</p>`;
+      fdc.appendChild(div);
+    });
     document.getElementById("full-truth").textContent = full.truth_full;
     document.getElementById("full-diagnosis").textContent = full.diagnosis_full;
     document.getElementById("full-error").textContent = full.first_error;
@@ -755,7 +782,7 @@
     const note = document.querySelector(".dims-note");
     if (note) note.textContent = "CINCO DE CINCO DIMENSIONES DESBLOQUEADAS";
 
-        // Ocultar CTA de compra y sección de hallazgos ocultos, mostrar lectura completa
+    // Ocultar CTA de compra y sección de hallazgos ocultos, mostrar lectura completa
     document.getElementById("unlock-cta-block").style.display = "none";
     const hf = document.getElementById("hidden-findings-block");
     if (hf) hf.style.display = "none";

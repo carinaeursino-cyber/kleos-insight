@@ -78,13 +78,14 @@ Dimensión más débil: ${d.weakest}
 DECLARACIONES DEL CLIENTE (contexto interno para diagnosticar — no citar):
 ${decls || "(no disponibles)"}
 
-GENERA EXACTAMENTE ESTE JSON:
+DIMENSIONES RESERVADAS (las que el cliente NO pudo ver — interpretarlas todas):
+${(d.lockedDims || []).map((x) => `- ${x.key}: ${x.name} (${x.score}/20)`).join("\n")}
+
+GENERA EXACTAMENTE ESTE JSON (una clave por cada dimensión reservada listada arriba, usando su identificador exacto):
 
 {
   "dim_readings": {
-    "trust": "...",
-    "differentiation": "...",
-    "journey": "..."
+${(d.lockedDims || []).map((x) => `    "${x.key}": "..."`).join(",\n")}
   },
   "truth_full": "...",
   "diagnosis_full": "...",
@@ -94,7 +95,7 @@ GENERA EXACTAMENTE ESTE JSON:
 
 ESPECIFICACIONES:
 
-"dim_readings": para cada dimensión reservada (Confianza, Diferenciación, Recorrido), 2-3 frases con esta estructura: (1) mencione el puntaje obtenido y qué posición representa en la escala, (2) explique el MECANISMO que ese puntaje revela — la dinámica de percepción que está operando en este caso y que el cliente no ha identificado, (3) cierre con la dirección de corrección de esa dimensión en una frase. Si el puntaje es alto, reconózcalo con honestidad y explique qué ventaja representa y cómo protegerla.
+"dim_readings": para CADA dimensión reservada listada arriba, 2-3 frases con esta estructura: (1) mencione el puntaje obtenido y qué posición representa en la escala, (2) explique el MECANISMO que ese puntaje revela — la dinámica de percepción que está operando en este caso y que el cliente no ha identificado, (3) cierre con la dirección de corrección de esa dimensión en una frase. Si el puntaje es alto, reconózcalo con honestidad y explique qué ventaja representa y cómo protegerla. Use los nombres de cara al cliente: Comprensión, Autoridad, Confianza, Diferenciación, Conversión.
 
 "truth_full": la observación crítica COMPLETA (3-4 frases). Revele la cadena causal que el cliente no ve: qué dinámica de mercado está produciendo los síntomas que reportó, por qué ocurre (el principio de percepción detrás), y qué le está costando en términos económicos concretos. Conocimiento nuevo, no descripción de sus síntomas. El cliente debe pensar "esto explica POR QUÉ me pasa", no "esto es lo que me pasa".
 
@@ -238,13 +239,16 @@ module.exports = async (req, res) => {
       level: clean(d.level, 80),
       weakest: clean(d.weakest, 40),
       dimensions: d.dimensions.slice(0, 5).map((x) => ({
+        key: clean(x.key, 20),
         name: clean(x.name, 30),
         score: Math.max(0, Math.min(20, Math.round(x.score || 0))),
+        locked: !!x.locked,
       })),
       declarations: (Array.isArray(d.declarations) ? d.declarations : [])
         .slice(0, 12)
         .map((x) => ({ q: clean(x.q, 200), a: clean(x.a, 200) })),
     };
+    data.lockedDims = data.dimensions.filter((x) => x.locked && x.key);
 
     const prompt = buildFullPrompt(data);
     const groqKey = process.env.GROQ_API_KEY;
@@ -278,12 +282,14 @@ module.exports = async (req, res) => {
       return;
     }
 
+    // Sanear lecturas dimensionales (claves dinámicas según lo reservado)
+    const dimReadings = {};
+    for (const k of Object.keys(full.dim_readings)) {
+      dimReadings[String(k).slice(0, 20)] = String(full.dim_readings[k] || "").trim();
+    }
+
     res.status(200).json({
-      dim_readings: {
-        trust: String(full.dim_readings.trust || "").trim(),
-        differentiation: String(full.dim_readings.differentiation || "").trim(),
-        journey: String(full.dim_readings.journey || "").trim(),
-      },
+      dim_readings: dimReadings,
       truth_full: full.truth_full.trim(),
       diagnosis_full: full.diagnosis_full.trim(),
       sequence: full.sequence.slice(0, 3).map((s) => String(s).trim()),

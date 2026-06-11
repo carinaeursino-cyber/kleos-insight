@@ -77,7 +77,7 @@ sup { font-size: 0.45em; color: var(--gold); }
   border-radius: 999px;
   padding: 1.15rem 2.8rem;
   cursor: pointer;
-  transition: background 0.3s var(--ease), transform 0.3s var(--ease), box-shadow 0.3s var(--ease);
+  transition: background 0.4s var(--ease), transform 0.4s var(--ease), box-shadow 0.4s var(--ease);
 }
 .btn-gold::after {
   content: "";
@@ -188,7 +188,6 @@ sup { font-size: 0.45em; color: var(--gold); }
 }
 .watermark.wm-right { right: -10%; top: 50%; transform: translateY(-50%); bottom: auto; }
 .watermark.wm-center { left: 50%; top: 50%; transform: translate(-50%, -50%); right: auto; bottom: auto; }
-
 .scroll-line {
   position: absolute;
   bottom: 0;
@@ -363,8 +362,6 @@ sup { font-size: 0.45em; color: var(--gold); }
   justify-content: center;
   padding: 3rem clamp(1.5rem, 5vw, 4rem);
 }
-
-/* Cambio de pregunta: Fade + Blur — "el protocolo avanza" */
 .quiz-card {
   width: 100%;
   max-width: 720px;
@@ -394,10 +391,10 @@ sup { font-size: 0.45em; color: var(--gold); }
   display: flex;
   align-items: center;
   gap: 1rem;
-  transition: border-color 0.3s var(--ease), background 0.3s var(--ease), transform 0.3s var(--ease);
+  transition: border-color 0.35s var(--ease), background 0.35s var(--ease), transform 0.35s var(--ease);
 }
 .q-option .marker { font-family: var(--mono); font-size: 0.65rem; color: var(--gold); opacity: 0; transition: opacity 0.3s; }
-.q-option:hover { border-color: var(--gold); background: rgba(197, 160, 89, 0.05); transform: translateX(5px); }
+.q-option:hover { border-color: var(--gold); transform: translateX(5px); }
 .q-option:hover .marker { opacity: 0.5; }
 .q-option.selected { border-color: var(--gold); background: var(--gold-07); }
 .q-option.selected .marker { opacity: 1; }
@@ -413,7 +410,7 @@ sup { font-size: 0.45em; color: var(--gold); }
   padding: 1.2rem 1.4rem;
   width: 100%;
   outline: none;
-  transition: border-color 0.3s var(--ease);
+  transition: border-color 0.35s var(--ease);
   caret-color: var(--gold);
 }
 .q-textarea { min-height: 120px; resize: vertical; line-height: 1.7; }
@@ -576,7 +573,7 @@ sup { font-size: 0.45em; color: var(--gold); }
   stroke-linecap: round;
   stroke-dasharray: 565.48;
   stroke-dashoffset: 565.48;
-  transition: stroke-dashoffset 1.5s var(--ease);
+  transition: stroke-dashoffset 1.8s var(--ease);
 }
 .index-number {
   position: absolute;
@@ -627,6 +624,32 @@ sup { font-size: 0.45em; color: var(--gold); }
 }
 .dim-result .score { font-family: var(--mono); font-size: 0.74rem; letter-spacing: 0.1em; text-align: right; color: var(--text); }
 
+/* Pregunta de cada dimensión (lenguaje del dolor) */
+.dim-result .dim-q {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 300;
+  color: var(--text-40);
+  margin-top: 0.3rem;
+  letter-spacing: 0;
+}
+
+/* Dimensión fortaleza: la única visible, con su lectura */
+.dim-result.strength {
+  background: linear-gradient(to right, rgba(197, 160, 89, 0.05), transparent 70%);
+  border-left: 2px solid var(--gold);
+  padding-left: 1.2rem;
+}
+.dim-result .dim-reading {
+  grid-column: 1 / -1;
+  font-size: 0.92rem;
+  font-weight: 300;
+  line-height: 1.75;
+  color: var(--text-60);
+  margin-top: 0.9rem;
+  max-width: 60ch;
+}
+
 .dim-result.locked { transition: background 0.3s var(--ease), box-shadow 0.3s var(--ease); cursor: default; }
 .dim-result.locked .name { color: var(--text-40); transition: color 0.3s var(--ease); }
 .dim-result.locked .bar-fill { background: var(--text-40); box-shadow: none; opacity: 0.5; }
@@ -649,6 +672,7 @@ sup { font-size: 0.45em; color: var(--gold); }
   font-weight: 400;
   line-height: 1.55;
 }
+
 /* Insight detectado — el momento eureka */
 .insight-box {
   position: relative;
@@ -672,6 +696,7 @@ sup { font-size: 0.45em; color: var(--gold); }
   font-weight: 400;
   line-height: 1.7;
 }
+
 /* Causa raíz detectada */
 .cause-box {
   border-left: 2px solid var(--gold);
@@ -685,6 +710,7 @@ sup { font-size: 0.45em; color: var(--gold); }
   font-weight: 400;
   line-height: 1.65;
 }
+
 /* Patrón detectado — pieza de identidad */
 .pattern-box {
   border: 1px solid var(--gold-15);
@@ -727,6 +753,7 @@ sup { font-size: 0.45em; color: var(--gold); }
   color: var(--text-40);
 }
 .pattern-match span { color: var(--gold); }
+
 /* Prioridad estratégica #1 — prescripción única */
 .priority-box {
   border: 1px solid var(--gold-15);
@@ -761,6 +788,7 @@ sup { font-size: 0.45em; color: var(--gold); }
 @keyframes impactIn {
   to { opacity: 1; transform: translateX(0); }
 }
+
 /* Observación crítica */
 .truth-box { border: 1px solid var(--gold-15); background: var(--obsidian-card); padding: 2.2rem 2rem 1.4rem; }
 .truth-visible { font-size: 1.15rem; line-height: 1.75; margin-bottom: 1.2rem; }
@@ -794,6 +822,7 @@ sup { font-size: 0.45em; color: var(--gold); }
   letter-spacing: 0.42em;
   color: var(--gold);
 }
+
 /* ---------- Lo que el protocolo detectó (hallazgos ocultos) ---------- */
 .hidden-box {
   border: 1px solid var(--gold-15);
@@ -868,6 +897,7 @@ sup { font-size: 0.45em; color: var(--gold); }
 .finding.locked .f-mark { color: var(--gold); opacity: 0.5; }
 .finding.locked:hover { color: var(--text-60); }
 .finding.locked:hover .f-mark { opacity: 1; }
+
 /* CTA desbloqueo — fade in tardío: primero el valor, luego la acción */
 .unlock-cta { text-align: center; display: flex; flex-direction: column; align-items: center; gap: 1.2rem; margin-top: 5.5rem; }
 .is-active .unlock-cta.r-in { animation-delay: 2.4s; }
@@ -917,6 +947,7 @@ sup { font-size: 0.45em; color: var(--gold); }
 .modal-title { font-size: 1.9rem; font-weight: 500; margin-bottom: 1.4rem; }
 .modal-body { font-size: 0.92rem; line-height: 1.85; color: var(--text-60); margin-bottom: 1.1rem; }
 .modal-actions { margin-top: 2rem; display: flex; justify-content: flex-end; }
+
 
 
 /* =========================================================
@@ -1068,6 +1099,7 @@ sup { font-size: 0.45em; color: var(--gold); }
   transition: border-color 0.3s var(--ease);
 }
 .advisory-link:hover { border-color: var(--gold); }
+
 /* =========================================================
    RESPONSIVE
    ========================================================= */

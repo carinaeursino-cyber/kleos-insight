@@ -2,19 +2,36 @@
    KLEOS INSIGHT™ — Motor del protocolo KIP-001
    Modelo de cinco dimensiones · 0–20 por dimensión · Índice 0–100
 
-   El índice y las dimensiones se calculan localmente.
-   Los textos se generan vía /api/diagnose (IA) con respaldo
-   local garantizado.
+   CONTRATO DE INTEGRACIÓN (Gemini V2):
+   ------------------------------------------------
+   KleosEngine.run(answers) → Promise<Reading>
+
+   Reading = {
+     index: number,                  // Índice Kleos 0–100
+     level: { code, name },          // Nivel de percepción
+     dimensions: [                   // Las 5 dimensiones del modelo
+       { key, name, score, max, state: "visible" | "locked" }
+     ],
+     perception: string,             // Percepción detectada (personalizada)
+     truth: string,                  // Verdad incómoda (parcial en freemium)
+     diagnosis: string               // Lectura principal (bloqueada en freemium)
+   }
+
+   En V2, el cuerpo de run() se reemplaza por una llamada a un
+   endpoint que consulta Gemini con las 12 entradas (incluidas
+   las 4 abiertas: company, self_perception, client_perception,
+   differentiator). El contrato de retorno no cambia y la
+   interfaz no requiere modificaciones.
    ========================================================= */
 
 const KleosEngine = (() => {
 
   const DIMENSIONS = [
-    { key: "clarity", name: "Claridad", state: "visible" },
-    { key: "value", name: "Valor Percibido", state: "visible" },
-    { key: "trust", name: "Confianza", state: "locked" },
-    { key: "differentiation", name: "Diferenciación", state: "locked" },
-    { key: "journey", name: "Recorrido", state: "locked" },
+    { key: "clarity", name: "Comprensión", question: "¿El mercado entiende qué hace?" },
+    { key: "value", name: "Autoridad", question: "¿Lo perciben como una referencia?" },
+    { key: "trust", name: "Confianza", question: "¿Genera suficiente seguridad para comprar?" },
+    { key: "differentiation", name: "Diferenciación", question: "¿Por qué elegirlo a usted?" },
+    { key: "journey", name: "Conversión", question: "¿Qué tan fácil es convertirse en su cliente?" },
   ];
 
   const LEVELS = [
@@ -26,7 +43,8 @@ const KleosEngine = (() => {
 
   const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 
-  /* Densidad informativa de un campo abierto (0–8). */
+  /* Densidad informativa de un campo abierto (0–8).
+     No premia la longitud: premia la presencia de sustancia. */
   function textScore(text) {
     const t = String(text || "").trim();
     if (!t) return 0;
@@ -35,7 +53,8 @@ const KleosEngine = (() => {
     return clamp(Math.round(words * 0.9) + specific, 1, 8);
   }
 
-  /* Alineación entre autopercepción y percepción externa (0–6). */
+  /* Alineación entre autopercepción y percepción externa (0–6).
+     Coincidencia de vocabulario = recorrido coherente. */
   function alignmentScore(selfWords, clientWords) {
     const norm = (s) =>
       String(s || "")
@@ -51,6 +70,30 @@ const KleosEngine = (() => {
     return clamp(2 + overlap * 2, 0, 6);
   }
 
+  /* ---------- Lectura de la dimensión visible (la fortaleza) ---------- */
+  const STRENGTH_READINGS = {
+    clarity: (s) =>
+      s >= 14
+        ? "Su nivel de comprensión es alto. El mercado entiende qué hace sin esfuerzo — una base que la mayoría no tiene."
+        : "La comprensión es hoy su dimensión más sólida. El mercado capta qué hace, aunque aún queda margen para que lo capte más rápido.",
+    value: (s) =>
+      s >= 14
+        ? "Su autoridad percibida es alta. El mercado entiende que sabe lo que hace, y eso se refleja en cómo recibe su precio."
+        : "La autoridad es hoy su dimensión más sólida. El mercado le reconoce criterio, aunque esa percepción aún no opera a su favor con toda su fuerza.",
+    trust: (s) =>
+      s >= 14
+        ? "Su nivel de confianza es alto. Las señales que emite reducen el riesgo percibido antes de cualquier conversación."
+        : "La confianza es hoy su dimensión más sólida. Genera seguridad suficiente para sostener la decisión, aunque todavía con margen de refuerzo.",
+    differentiation: (s) =>
+      s >= 14
+        ? "Su diferenciación es alta. El mercado identifica por qué elegirlo — la ventaja más difícil de construir ya está operando."
+        : "La diferenciación es hoy su dimensión más sólida. Existe una base de singularidad que el resto de su sistema aún no aprovecha del todo.",
+    journey: (s) =>
+      s >= 14
+        ? "Su conversión es alta. El trayecto entre el interés y la decisión fluye sin fricciones significativas."
+        : "La conversión es hoy su dimensión más sólida. El recorrido hacia la compra funciona, aunque aún filtra decisiones que podrían cerrarse antes.",
+  };
+
   function weightOf(id, optIdx) {
     const q = KIP_PROTOCOL.find((q) => q.id === id);
     if (!q || !q.options || optIdx == null) return 0;
@@ -58,7 +101,7 @@ const KleosEngine = (() => {
     return opt ? opt.weight : 0;
   }
 
-  /* ---------- Lecturas locales (respaldo garantizado) ---------- */
+  /* ---------- Lecturas (simuladas en V1, Gemini en V2) ---------- */
 
   function buildPerception(scores, answers) {
     const self = String(answers.self_perception || "").trim();
@@ -90,7 +133,10 @@ const KleosEngine = (() => {
 
   function buildDiagnosis(scores) {
     const lowest = [...scores].sort((a, b) => a.score - b.score)[0];
-    return `La dimensión que hoy gobierna su techo de crecimiento es ${lowest.name.toLowerCase()}. La lectura completa establece la secuencia de corrección en tres movimientos, el orden en que deben ejecutarse y el error que conviene no cometer primero…`;  /* ---------- Prescripción: causa raíz, prioridad e impacto ----------
+    return `La dimensión que hoy gobierna su techo de crecimiento es ${lowest.name.toLowerCase()}. La lectura completa establece la secuencia de corrección en tres movimientos, el orden en que deben ejecutarse y el error que conviene no cometer primero…`;
+  }
+
+  /* ---------- Prescripción: causa raíz, prioridad e impacto ----------
      Construida a partir de la dimensión más débil detectada.
      Determinista (no requiere IA): es el modelo KIP hablando. */
   const PRESCRIPTIONS = {
@@ -166,7 +212,7 @@ const KleosEngine = (() => {
       impacts: p.impacts,
     };
   }
-  }
+
   /* ---------- Fragmento oculto: "lo que el protocolo detectó" ----------
      Frases reales del caso, cortadas en el punto de máxima tensión.
      Construidas con la dimensión más débil + datos declarados. */
@@ -189,7 +235,8 @@ const KleosEngine = (() => {
     const builder = HIDDEN_FRAGMENTS[lowest.key] || HIDDEN_FRAGMENTS.clarity;
     return builder(ctx);
   }
-    /* ---------- Patrón detectado: identidad reconocible ----------
+
+  /* ---------- Patrón detectado: identidad reconocible ----------
      5 patrones memorables asignados por la dimensión dominante.
      Sin números, sin cálculos visibles: interpretación. */
   const PATTERNS = {
@@ -233,7 +280,8 @@ const KleosEngine = (() => {
 
     return { name: p.name, text: p.text, match };
   }
-    /* ---------- Insight detectado: el momento eureka ----------
+
+  /* ---------- Insight detectado: el momento eureka ----------
      generateInsight() cruza respuestas entre sí buscando la
      CONTRADICCIÓN más reveladora del caso. Reglas en orden de
      prioridad: la primera que aplica, gana. ---------- */
@@ -244,7 +292,7 @@ const KleosEngine = (() => {
     const selfW = norm(a.self_perception).split(/[\s,]+/).filter(Boolean);
     const clientW = norm(a.client_perception).split(/[\s,]+/).filter(Boolean);
     const overlap = selfW.filter((w) => clientW.includes(w)).length;
-    const negClient = ["caro", "lento", "distante", "impreciso", "comun", "complicado", "frio"]
+    const negClient = ["caro", "lento", "distante", "imprecisо", "impreciso", "comun", "complicado", "frio"]
       .some((w) => clientW.includes(w));
     const aspSelf = ["exclusivo", "premium", "precision", "innovador", "profesional"]
       .some((w) => selfW.includes(w));
@@ -271,7 +319,7 @@ const KleosEngine = (() => {
         text: "Existe una contradicción directa entre cómo define su negocio y cómo el mercado lo interpreta — y ambas descripciones no pueden ser ciertas a la vez para el comprador. Hoy, en cada decisión de compra, está ganando la versión del mercado.",
       },
       {
-        // Llegan comparando + prospectos que se enfrían: conversión, no demanda
+        // Llegan comparando + prospectos que se enfrían: problema de conversión, no de demanda
         when: () => a.journey_1 >= 1 && a.trust_1 >= 2,
         text: "Su principal obstáculo no parece ser la generación de demanda, sino la conversión de la demanda que ya existe. Atraer más interesados con el recorrido actual solo aumentaría el volumen de oportunidades que se enfrían en el mismo punto.",
       },
@@ -281,7 +329,7 @@ const KleosEngine = (() => {
         text: "Su propuesta de valor vive en su cabeza, y eso tiene una consecuencia medible: cada conversación comercial empieza desde cero. El mercado no está rechazando su oferta — está recibiendo una versión distinta de ella cada vez.",
       },
       {
-        // Sin afirmación única (lo confesó)
+        // Sin afirmación única + mercado lo describe como común/comparable
         when: () => a.differentiator_type === 3,
         text: "Su negocio todavía no posee una afirmación que nadie más pueda hacer — y ese dato explica más de su situación comercial que cualquier otro. Sin esa afirmación, el mercado solo dispone de una variable para decidir: el precio.",
       },
@@ -304,10 +352,12 @@ const KleosEngine = (() => {
     };
     return fallback[lowest.key] || fallback.clarity;
   }
+
   /* ---------- Ejecución del protocolo ---------- */
 
-  /* Declaraciones textuales: las respuestas cerradas tal como el
-     usuario las eligió — el dolor activo declarado. */
+  /* Declaraciones textuales: las 8 respuestas cerradas tal como el
+     usuario las eligió. Son el "dolor activo" declarado — el insumo
+     que hace que la lectura hable de SU caso y no de un caso. */
   function buildDeclarations(answers) {
     return KIP_PROTOCOL
       .filter((q) => q.type === "choice" && answers[q.id] != null)
@@ -318,7 +368,9 @@ const KleosEngine = (() => {
       .filter((d) => d.a);
   }
 
-  /* Capa IA: si falla, la experiencia continúa con textos locales. */
+  /* Capa Gemini: pide los textos personalizados a /api/diagnose.
+     Si falla (sin conexión, sin key, error del modelo), retorna null
+     y la experiencia continúa con los textos del motor local. */
   async function fetchAiReading(payload) {
     try {
       const ctrl = new AbortController();
@@ -368,12 +420,21 @@ const KleosEngine = (() => {
 
     const raw = { clarity, value, trust, differentiation, journey };
 
+    // Solo la dimensión más alta (la fortaleza) se muestra completa.
+    // Las otras cuatro quedan reservadas — curiosidad máxima.
+    const highestKey = Object.keys(raw).reduce((a, b) => (raw[b] > raw[a] ? b : a));
+
     const dimensions = DIMENSIONS.map((d) => ({
       key: d.key,
       name: d.name,
+      question: d.question,
       score: raw[d.key],
       max: 20,
-      state: d.state,
+      state: d.key === highestKey ? "visible" : "locked",
+      reading:
+        d.key === highestKey
+          ? (STRENGTH_READINGS[d.key] || STRENGTH_READINGS.clarity)(raw[d.key])
+          : null,
     }));
 
     const index = clamp(clarity + value + trust + differentiation + journey, 0, 100);
@@ -387,7 +448,7 @@ const KleosEngine = (() => {
       diagnosis: buildDiagnosis(dimensions),
     };
 
-    // Intento de lectura generada por IA
+    // Intento de lectura generada por Gemini
     const ai = await fetchAiReading({
       company: answers.company,
       self_perception: answers.self_perception,
@@ -406,7 +467,7 @@ const KleosEngine = (() => {
       index,
       level: { code: level.code, name: level.name },
       dimensions,
-            perception: texts.perception,
+      perception: texts.perception,
       truth: texts.truth,
       diagnosis: texts.diagnosis,
       prescription: buildPrescription(dimensions),
