@@ -836,4 +836,49 @@
     if (hf) hf.style.display = "";
     showScreen("landing");
   });
+
+  /* ---------- MODO PREVIEW (solo para revisión interna) ----------
+     Activar con: insight.carinaursino.com/?preview=kleos2026
+     Doble click en el botón dorado del CTA = simular el desbloqueo
+     con textos de muestra, SIN pagar y SIN llamar a la IA.
+     Inofensivo: no toca la validación real de licencias. */
+  const PREVIEW_KEY = "kleos2026";
+  if (new URLSearchParams(location.search).get("preview") === PREVIEW_KEY) {
+    const badge = document.createElement("div");
+    badge.textContent = "MODO PREVIEW";
+    badge.style.cssText =
+      "position:fixed;top:10px;right:10px;z-index:9999;font-family:monospace;" +
+      "font-size:10px;letter-spacing:2px;color:#C5A059;border:1px solid #C5A059;" +
+      "padding:4px 10px;background:rgba(5,5,5,.8);pointer-events:none;";
+    document.body.appendChild(badge);
+
+    document.getElementById("btn-unlock").addEventListener("dblclick", () => {
+      if (!state.reading) return;
+      const r = state.reading;
+      const lockedDims = r.dimensions.filter((d) => d.state === "locked");
+      const fakeReadings = {};
+      lockedDims.forEach((d) => {
+        fakeReadings[d.key] =
+          `[PREVIEW] Lectura de ${d.name} (${d.score}/20): aquí la IA explicará el mecanismo detectado en esta dimensión y la dirección de corrección para su caso específico.`;
+      });
+      closeModal();
+      revealFullReading(
+        {
+          dim_readings: fakeReadings,
+          truth_full:
+            "[PREVIEW] Aquí aparecerá la observación crítica completa generada por la IA: la cadena causal que el cliente no ve, el principio de percepción detrás y su costo económico concreto.",
+          diagnosis_full:
+            "[PREVIEW] Aquí aparecerá el diagnóstico central: la categoría mental que ocupa hoy el negocio, por qué fija un techo a su precio y a qué categoría debe migrar.",
+          sequence: [
+            "[PREVIEW] Primer movimiento de corrección, accionable esta semana.",
+            "[PREVIEW] Segundo movimiento, que se apoya en el primero.",
+            "[PREVIEW] Tercer movimiento, que consolida la secuencia.",
+          ],
+          first_error:
+            "[PREVIEW] Aquí aparecerá el error que no debe cometer primero — el movimiento tentador que profundizaría la brecha.",
+        },
+        r
+      );
+    });
+  }
 })();
