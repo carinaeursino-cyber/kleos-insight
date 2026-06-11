@@ -90,7 +90,82 @@ const KleosEngine = (() => {
 
   function buildDiagnosis(scores) {
     const lowest = [...scores].sort((a, b) => a.score - b.score)[0];
-    return `La dimensión que hoy gobierna su techo de crecimiento es ${lowest.name.toLowerCase()}. La lectura completa establece la secuencia de corrección en tres movimientos, el orden en que deben ejecutarse y el error que conviene no cometer primero…`;
+    return `La dimensión que hoy gobierna su techo de crecimiento es ${lowest.name.toLowerCase()}. La lectura completa establece la secuencia de corrección en tres movimientos, el orden en que deben ejecutarse y el error que conviene no cometer primero…`;  /* ---------- Prescripción: causa raíz, prioridad e impacto ----------
+     Construida a partir de la dimensión más débil detectada.
+     Determinista (no requiere IA): es el modelo KIP hablando. */
+  const PRESCRIPTIONS = {
+    clarity: {
+      cause:
+        "Su propuesta contiene demasiadas interpretaciones posibles. El mercado necesita comprender su valor más rápido de lo que hoy lo logra — y cada segundo de ambigüedad se paga en decisiones que se van hacia opciones más fáciles de entender.",
+      priority:
+        "Durante los próximos 30 días, concentre sus esfuerzos en reducir la ambigüedad de su propuesta: una sola frase, un solo significado, idéntica en todos los canales — antes de invertir en más visibilidad.",
+      impacts: [
+        "↑ Comprensión inmediata de su propuesta",
+        "↑ Mayor conversión en primeras conversaciones",
+        "↑ Ciclos de venta más cortos",
+        "↑ Menor necesidad de explicar y justificar",
+      ],
+    },
+    value: {
+      cause:
+        "Existe una brecha entre el valor que entrega y el valor que el mercado percibe. No es un problema de calidad: es un problema de traducción — lo que hace bien no está llegando en un formato que el mercado pueda valorar antes de comprar.",
+      priority:
+        "Durante los próximos 30 días, concentre sus esfuerzos en hacer visible el valor que hoy entrega en silencio: evidencia, resultados y criterio expuestos antes de la conversación de precio — y no toque sus tarifas hasta lograrlo.",
+      impacts: [
+        "↑ Mayor conversión",
+        "↑ Mayor percepción de valor",
+        "↑ Menor dependencia del precio",
+        "↑ Más facilidad para generar confianza",
+      ],
+    },
+    trust: {
+      cause:
+        "Su mensaje genera interés inicial, pero no transmite suficientes señales de credibilidad para reducir el riesgo percibido. El prospecto no duda de su oferta: duda de lo que no puede verificar antes de comprometerse.",
+      priority:
+        "Durante los próximos 30 días, concentre sus esfuerzos en construir señales de credibilidad verificables — prueba, respaldo y coherencia visible entre lo que promete y lo que su presencia comunica — antes de invertir más presupuesto en adquisición.",
+      impacts: [
+        "↑ Menos prospectos que desaparecen sin explicación",
+        "↑ Decisiones de compra más rápidas",
+        "↑ Menor exigencia de garantías y referencias",
+        "↑ Mayor tasa de cierre en primeras conversaciones",
+      ],
+    },
+    differentiation: {
+      cause:
+        "Su marca compite principalmente por similitud y no por singularidad. El mercado entiende lo que hace, pero no por qué debería elegirlo frente a otras alternativas — y cuando la diferencia no es visible, la decisión se traslada al precio.",
+      priority:
+        "Durante los próximos 30 días, concentre todos sus esfuerzos en fortalecer la diferenciación — una afirmación que solo usted pueda sostener — antes de invertir más presupuesto en adquisición.",
+      impacts: [
+        "↑ Menos comparación por precio",
+        "↑ Preferencia frente a alternativas similares",
+        "↑ Mayor poder de negociación",
+        "↑ Recordación de marca",
+      ],
+    },
+    journey: {
+      cause:
+        "Sus clientes encuentran fricción entre el interés y la compra. La intención existe — el recorrido la desgasta: cada paso confuso, cada duda sin responder y cada comparación innecesaria filtra decisiones que ya estaban a su favor.",
+      priority:
+        "Durante los próximos 30 días, concentre sus esfuerzos en eliminar la fricción entre el interés y la decisión: menos pasos, menos dudas abiertas, un camino inequívoco — antes de buscar más tráfico.",
+      impacts: [
+        "↑ Más clientes que llegan decididos",
+        "↑ Mayor conversión del interés ya existente",
+        "↑ Menor costo por cliente adquirido",
+        "↑ Recorridos de compra más cortos",
+      ],
+    },
+  };
+
+  function buildPrescription(dimensions) {
+    const lowest = [...dimensions].sort((a, b) => a.score - b.score)[0];
+    const p = PRESCRIPTIONS[lowest.key] || PRESCRIPTIONS.clarity;
+    return {
+      dimension: lowest.name,
+      cause: p.cause,
+      priority: p.priority,
+      impacts: p.impacts,
+    };
+  }
   }
 
   /* ---------- Ejecución del protocolo ---------- */
@@ -195,9 +270,10 @@ const KleosEngine = (() => {
       index,
       level: { code: level.code, name: level.name },
       dimensions,
-      perception: texts.perception,
+            perception: texts.perception,
       truth: texts.truth,
       diagnosis: texts.diagnosis,
+      prescription: buildPrescription(dimensions),
       declarations: buildDeclarations(answers),
       source: ai ? "gemini" : "local",
     };

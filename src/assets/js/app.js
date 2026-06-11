@@ -526,8 +526,25 @@
     state.reading = r; // guardar para el desbloqueo
     el.resultLevel.textContent = `${r.level.code} — ${r.level.name}`;
     el.resultPerception.textContent = r.perception;
-    el.resultTruth.textContent = r.truth;
+        el.resultTruth.textContent = r.truth;
     el.resultDiagnosis.textContent = r.diagnosis;
+
+    // Prescripción: causa raíz, prioridad #1 e impacto potencial
+    if (r.prescription) {
+      document.getElementById("cause-dimension").textContent =
+        `DIMENSIÓN CRÍTICA · ${r.prescription.dimension.toUpperCase()}`;
+      document.getElementById("cause-text").textContent = r.prescription.cause;
+      document.getElementById("priority-text").textContent = r.prescription.priority;
+      const list = document.getElementById("impact-list");
+      list.innerHTML = "";
+      r.prescription.impacts.forEach((imp, i) => {
+        const row = document.createElement("p");
+        row.className = "impact-item mono";
+        row.style.animationDelay = `${1.2 + i * 0.18}s`;
+        row.textContent = imp;
+        list.appendChild(row);
+      });
+    }
 
     // Tablero de dimensiones: 2 visibles, 3 reservadas
     el.dimsBoard.innerHTML = "";
