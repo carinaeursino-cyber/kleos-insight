@@ -100,6 +100,19 @@
     <div class="detail" id="list-view">
       <h1>Diagnósticos</h1>
       <div class="stats" id="stats"></div>
+
+      <h1 style="font-size:1.3rem;margin-top:1rem">Analítica del protocolo</h1>
+      <div class="stats" id="proto-stats"></div>
+      <div class="dgrid" style="margin-bottom:2rem">
+        <div class="dcard">
+          <p class="lab">RESPUESTAS POR PREGUNTA (CAÍDA = FRICCIÓN)</p>
+          <div id="q-funnel"></div>
+        </div>
+        <div class="dcard">
+          <p class="lab">ÚLTIMA PREGUNTA VISTA AL ABANDONAR</p>
+          <div id="q-abandon"></div>
+        </div>
+      </div>
       <table>
         <thead>
           <tr>
@@ -175,6 +188,53 @@
           `<div class="stat"><p class="n">${avg}</p><p class="l">ÍNDICE PROM.</p></div>` +
           `<div class="stat"><p class="n">${data.partials || 0}</p><p class="l">ABANDONOS</p></div>`;
 
+        /* ---- Analítica del protocolo ---- */
+        const an = data.analytics || {};
+        const started = ev.startedProtocol || 0;
+        const completed = ev.completedProtocol || 0;
+        const completionRate = started ? Math.round((completed / started) * 100) : 0;
+        const fmtDur = (s) => (s >= 60 ? Math.floor(s / 60) + "m " + (s % 60) + "s" : s + "s");
+
+        // Pregunta con mayor/menor abandono (caída entre preguntas consecutivas)
+        const q = an.questions || {};
+        const counts = [];
+        for (let i = 1; i <= 12; i++) counts.push(q["q" + String(i).padStart(2, "0")] || 0);
+        let maxDropQ = null, maxDrop = -1, minDropQ = null, minDrop = Infinity;
+        for (let i = 1; i < 12; i++) {
+          const drop = counts[i - 1] - counts[i];
+          if (counts[i - 1] > 0) {
+            if (drop > maxDrop) { maxDrop = drop; maxDropQ = i + 1; }
+            if (drop < minDrop) { minDrop = drop; minDropQ = i + 1; }
+          }
+        }
+
+        $("proto-stats").innerHTML =
+          `<div class="stat"><p class="n">${completionRate}%</p><p class="l">FINALIZACIÓN</p></div>` +
+          `<div class="stat"><p class="n">${an.avgDuration ? fmtDur(an.avgDuration) : "—"}</p><p class="l">TIEMPO PROM.</p></div>` +
+          `<div class="stat"><p class="n">${an.avgDiscovery != null ? an.avgDiscovery + "%" : "—"}</p><p class="l">DISCOVERY SCORE (ABANDONOS)</p></div>` +
+          `<div class="stat"><p class="n">${maxDropQ ? "P" + maxDropQ : "—"}</p><p class="l">MAYOR ABANDONO</p></div>` +
+          `<div class="stat"><p class="n">${minDropQ ? "P" + minDropQ : "—"}</p><p class="l">MENOR ABANDONO</p></div>` +
+          `<div class="stat"><p class="n">${ev.downloadedPdf || 0}</p><p class="l">ACCESOS PDF</p></div>` +
+          `<div class="stat"><p class="n">${(ev.clickedAdvisory || 0) + (ev.clickedNextProtocol || 0)}</p><p class="l">CLICS CTA FINAL</p></div>`;
+
+        // Embudo visual por pregunta
+        const maxCount = Math.max(...counts, 1);
+        $("q-funnel").innerHTML = counts.map((c, i) =>
+          `<div class="dimrow"><span>P${String(i + 1).padStart(2, "0")}</span>` +
+          `<span style="flex:1;margin:0 12px;height:4px;align-self:center;background:rgba(197,160,89,.1)">` +
+          `<span style="display:block;height:100%;width:${Math.round((c / maxCount) * 100)}%;background:#C5A059"></span></span>` +
+          `<span>${c}</span></div>`
+        ).join("");
+
+        // Distribución de abandonos
+        const ab = an.abandonAt || {};
+        const abEntries = Object.entries(ab).sort();
+        $("q-abandon").innerHTML = abEntries.length
+          ? abEntries.map(([k, v]) =>
+              `<div class="dimrow"><span>P${k.slice(1)}</span><span>${v} abandono${v > 1 ? "s" : ""}</span></div>`
+            ).join("")
+          : '<p class="val">Sin abandonos registrados</p>';
+
         const tbody = $("rows");
         tbody.innerHTML = "";
         $("empty").style.display = total ? "none" : "block";
@@ -222,5 +282,5 @@
       else show("login");
     })();
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a3f6aeae1fa777',t:'MTc4MTIxNjAxMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

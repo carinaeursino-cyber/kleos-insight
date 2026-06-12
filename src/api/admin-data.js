@@ -70,11 +70,63 @@ module.exports = async (req, res) => {
     const partialsRes = await redis(["LLEN", "kip001:partials"]);
     const partials = (partialsRes && partialsRes.result) || 0;
 
+    /* ---- Analítica del protocolo ---- */
+    // Respuestas por pregunta (para detectar fricción)
+    const qaRes = await redis(["HGETALL", "kip001:qanswered"]);
+    const qaArr = (qaRes && qaRes.result) || [];
+    const questions = {};
+    for (let i = 0; i < qaArr.length; i += 2) {
+      questions[qaArr[i]] = parseInt(qaArr[i + 1], 10) || 0;
+    }
+
+    // Tiempo promedio de completado
+    const durRes = await redis(["LRANGE", "kip001:durations", "0", "999"]);
+    const durations = ((durRes && durRes.result) || []).map(Number).filter((x) => x > 0);
+    const avgDuration = durations.length
+      ? Math.round(durations.reduce((a, b) => a + b, 0) / durations.length)
+      : 0;
+
+    // Índices calculados
+    const idxRes = await redis(["LRANGE", "kip001:indices", "0", "999"]);
+    const indices = ((idxRes && idxRes.result) || []).map(Number);
+    const avgIndex = indices.length
+      ? Math.round(indices.reduce((a, b) => a + b, 0) / indices.length)
+      : 0;
+
+    // Discovery Score de los abandonos (cuánto completaron antes de irse)
+    const pRes = await redis(["LRANGE", "kip001:partials", "0", "499"]);
+    const partialList = ((pRes && pRes.result) || [])
+      .map((j) => { try { return JSON.parse(j); } catch { return null; } })
+      .filter(Boolean);
+    const discoveryScores = partialList.map((p) =>
+      Math.round(((p.respondidas || Math.max(0, (p.entrada || 1) - 1)) / 12) * 100)
+    );
+    const avgDiscovery = discoveryScores.length
+      ? Math.round(discoveryScores.reduce((a, b) => a + b, 0) / discoveryScores.length)
+      : null;
+    // Distribución de últimas preguntas vistas al abandonar
+    const abandonAt = {};
+    partialList.forEach((p) => {
+      const k = `q${String(Math.max(1, Math.min(12, p.entrada || 1))).padStart(2, "0")}`;
+      abandonAt[k] = (abandonAt[k] || 0) + 1;
+    });
+
+    const analytics = {
+      questions,
+      avgDuration,
+      durationsCount: durations.length,
+      avgIndex,
+      indicesCount: indices.length,
+      avgDiscovery,
+      discoveryCount: discoveryScores.length,
+      abandonAt,
+    };
+
     /* ---- Lista resumida (últimos 200) ---- */
     const idsRes = await redis(["LRANGE", "kip001:ids", "0", "199"]);
     const ids = (idsRes && idsRes.result) || [];
     if (!ids.length) {
-      res.status(200).json({ total: 0, records: [], events, partials });
+      res.status(200).json({ total: 0, records: [], events, partials, analytics });
       return;
     }
 
@@ -102,7 +154,7 @@ module.exports = async (req, res) => {
       })
       .filter(Boolean);
 
-    res.status(200).json({ total: rows.length, records: rows, events, partials });
+    res.status(200).json({ total: rows.length, records: rows, events, partials, analytics });
   } catch (e) {
     console.error("admin-data error:", e && e.message);
     res.status(500).json({ error: "internal" });

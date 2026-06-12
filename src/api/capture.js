@@ -62,10 +62,36 @@ module.exports = async (req, res) => {
         "paid",
         "downloadedPdf",
         "abandonedProtocol",
+        "resultGenerated",
+        "clickedAdvisory",
+        "clickedNextProtocol",
       ];
       const ev = clean(d.event, 30);
       if (ALLOWED.includes(ev)) {
         await redis(["HINCRBY", "kip001:events", ev, "1"]);
+
+        // Duración total al completar (segundos)
+        if (ev === "completedProtocol" && typeof d.duration === "number") {
+          const dur = Math.max(0, Math.min(7200, Math.round(d.duration)));
+          await redis(["LPUSH", "kip001:durations", String(dur)]);
+          await redis(["LTRIM", "kip001:durations", "0", "999"]);
+        }
+        // Índice calculado al generar resultado
+        if (ev === "resultGenerated" && typeof d.index === "number") {
+          const idx = Math.max(0, Math.min(100, Math.round(d.index)));
+          await redis(["LPUSH", "kip001:indices", String(idx)]);
+          await redis(["LTRIM", "kip001:indices", "0", "999"]);
+        }
+      }
+      res.status(200).json({ ok: true });
+      return;
+    }
+
+    /* ---- Avance por pregunta (tracking granular) ---- */
+    if (d.action === "question") {
+      const n = Math.max(1, Math.min(12, Math.round(d.n || 0)));
+      if (n >= 1) {
+        await redis(["HINCRBY", "kip001:qanswered", `q${String(n).padStart(2, "0")}`, "1"]);
       }
       res.status(200).json({ ok: true });
       return;
@@ -76,7 +102,9 @@ module.exports = async (req, res) => {
       const partial = {
         fecha: new Date().toISOString(),
         empresa: clean(d.empresa, 80),
-        entrada: Math.max(0, Math.min(12, Math.round(d.entrada || 0))),
+        entrada: Math.max(0, Math.min(12, Math.round(d.entrada || 0))),       // última vista
+        respondidas: Math.max(0, Math.min(12, Math.round(d.respondidas || 0))), // últimas respondidas
+        elapsed: Math.max(0, Math.min(7200, Math.round(d.elapsed || 0))),     // segundos transcurridos
         respuestas:
           d.respuestas && typeof d.respuestas === "object" ? d.respuestas : {},
       };
