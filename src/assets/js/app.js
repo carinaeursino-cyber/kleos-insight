@@ -9,7 +9,7 @@
 
   // ---------- Configuración de checkout ----------
   // URL del producto en Lemon Squeezy (reemplazar al crear la tienda)
-  const CHECKOUT_URL = "https://TUTIENDA.lemonsqueezy.com/buy/PRODUCT_UUID";
+  const CHECKOUT_URL = "https://kleosstudio.lemonsqueezy.com/buy/PRODUCT_UUID";
 
   // ---------- Estado ----------
   const state = {
@@ -18,6 +18,8 @@
     reading: null, // último resultado (para el desbloqueo)
     lead: { nombre: "", email: "", empresa: "" }, // captura del gate
     recordId: null, // id del registro guardado
+    startedAt: null, // timestamp de inicio del protocolo
+    answeredCount: 0, // preguntas respondidas (tracking)
   };
 
   // ---------- Referencias ----------
@@ -68,6 +70,17 @@
     } catch { /* silencioso */ }
   }
 
+  function trackQuestion(n) {
+    try {
+      fetch("/api/capture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "question", n }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch { /* silencioso */ }
+  }
+
   // Abandono: si cierra la pestaña a mitad del protocolo, guardar estado parcial
   let protocolActive = false;
   window.addEventListener("pagehide", () => {
@@ -80,6 +93,8 @@
             action: "partial",
             empresa: state.lead.empresa || state.answers.company || "",
             entrada: state.current + 1,
+            respondidas: state.answeredCount,
+            elapsed: state.startedAt ? Math.round((Date.now() - state.startedAt) / 1000) : 0,
             respuestas: state.answers,
           })],
           { type: "application/json" }
@@ -295,7 +310,7 @@
         row.appendChild(count);
         el.qBody.appendChild(input);
         el.qBody.appendChild(row);
-        setTimeout(() => input.focus(), animated ? 420 : 50);
+        setTimeout(() => input.focus(), animated ? 520 : 50);
       }
     };
 
@@ -509,6 +524,10 @@
     const currentId = KIP_PROTOCOL[state.current].id;
     const signal = getSignal(currentId);
 
+    // Tracking: pregunta N respondida
+    state.answeredCount = state.current + 1;
+    trackQuestion(state.current + 1);
+
     const go = () => {
       if (state.current < KIP_PROTOCOL.length - 1) {
         state.current++;
@@ -517,7 +536,18 @@
         el.progressFill.style.width = "100%";
         animateDiscovery(100);
         protocolActive = false;
-        trackEvent("completedProtocol");
+        try {
+          fetch("/api/capture", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              action: "event",
+              event: "completedProtocol",
+              duration: state.startedAt ? Math.round((Date.now() - state.startedAt) / 1000) : 0,
+            }),
+            keepalive: true,
+          }).catch(() => {});
+        } catch { /* noop */ }
         setTimeout(startAnalysis, 350);
       }
     };
@@ -571,6 +601,14 @@
   // ---------- Pantalla 3.5 · Diagnóstico listo (captura de lead) ----------
   function showGate(r) {
     state.reading = r;
+    try {
+      fetch("/api/capture", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action: "event", event: "resultGenerated", index: r.index }),
+        keepalive: true,
+      }).catch(() => {});
+    } catch { /* noop */ }
     document.getElementById("gate-index").textContent = r.index;
     document.getElementById("gate-level").textContent = r.level.name
       .toLowerCase()
@@ -756,6 +794,8 @@
     btn.addEventListener("click", () => {
       resetProtocol();
       protocolActive = true;
+      state.startedAt = Date.now();
+      state.answeredCount = 0;
       trackEvent("startedProtocol");
       showScreen("protocol");
       renderEntry(false);
@@ -767,6 +807,11 @@
     resetProtocol();
     showScreen("landing");
   });
+
+  // CTA de asesoría directa (lectura completa)
+  document.querySelectorAll(".advisory-link").forEach((a) =>
+    a.addEventListener("click", () => trackEvent("clickedAdvisory"), { once: true })
+  );
 
   // ---------- Modal de acceso / checkout ----------
   const modal = document.getElementById("modal-unlock");
@@ -946,6 +991,7 @@
         `Hola, acabo de completar KIP-001 (Índice Kleos: ${r.index}) y quiero reservar acceso prioritario a ${np.code}.`
       );
       btn.href = `mailto:carina@carinaursino.com?subject=${subject}&body=${body}`;
+      btn.addEventListener("click", () => trackEvent("clickedNextProtocol"), { once: true });
 
       const routeEl = document.getElementById("route-list");
       routeEl.innerHTML = "";
