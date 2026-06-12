@@ -65,6 +65,22 @@
     .back { font-family: var(--mono); font-size: .65rem; letter-spacing: .18em; color: var(--text-40);
             background: none; border: none; cursor: pointer; margin-bottom: 1.6rem; }
     .back:hover { color: var(--gold); }
+
+    /* Acciones de limpieza */
+    .danger-zone { margin-top: 3rem; border-top: 1px solid var(--gold-15); padding-top: 1.6rem;
+                   display: flex; gap: .8rem; flex-wrap: wrap; align-items: center; }
+    .danger-label { font-family: var(--mono); font-size: .56rem; letter-spacing: .28em; color: var(--text-40); width: 100%; }
+    .btn-danger {
+      font-family: var(--mono); font-size: .6rem; letter-spacing: .18em; text-transform: uppercase;
+      background: none; color: rgba(176,96,77,.9); border: 1px solid rgba(176,96,77,.4);
+      border-radius: 999px; padding: .6rem 1.3rem; cursor: pointer; transition: all .25s;
+    }
+    .btn-danger:hover { background: rgba(176,96,77,.12); }
+    .btn-del {
+      font-family: var(--mono); font-size: .85rem; background: none; border: none;
+      color: var(--text-40); cursor: pointer; padding: .2rem .5rem; transition: color .25s;
+    }
+    .btn-del:hover { color: rgba(176,96,77,1); }
     .dgrid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-bottom: 1.6rem; }
     .dcard { border: 1px solid var(--gold-15); background: var(--card); padding: 1.4rem 1.5rem; }
     .dcard .lab { font-family: var(--mono); font-size: .55rem; letter-spacing: .28em; color: var(--gold); margin-bottom: .7rem; }
@@ -117,12 +133,19 @@
         <thead>
           <tr>
             <th>FECHA</th><th>EMPRESA</th><th class="hide-m">EMAIL</th>
-            <th>ÍNDICE</th><th class="hide-m">PATRÓN</th><th>PAGÓ</th>
+            <th>ÍNDICE</th><th class="hide-m">PATRÓN</th><th>PAGÓ</th><th></th>
           </tr>
         </thead>
         <tbody id="rows"></tbody>
       </table>
       <p class="empty" id="empty" style="display:none">SIN REGISTROS TODAVÍA</p>
+
+      <div class="danger-zone">
+        <p class="danger-label">ZONA DE LIMPIEZA — ACCIONES IRREVERSIBLES</p>
+        <button class="btn-danger" id="btn-purge-analytics">Purgar analítica</button>
+        <button class="btn-danger" id="btn-purge-records">Purgar diagnósticos</button>
+        <button class="btn-danger" id="btn-purge-all">Purgar todo</button>
+      </div>
     </div>
 
     <!-- Detalle -->
@@ -249,8 +272,15 @@
             `<td class="hide-m">${rec.email || "—"}</td>` +
             `<td class="idx">${rec.kleosIndex ?? "—"}</td>` +
             `<td class="hide-m">${rec.pattern || "—"}</td>` +
-            `<td class="${rec.paid ? "paid-yes" : "paid-no"}">${rec.paid ? "SÍ" : "NO"}</td>`;
+            `<td class="${rec.paid ? "paid-yes" : "paid-no"}">${rec.paid ? "SÍ" : "NO"}</td>` +
+            `<td><button class="btn-del" title="Eliminar registro">✕</button></td>`;
           tr.addEventListener("click", () => loadDetail(rec.id));
+          tr.querySelector(".btn-del").addEventListener("click", async (e) => {
+            e.stopPropagation();
+            if (!confirm(`¿Eliminar el diagnóstico de "${rec.empresa || rec.email || rec.id}"?\n\nEsta acción es irreversible.`)) return;
+            await purge({ action: "delete_record", id: rec.id });
+            loadList();
+          });
           tbody.appendChild(tr);
         });
       }
@@ -272,6 +302,37 @@
         $("d-respuestas").innerHTML = (d.declaraciones || []).map((x) => `<div class="qa"><p class="q">${x.q}</p><p class="a">→ ${x.a}</p></div>`).join("") || '<p class="val">—</p>';
       }
 
+      /* ---- Limpieza de datos ---- */
+      async function purge(payload) {
+        const r = await fetch("/api/admin-purge", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ key: KEY, ...payload }),
+        });
+        if (!r.ok) alert("Error al ejecutar la limpieza.");
+        return r.ok;
+      }
+
+      $("btn-purge-analytics").addEventListener("click", async () => {
+        if (!confirm("¿Purgar TODA la analítica?\n\n(embudo, eventos, tiempos, índices y abandonos)\n\nLos diagnósticos/leads NO se borran. Irreversible.")) return;
+        await purge({ action: "purge_analytics" });
+        loadList();
+      });
+
+      $("btn-purge-records").addEventListener("click", async () => {
+        if (!confirm("¿Purgar TODOS los diagnósticos/leads?\n\n(la analítica NO se borra)\n\nIrreversible.")) return;
+        if (!confirm("Confirmación final: se eliminarán todos los registros de la tabla. ¿Continuar?")) return;
+        await purge({ action: "purge_records" });
+        loadList();
+      });
+
+      $("btn-purge-all").addEventListener("click", async () => {
+        if (!confirm("¿PURGAR TODO?\n\nAnalítica + todos los diagnósticos/leads.\n\nLos informes de clientes que PAGARON no se tocan.\n\nIrreversible.")) return;
+        if (!confirm("Confirmación final: el panel quedará en cero, listo para el lanzamiento. ¿Continuar?")) return;
+        await purge({ action: "purge_all" });
+        loadList();
+      });
+
       $("btn-login").addEventListener("click", () => {
         KEY = $("key-input").value.trim();
         if (KEY) loadList();
@@ -283,5 +344,5 @@
       else show("login");
     })();
   </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a50d330d99322d',t:'MTc4MTIyNzQyMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0a5280c9db957e9',t:'MTc4MTIyODUyMA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
