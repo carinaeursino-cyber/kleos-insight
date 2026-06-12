@@ -102,6 +102,7 @@ module.exports = async (req, res) => {
       const partial = {
         fecha: new Date().toISOString(),
         empresa: clean(d.empresa, 80),
+        gate: !!d.gate, // true = abandonó en la pantalla de email (terminó las 12)
         entrada: Math.max(0, Math.min(12, Math.round(d.entrada || 0))),       // última vista
         respondidas: Math.max(0, Math.min(12, Math.round(d.respondidas || 0))), // últimas respondidas
         elapsed: Math.max(0, Math.min(7200, Math.round(d.elapsed || 0))),     // segundos transcurridos

@@ -81,26 +81,36 @@
     } catch { /* silencioso */ }
   }
 
-  // Abandono: si cierra la pestaña a mitad del protocolo, guardar estado parcial
+  // Abandono: si cierra la pestaña a mitad del protocolo o en el gate,
+  // guardar estado parcial (sendBeacon sobrevive al cierre)
   let protocolActive = false;
+  let gateActive = false;
   window.addEventListener("pagehide", () => {
-    if (!protocolActive || state.current >= KIP_PROTOCOL.length - 1) return;
+    const midProtocol = protocolActive && state.current < KIP_PROTOCOL.length - 1;
+    if (!midProtocol && !gateActive) return;
     try {
       navigator.sendBeacon(
         "/api/capture",
         new Blob(
           [JSON.stringify({
             action: "partial",
+            gate: gateActive, // abandonó en la pantalla de email
             empresa: state.lead.empresa || state.answers.company || "",
-            entrada: state.current + 1,
-            respondidas: state.answeredCount,
+            entrada: gateActive ? 12 : state.current + 1,
+            respondidas: gateActive ? 12 : state.answeredCount,
             elapsed: state.startedAt ? Math.round((Date.now() - state.startedAt) / 1000) : 0,
             respuestas: state.answers,
           })],
           { type: "application/json" }
         )
       );
-      trackEvent("abandonedProtocol");
+      navigator.sendBeacon(
+        "/api/capture",
+        new Blob(
+          [JSON.stringify({ action: "event", event: "abandonedProtocol" })],
+          { type: "application/json" }
+        )
+      );
     } catch { /* noop */ }
   });
 
@@ -310,7 +320,7 @@
         row.appendChild(count);
         el.qBody.appendChild(input);
         el.qBody.appendChild(row);
-        setTimeout(() => input.focus(), animated ? 520 : 50);
+        setTimeout(() => input.focus(), animated ? 420 : 50);
       }
     };
 
@@ -618,6 +628,7 @@
       `Detectamos una brecha importante en su <span class="gold">${weakest}</span>`;
     const gc = document.getElementById("gate-company");
     if (gc && !gc.value) gc.value = state.answers.company || "";
+    gateActive = true; // si cierra aquí sin dejar datos, cuenta como abandono
     showScreen("gate");
   }
 
@@ -672,6 +683,7 @@
       return;
     }
     state.lead = { nombre, email, empresa };
+    gateActive = false; // dejó sus datos: ya no es abandono
     gateStatus("DESBLOQUEANDO INFORME", "loading");
     trackEvent("openedResults");
     captureRecord(); // en paralelo, sin esperar
@@ -778,6 +790,7 @@
     state.answers = {};
     state.reading = null;
     state.recordId = null;
+    gateActive = false;
     discoveryShown = 0;
     if (el.discoveryValue) el.discoveryValue.textContent = "0%";
     el.indexNumber.textContent = "0";

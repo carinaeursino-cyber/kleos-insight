@@ -105,8 +105,14 @@ module.exports = async (req, res) => {
       ? Math.round(discoveryScores.reduce((a, b) => a + b, 0) / discoveryScores.length)
       : null;
     // Distribución de últimas preguntas vistas al abandonar
+    // (los abandonos en el gate de email se cuentan aparte)
     const abandonAt = {};
+    let gateAbandons = 0;
     partialList.forEach((p) => {
+      if (p.gate) {
+        gateAbandons++;
+        return;
+      }
       const k = `q${String(Math.max(1, Math.min(12, p.entrada || 1))).padStart(2, "0")}`;
       abandonAt[k] = (abandonAt[k] || 0) + 1;
     });
@@ -120,6 +126,7 @@ module.exports = async (req, res) => {
       avgDiscovery,
       discoveryCount: discoveryScores.length,
       abandonAt,
+      gateAbandons,
     };
 
     /* ---- Lista resumida (últimos 200) ---- */
