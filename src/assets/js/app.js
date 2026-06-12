@@ -9,7 +9,7 @@
 
   // ---------- Configuración de checkout ----------
   // URL del producto en Lemon Squeezy (reemplazar al crear la tienda)
-  const CHECKOUT_URL = "https://kleosstudio.lemonsqueezy.com/buy/PRODUCT_UUID";
+  const CHECKOUT_URL = "https://TUTIENDA.lemonsqueezy.com/buy/PRODUCT_UUID";
 
   // ---------- Estado ----------
   const state = {
