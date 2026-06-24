@@ -100,7 +100,7 @@
       padding: 4rem 4rem;
       margin-bottom: 3.5rem;
       display: grid;
-      grid-template-columns: 1.1fr 1fr;
+      grid-template-columns: 55% 45%;
       gap: 4rem;
       align-items: center;
       min-height: 520px;
@@ -132,53 +132,49 @@
       max-width: 520px;
     }
 
-    .kip-orbital {
-      position: relative;
-      width: 340px;
-      height: 340px;
-      margin: 0 auto;
-    }
-
-    .kip-orbital .orbit {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      border: 1px solid var(--gold-15);
-      border-radius: 50%;
-      transform: translate(-50%, -50%);
-    }
-
-    .kip-orbital .orbit-1 { width: 340px; height: 340px; }
-    .kip-orbital .orbit-2 { width: 250px; height: 250px; }
-    .kip-orbital .orbit-3 { width: 170px; height: 170px; }
-    .kip-orbital .orbit-4 { width: 100px; height: 100px; }
-
-    .kip-orbital .center-k {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 82px;
-      height: 82px;
-      background: #111111;
-      border: 2px solid var(--gold);
-      border-radius: 50%;
+    .kip-hero-visual {
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 2.6rem;
-      font-weight: 700;
-      color: var(--gold);
-      box-shadow: 0 0 40px rgba(197, 160, 89, 0.45);
+      padding: 0 0.5rem;
     }
 
-    .kip-orbital .dot {
-      position: absolute;
-      width: 5px;
-      height: 5px;
-      background: var(--gold);
-      border-radius: 50%;
-      box-shadow: 0 0 10px var(--gold);
+    .kip-hero-visual img {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      object-fit: contain;
+      opacity: 0.95;
+      display: block;
+    }
+
+    @media (max-width: 1024px) {
+      .kip-hero-informative {
+        grid-template-columns: 52% 48%;
+        gap: 2.5rem;
+      }
+
+      .kip-hero-visual img {
+        max-width: 92%;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .kip-hero-informative {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+        min-height: auto;
+      }
+
+      .kip-hero-visual {
+        order: 2;
+        padding: 0 1rem;
+      }
+
+      .kip-hero-visual img {
+        max-width: 85%;
+        margin: 0 auto;
+      }
     }
 
     .kip-metrics-grid {
@@ -856,17 +852,13 @@
         </p>
       </div>
 
-      <div class="kip-orbital">
-        <div class="orbit orbit-1"></div>
-        <div class="orbit orbit-2"></div>
-        <div class="orbit orbit-3"></div>
-        <div class="orbit orbit-4"></div>
-        <div class="center-k">K</div>
-        <div class="dot" style="top: 18%; left: 22%;"></div>
-        <div class="dot" style="top: 32%; left: 75%;"></div>
-        <div class="dot" style="top: 62%; left: 18%;"></div>
-        <div class="dot" style="top: 78%; left: 65%;"></div>
-        <div class="dot" style="top: 45%; left: 82%;"></div>
+      <div class="kip-hero-visual">
+        <img
+          src="assets/images/kleos_constelacion.png"
+          alt="Constelación KLEOS — mapa de inteligencia diagnóstica"
+          width="1716"
+          height="917"
+        >
       </div>
     </div>
 
