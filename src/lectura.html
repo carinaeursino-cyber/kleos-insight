@@ -4,7 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lectura Completa | KIP-001 — KLEOS INSIGHT™</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
     .reading-container {
       max-width: 1200px;
@@ -12,14 +16,83 @@
       padding: 2rem 1.5rem 6rem;
     }
 
-    .kip-topbar {
+    /* ===================== HEADER PREMIUM ===================== */
+    .kip-header-premium {
+      background: #050505;
+      border: 1px solid rgba(197, 160, 89, 0.15);
+      border-radius: 16px;
+      padding: 1.35rem 2rem;
+      margin-top: 0.5rem;
+      margin-bottom: 3rem;
       display: flex;
-      justify-content: space-between;
       align-items: center;
-      padding: 1rem 0 2.5rem;
-      border-bottom: 1px solid var(--gold-15);
+      justify-content: space-between;
+      gap: 1.5rem;
+      box-shadow:
+        0 0 0 1px rgba(197, 160, 89, 0.08),
+        0 12px 40px rgba(0, 0, 0, 0.45);
     }
 
+    .kip-header-logo {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.85rem;
+      font-weight: 500;
+      color: #C5A059;
+      letter-spacing: 0.08em;
+      text-shadow: 0 0 12px rgba(197, 160, 89, 0.12);
+      flex-shrink: 0;
+    }
+
+    .kip-header-protocol {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.25em;
+      color: rgba(245, 245, 245, 0.55);
+      text-transform: uppercase;
+      text-align: center;
+      flex: 1;
+    }
+
+    .kip-header-button {
+      background: rgba(197, 160, 89, 0.08);
+      border: 1px solid rgba(197, 160, 89, 0.20);
+      color: #C5A059;
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      padding: 0.7rem 1.4rem;
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background 0.3s ease, border-color 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.55rem;
+      flex-shrink: 0;
+    }
+
+    .kip-header-button:hover {
+      background: rgba(197, 160, 89, 0.15);
+      border-color: rgba(197, 160, 89, 0.30);
+    }
+
+    .kip-header-button-icon {
+      flex-shrink: 0;
+      opacity: 0.85;
+    }
+
+    @media (max-width: 768px) {
+      .kip-header-premium {
+        flex-wrap: wrap;
+        padding: 1.1rem 1.25rem;
+      }
+
+      .kip-header-protocol {
+        order: 3;
+        width: 100%;
+        font-size: 0.62rem;
+      }
+    }
     .kip-hero-informative {
       background: #0B0B0B;
       border: 1px solid var(--gold-15);
@@ -758,15 +831,18 @@
 
   <div class="reading-container">
 
-    <!-- TOP BAR -->
-    <div class="kip-topbar">
-      <div><strong>KLEOS</strong></div>
-      <div>KIP-001 · KLEOS INSIGHT PROTOCOL</div>
-      <div>
-        <button style="background:transparent; border:1px solid var(--gold-15); color:var(--gold); padding:0.5rem 1.2rem; border-radius:999px; font-size:0.75rem;">
-          DESCARGAR PDF
-        </button>
-      </div>
+    <!-- HEADER PREMIUM -->
+    <div class="kip-header-premium">
+      <div class="kip-header-logo">KLEOS</div>
+      <div class="kip-header-protocol">KIP-001 · KLEOS INSIGHT PROTOCOL</div>
+      <button type="button" class="kip-header-button" onclick="generarPDF()">
+        <svg class="kip-header-button-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M12 3v12"/>
+          <path d="M7 10l5 5 5-5"/>
+          <path d="M5 21h14"/>
+        </svg>
+        <span>DESCARGAR PDF</span>
+      </button>
     </div>
 
     <!-- HERO -->
@@ -1137,6 +1213,382 @@
     window.onload = function() {
       drawRadar();
     };
+    function generarPDF() {
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
+
+      const pageW = doc.internal.pageSize.getWidth();
+      const pageH = doc.internal.pageSize.getHeight();
+      const margin = 20;
+      const contentW = pageW - margin * 2;
+      const footerY = pageH - 14;
+      const headerY = 16;
+      const contentStartY = 30;
+
+      const gold = [197, 160, 89];
+      const dark = [28, 28, 28];
+      const gray = [110, 110, 110];
+      const lightGray = [160, 160, 160];
+
+      const empresa = new URLSearchParams(window.location.search).get('empresa') || 'Su Empresa';
+      const fecha = new Date().toLocaleDateString('es-ES', { day: 'numeric', month: 'long', year: 'numeric' });
+
+      let pageNum = 1;
+
+      function paintPageWhite() {
+        doc.setFillColor(255, 255, 255);
+        doc.rect(0, 0, pageW, pageH, 'F');
+      }
+
+      function addPageHeader() {
+        doc.setFont('times', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(...gold);
+        doc.text('KLEOS', margin, headerY);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(...lightGray);
+        doc.text('KIP-001 · INFORME EJECUTIVO', pageW - margin, headerY, { align: 'right' });
+        doc.setDrawColor(...gold);
+        doc.setLineWidth(0.15);
+        doc.line(margin, headerY + 3, pageW - margin, headerY + 3);
+      }
+
+      function addPageFooter() {
+        doc.setDrawColor(220, 220, 220);
+        doc.setLineWidth(0.2);
+        doc.line(margin, footerY - 4, pageW - margin, footerY - 4);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(...lightGray);
+        doc.text('KLEOS INSIGHT PROTOCOL', margin, footerY);
+        doc.text(String(pageNum), pageW / 2, footerY, { align: 'center' });
+        doc.text(fecha, pageW - margin, footerY, { align: 'right' });
+      }
+
+      function startContentPage() {
+        addPageFooter();
+        doc.addPage();
+        pageNum++;
+        paintPageWhite();
+        addPageHeader();
+        return contentStartY;
+      }
+
+      function ensureSpace(y, needed) {
+        if (y + needed > footerY - 6) {
+          return startContentPage();
+        }
+        return y;
+      }
+
+      function writeLines(y, lines, fontSize, style, color) {
+        doc.setFont('helvetica', style || 'normal');
+        doc.setFontSize(fontSize);
+        doc.setTextColor(...(color || dark));
+        lines.forEach(function(line) {
+          y = ensureSpace(y, fontSize * 0.55);
+          doc.text(line, margin, y);
+          y += fontSize * 0.48;
+        });
+        return y;
+      }
+
+      function writeParagraph(y, text, fontSize) {
+        const lines = doc.splitTextToSize(text, contentW);
+        return writeLines(y, lines, fontSize || 10, 'normal', dark) + 3;
+      }
+
+      function writeSectionTitle(y, num, title) {
+        y = ensureSpace(y, 22);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(7);
+        doc.setTextColor(...gold);
+        doc.text('SECCIÓN ' + String(num).padStart(2, '0'), margin, y);
+        doc.setFont('times', 'bold');
+        doc.setFontSize(15);
+        doc.setTextColor(...dark);
+        doc.text(title, margin, y + 7);
+        doc.setDrawColor(...gold);
+        doc.setLineWidth(0.35);
+        doc.line(margin, y + 10, margin + 48, y + 10);
+        return y + 18;
+      }
+
+      function writeSubheading(y, text) {
+        y = ensureSpace(y, 12);
+        doc.setFont('times', 'bold');
+        doc.setFontSize(11);
+        doc.setTextColor(...dark);
+        doc.text(text, margin, y);
+        return y + 8;
+      }
+
+      function writeBulletList(y, items) {
+        items.forEach(function(item) {
+          y = ensureSpace(y, 8);
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(10);
+          doc.setTextColor(...dark);
+          const lines = doc.splitTextToSize('• ' + item, contentW - 4);
+          lines.forEach(function(line, i) {
+            y = ensureSpace(y, 6);
+            doc.text(line, margin + (i === 0 ? 0 : 4), y);
+            y += 5;
+          });
+          y += 1;
+        });
+        return y + 3;
+      }
+
+      function writeMetricRow(y, label, value, note) {
+        y = ensureSpace(y, 14);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(8);
+        doc.setTextColor(...gray);
+        doc.text(label.toUpperCase(), margin, y);
+        doc.setFont('times', 'bold');
+        doc.setFontSize(16);
+        doc.setTextColor(...gold);
+        doc.text(value, margin, y + 7);
+        if (note) {
+          doc.setFont('helvetica', 'normal');
+          doc.setFontSize(9);
+          doc.setTextColor(...gray);
+          doc.text(note, margin, y + 13);
+          return y + 18;
+        }
+        return y + 12;
+      }
+
+      // ==================== 1. PORTADA ====================
+      paintPageWhite();
+
+      let y = 55;
+      doc.setFont('times', 'bold');
+      doc.setFontSize(40);
+      doc.setTextColor(...gold);
+      doc.text('KLEOS', pageW / 2, y, { align: 'center' });
+
+      y += 14;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(8);
+      doc.setTextColor(...lightGray);
+      doc.text('INTELIGENCIA DIAGNÓSTICA EMPRESARIAL', pageW / 2, y, { align: 'center' });
+
+      y += 28;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(11);
+      doc.setTextColor(...gold);
+      doc.text('KIP-001', pageW / 2, y, { align: 'center' });
+
+      y += 8;
+      doc.setFontSize(9);
+      doc.setTextColor(...gray);
+      doc.text('KLEOS INSIGHT PROTOCOL', pageW / 2, y, { align: 'center' });
+      y += 6;
+      doc.text('Diagnóstico de Percepción', pageW / 2, y, { align: 'center' });
+
+      y += 38;
+      doc.setFont('times', 'bold');
+      doc.setFontSize(20);
+      doc.setTextColor(...dark);
+      doc.text(empresa, pageW / 2, y, { align: 'center' });
+
+      y += 12;
+      doc.setFont('helvetica', 'normal');
+      doc.setFontSize(9);
+      doc.setTextColor(...gray);
+      doc.text(fecha, pageW / 2, y, { align: 'center' });
+
+      y += 28;
+      doc.setDrawColor(...gold);
+      doc.setLineWidth(0.4);
+      doc.line(pageW / 2 - 35, y, pageW / 2 + 35, y);
+
+      y += 18;
+      doc.setFont('helvetica', 'italic');
+      doc.setFontSize(9);
+      doc.setTextColor(...gray);
+      doc.text('Informe Ejecutivo Confidencial', pageW / 2, y, { align: 'center' });
+
+      addPageFooter();
+
+      // ==================== 2. RESUMEN EJECUTIVO ====================
+      y = startContentPage();
+      y = writeSectionTitle(y, 2, 'Resumen Ejecutivo');
+
+      y = writeMetricRow(y, 'Índice KLEOS', '63 / 100', 'Nivel de percepción: MEDIO — Superas al 68% de los negocios');
+      y = writeMetricRow(y, 'Performance', '72%', 'Tu rendimiento percibido');
+      y = writeMetricRow(y, 'Brecha de Percepción', '37%', 'Diferencia entre valor real y percibido');
+      y = writeMetricRow(y, 'Dimensión más baja', '8 / 20 — Diferenciación', 'Principal punto que limita tu crecimiento');
+      y = writeMetricRow(y, 'Potencial sin liberar', '42%', 'Tu potencial actual no está siendo capturado');
+
+      y += 4;
+      y = writeParagraph(y,
+        'El Índice KLEOS de 63/100 sitúa al negocio en un nivel de percepción medio, con una brecha relevante entre el valor entregado y la percepción del mercado. La dimensión más crítica es Diferenciación (8/20), generando competencia principalmente por precio y pérdida de oportunidades de posicionamiento.'
+      );
+
+      // ==================== 3. ESPEJO DE PERCEPCIÓN ====================
+      y = startContentPage();
+      y = writeSectionTitle(y, 3, 'Espejo de Percepción');
+
+      y = writeSubheading(y, 'Lo que tú crees');
+      y = writeBulletList(y, [
+        'Innovador',
+        'Profesional',
+        'Confiable',
+        'Comprometido',
+        'Orientado a resultados'
+      ]);
+
+      y = writeSubheading(y, 'Lo que el mercado ve');
+      y = writeBulletList(y, [
+        'Similar a otras opciones',
+        'Poco diferenciado',
+        'Difícil de comprender',
+        'Falta de pruebas visibles',
+        'Comunicación poco clara'
+      ]);
+
+      y = writeSubheading(y, 'Brecha Detectada');
+      y = writeParagraph(y,
+        'Detectamos una diferencia significativa entre la percepción interna de valor y la percepción externa del mercado.'
+      );
+
+      // ==================== 4. PRINCIPAL FUGA DE CRECIMIENTO ====================
+      y = startContentPage();
+      y = writeSectionTitle(y, 4, 'Principal Fuga de Crecimiento');
+
+      y = writeMetricRow(y, 'Dimensión crítica', 'DIFERENCIACIÓN — 8/20', 'Principal punto de fuga detectado');
+
+      y = writeSubheading(y, '¿Por qué esto importa?');
+      y = writeParagraph(y,
+        'Cuando tu negocio no tiene una diferenciación clara, el mercado te percibe como una opción más entre muchas. Esto hace que las decisiones de compra se tomen principalmente por precio y limita tu capacidad de crecer sin depender de descuentos o mayor esfuerzo comercial.'
+      );
+
+      // ==================== 5. RADAR COMPLETO ====================
+      y = startContentPage();
+      y = writeSectionTitle(y, 5, 'Radar Completo — Perfil Estratégico KLEOS');
+
+      y = writeParagraph(y,
+        'Visualización del estado actual del negocio en las cinco dimensiones clave del framework KLEOS.'
+      );
+
+      const radarCanvas = document.getElementById('radar-chart');
+      if (radarCanvas) {
+        y = ensureSpace(y, 78);
+        try {
+          const radarImg = radarCanvas.toDataURL('image/png');
+          doc.addImage(radarImg, 'PNG', pageW / 2 - 38, y, 76, 76);
+          y += 82;
+        } catch (e) {
+          y += 4;
+        }
+      }
+
+      const dimensions = [
+        { name: 'Claridad', score: '15/20', level: 'Estable' },
+        { name: 'Valor Percibido', score: '14/20', level: 'Estable' },
+        { name: 'Confianza', score: '13/20', level: 'Estable' },
+        { name: 'Diferenciación', score: '8/20', level: 'Riesgo — Principal limitación' },
+        { name: 'Recorrido de Compra', score: '13/20', level: 'Estable' }
+      ];
+
+      dimensions.forEach(function(dim) {
+        y = ensureSpace(y, 10);
+        doc.setFont('times', 'bold');
+        doc.setFontSize(10);
+        doc.setTextColor(...dark);
+        doc.text(dim.name, margin, y);
+        doc.setFont('helvetica', 'normal');
+        doc.setFontSize(10);
+        doc.setTextColor(...gold);
+        doc.text(dim.score, pageW - margin, y, { align: 'right' });
+        y += 5;
+        doc.setFontSize(8);
+        doc.setTextColor(...gray);
+        doc.text(dim.level, margin, y);
+        y += 8;
+      });
+
+      // ==================== 6. VERDAD INCÓMODA ====================
+      y = startContentPage();
+      y = writeSectionTitle(y, 6, 'Verdad Incómoda');
+
+      y = writeParagraph(y,
+        'Estás compitiendo por precio porque tu propuesta de valor no está siendo percibida correctamente.'
+      );
+      y = writeParagraph(y,
+        'El mercado no compra lo que haces. Compra lo que entiende, valora y considera la mejor opción. Y hoy, tu negocio no está logrando comunicárselo.'
+      );
+      y = writeParagraph(y,
+        'No se trata de trabajar más duro. Se trata de construir una percepción que te posicione por encima del resto.'
+      );
+
+      // ==================== 7. COSTO DE NO RESOLVERLO ====================
+      y = startContentPage();
+      y = writeSectionTitle(y, 7, 'Costo de No Resolverlo');
+
+      y = writeSubheading(y, 'El costo de mantener esta situación');
+      y = writeParagraph(y,
+        'Si esta dimensión continúa siendo tu principal limitación, estos son algunos efectos probables sobre tu crecimiento:'
+      );
+      y = writeBulletList(y, [
+        'Competirás cada vez más por precio.',
+        'Los clientes seguirán comparándote con alternativas similares.',
+        'Tu propuesta perderá fuerza frente a competidores mejor posicionados.',
+        'El crecimiento dependerá de más esfuerzo comercial para lograr los mismos resultados.'
+      ]);
+
+      // ==================== 8. OPORTUNIDAD SI LO CORRIGES ====================
+      y = startContentPage();
+      y = writeSectionTitle(y, 8, 'Oportunidad si lo Corriges');
+
+      y = writeSubheading(y, 'La oportunidad si lo corriges');
+      y = writeParagraph(y,
+        'Cuando esta dimensión mejora, el impacto suele extenderse a todo el negocio:'
+      );
+      y = writeBulletList(y, [
+        'Aumentarás el valor percibido de tu oferta.',
+        'Reducirás la comparación directa con competidores.',
+        'Facilitarás la decisión de compra.',
+        'Mejorarás la conversión sin depender únicamente de más tráfico.'
+      ]);
+
+      y = writeParagraph(y,
+        'Si se resuelve la debilidad en Diferenciación, se estima una mejora potencial de hasta un 28% en preferencia de marca y reducción de competencia por precio.'
+      );
+
+      // ==================== 9. PRIORIDAD NÚMERO 1 ====================
+      y = startContentPage();
+      y = writeSectionTitle(y, 9, 'Prioridad Número 1');
+
+      y = writeSubheading(y, 'Qué deberías hacer primero');
+      y = writeParagraph(y, 'Reformular tu diferenciación.');
+      y = writeParagraph(y,
+        'Antes de invertir más en publicidad o contenido, asegúrate de que el mercado entienda por qué eres diferente y por qué elegirte a ti es la mejor decisión.'
+      );
+
+      // ==================== 10. CONCLUSIÓN ====================
+      y = startContentPage();
+      y = writeSectionTitle(y, 10, 'Conclusión');
+
+      y = writeParagraph(y,
+        'El diagnóstico KIP-001 ha identificado que el negocio presenta una brecha importante en la dimensión de Diferenciación. Esta debilidad está generando que el mercado no perciba claramente el valor diferencial, lo que deriva en decisiones de compra basadas principalmente en precio.'
+      );
+      y = writeParagraph(y,
+        'La recomendación estratégica es priorizar la reformulación de la diferenciación antes de invertir en otras áreas de crecimiento.'
+      );
+      y = writeParagraph(y,
+        'Este informe representa el primer paso de una arquitectura diagnóstica más amplia. KIP-001 es la puerta de entrada al Ecosistema KLEOS.'
+      );
+
+      addPageFooter();
+      doc.save('KIP-001_Informe_Ejecutivo.pdf');
+    }
+
+    window.generarPDF = generarPDF;
   </script>
 
 </body>
