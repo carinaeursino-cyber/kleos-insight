@@ -1,0 +1,1143 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lectura Completa | KIP-001 — KLEOS INSIGHT™</title>
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <style>
+    .reading-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 6rem;
+    }
+
+    .kip-topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 0 2.5rem;
+      border-bottom: 1px solid var(--gold-15);
+    }
+
+    .kip-hero-informative {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 24px;
+      padding: 4rem 4rem;
+      margin-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 4rem;
+      align-items: center;
+      min-height: 520px;
+    }
+
+    .kip-hero-text .pretitle {
+      font-size: 0.75rem;
+      letter-spacing: 0.4em;
+      color: var(--gold);
+      margin-bottom: 1rem;
+      font-weight: 600;
+    }
+
+    .kip-hero-text h1 {
+      font-size: 2.85rem;
+      line-height: 1.1;
+      margin-bottom: 1.2rem;
+      font-weight: 600;
+    }
+
+    .kip-hero-text .kleos {
+      color: var(--gold);
+    }
+
+    .kip-hero-text .subtitle {
+      font-size: 1.02rem;
+      color: var(--text-60);
+      line-height: 1.65;
+      max-width: 520px;
+    }
+
+    .kip-orbital {
+      position: relative;
+      width: 340px;
+      height: 340px;
+      margin: 0 auto;
+    }
+
+    .kip-orbital .orbit {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      border: 1px solid var(--gold-15);
+      border-radius: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    .kip-orbital .orbit-1 { width: 340px; height: 340px; }
+    .kip-orbital .orbit-2 { width: 250px; height: 250px; }
+    .kip-orbital .orbit-3 { width: 170px; height: 170px; }
+    .kip-orbital .orbit-4 { width: 100px; height: 100px; }
+
+    .kip-orbital .center-k {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 82px;
+      height: 82px;
+      background: #111111;
+      border: 2px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--gold);
+      box-shadow: 0 0 40px rgba(197, 160, 89, 0.45);
+    }
+
+    .kip-orbital .dot {
+      position: absolute;
+      width: 5px;
+      height: 5px;
+      background: var(--gold);
+      border-radius: 50%;
+      box-shadow: 0 0 10px var(--gold);
+    }
+
+    .kip-metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 1.2rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .kip-metric-card {
+      background: #111111;
+      border: 1px solid var(--gold-15);
+      border-radius: 14px;
+      padding: 1.5rem 1.3rem;
+      text-align: center;
+    }
+
+    .kip-metric-card.alert {
+      border-color: #f87171;
+    }
+
+    .kip-metric-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      color: var(--text-60);
+      margin-bottom: 0.5rem;
+      text-transform: uppercase;
+    }
+
+    .kip-metric-value {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+    }
+
+    /* ===================== SECCIÓN COMBINADA (ESPEJO + FUGA) ===================== */
+    .kip-diagnosis-section {
+      display: grid;
+      grid-template-columns: 65% 35%;
+      gap: 24px;
+      margin-bottom: 3.5rem;
+    }
+
+    @media (max-width: 900px) {
+      .kip-diagnosis-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .kip-espejo {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 2.8rem 3rem;
+    }
+
+    .kip-espejo-grid {
+      display: grid;
+      grid-template-columns: 1fr 80px 1fr;
+      gap: 2rem;
+      align-items: start;
+    }
+
+    .kip-espejo-col {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .kip-espejo-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.8rem;
+      color: var(--gold);
+    }
+
+    .kip-attribute {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.92rem;
+      padding: 0.5rem 0;
+    }
+
+    .kip-vs {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      font-size: 1.1rem;
+      color: var(--gold);
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .kip-brecha {
+      margin-top: 2rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--gold-15);
+    }
+
+    .kip-brecha-title {
+      font-size: 0.85rem;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+      font-weight: 600;
+    }
+
+    .kip-brecha-text {
+      font-size: 0.95rem;
+      color: var(--text-60);
+      line-height: 1.6;
+    }
+
+    .kip-fuga {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 2.8rem 3rem;
+      height: 100%;
+    }
+
+    .kip-fuga-header {
+      margin-bottom: 2rem;
+    }
+
+    .kip-fuga-title {
+      font-size: 1.35rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .kip-fuga-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-60);
+    }
+
+    .kip-fuga-card {
+      background: #111111;
+      border: 1px solid #f87171;
+      border-radius: 16px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+    }
+
+    .kip-fuga-dimension {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: #f87171;
+      margin-bottom: 0.3rem;
+    }
+
+    .kip-fuga-score {
+      font-size: 2.4rem;
+      font-weight: 700;
+      color: #f87171;
+    }
+
+    /* ===================== PERFIL ESTRATÉGICO KLEOS ===================== */
+    .kip-perfil {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 2.8rem 3rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .kip-perfil-content {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 2.5rem;
+      align-items: start;
+    }
+
+    .kip-dim-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .kip-dim-row {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      font-size: 0.9rem;
+    }
+
+    .kip-dim-row.weak {
+      background: #1a1111;
+      border: 1px solid #f87171;
+      border-radius: 10px;
+      padding: 0.6rem 0.8rem;
+    }
+
+    .kip-dim-name {
+      width: 130px;
+      font-weight: 500;
+    }
+
+    .kip-dim-bar {
+      flex: 1;
+      height: 6px;
+      background: var(--gold-15);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .kip-dim-fill {
+      height: 100%;
+      background: var(--gold);
+    }
+
+    .kip-dim-score {
+      width: 55px;
+      text-align: right;
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    .kip-radar-wrapper {
+      display: flex;
+      justify-content: center;
+    }
+
+    .kip-interpret-panel {
+      background: #111111;
+      border: 1px solid var(--gold-15);
+      border-radius: 14px;
+      padding: 1.8rem;
+      height: 100%;
+    }
+
+    .kip-interpret-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 1.3rem;
+    }
+
+    .kip-interpret-item {
+      margin-bottom: 1.1rem;
+      font-size: 0.9rem;
+    }
+
+    .kip-interpret-range {
+      font-weight: 600;
+      color: var(--gold);
+    }
+
+    /* ===================== VERDAD INCÓMODA ===================== */
+    .kip-verdad {
+      background: #070707;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 0;
+      margin-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: 42% 58%;
+      gap: 0;
+      align-items: stretch;
+      overflow: hidden;
+    }
+
+    .kip-verdad-text {
+      padding: 3.5rem 3.8rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.1rem;
+    }
+
+    .kip-verdad-pretitle {
+      font-size: 0.72rem;
+      letter-spacing: 0.4em;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .kip-verdad-title {
+      font-size: 1.85rem;
+      font-weight: 600;
+      line-height: 1.2;
+      color: var(--gold);
+    }
+
+    .kip-verdad-body {
+      font-size: 0.98rem;
+      line-height: 1.7;
+      color: var(--text-60);
+    }
+
+    .kip-verdad-divider {
+      height: 1px;
+      background: linear-gradient(to right, var(--gold), transparent);
+      margin: 0.6rem 0;
+    }
+
+    .kip-verdad-footer-card {
+      background: #111111;
+      border: 1px solid var(--gold-15);
+      border-radius: 12px;
+      padding: 1rem 1.4rem;
+      font-size: 0.9rem;
+      color: var(--text-60);
+      margin-top: 0.5rem;
+    }
+
+    .kip-verdad-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 0 20px 20px 0;
+      border: none;
+      box-shadow: none;
+      display: block;
+    }
+
+    /* ===================== EL COSTO DE NO RESOLVERLO ===================== */
+    .kip-costo {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 3rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .kip-costo-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .kip-costo-title {
+      font-size: 1.45rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+    }
+
+    .kip-costo-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-60);
+    }
+
+    .kip-costo-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+
+    .kip-costo-card {
+      background: #111111;
+      border: 1px solid var(--gold-15);
+      border-radius: 16px;
+      padding: 2rem;
+    }
+
+    .kip-costo-card.loss {
+      border-color: #f87171;
+    }
+
+    .kip-costo-card.opportunity {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(197, 160, 89, 0.1);
+    }
+
+    .kip-costo-card-title {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 0.8rem;
+    }
+
+    .kip-costo-intro {
+      font-size: 0.92rem;
+      color: var(--text-60);
+      margin-bottom: 1.2rem;
+      line-height: 1.5;
+    }
+
+    .kip-costo-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    .kip-costo-list li {
+      font-size: 0.92rem;
+      color: var(--text-60);
+      margin-bottom: 0.6rem;
+      line-height: 1.5;
+    }
+
+    .kip-costo-list.loss li::before {
+      content: "✧ ";
+      color: #f87171;
+    }
+
+    .kip-costo-list.opportunity li::before {
+      content: "✧ ";
+      color: var(--gold);
+    }
+
+    /* ===================== PRIORIDAD NÚMERO 1 ===================== */
+    .kip-prioridad {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 2.8rem 3.5rem;
+      margin-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: 140px 1fr 160px;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .kip-prioridad-circle {
+      width: 120px;
+      height: 120px;
+      border: 3px solid var(--gold);
+      border-radius: 50%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: var(--gold);
+      font-weight: 700;
+      box-shadow: 0 0 30px rgba(197, 160, 89, 0.3);
+    }
+
+    .kip-prioridad-circle .label {
+      font-size: 0.85rem;
+      letter-spacing: 0.3em;
+    }
+
+    .kip-prioridad-circle .number {
+      font-size: 2.6rem;
+      line-height: 1;
+      margin-top: 0.2rem;
+    }
+
+    .kip-prioridad-content {
+      display: flex;
+      flex-direction: column;
+      gap: 0.6rem;
+    }
+
+    .kip-prioridad-pretitle {
+      font-size: 0.75rem;
+      letter-spacing: 0.35em;
+      color: var(--gold);
+      font-weight: 600;
+    }
+
+    .kip-prioridad-title {
+      font-size: 1.45rem;
+      font-weight: 600;
+      line-height: 1.25;
+    }
+
+    .kip-prioridad-text {
+      font-size: 0.95rem;
+      color: var(--text-60);
+      line-height: 1.6;
+    }
+
+    .kip-prioridad-icon {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 3.8rem;
+      color: var(--gold);
+      opacity: 0.9;
+    }
+
+    /* ===================== DESBLOQUEAR HOJA DE RUTA COMPLETA ===================== */
+    .kip-hoja-ruta {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 3rem 3.5rem;
+      margin-bottom: 3.5rem;
+      display: grid;
+      grid-template-columns: 1.1fr 1fr 1fr;
+      gap: 2.5rem;
+      align-items: center;
+    }
+
+    .kip-hoja-ruta-text h2 {
+      font-size: 1.55rem;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 1rem;
+    }
+
+    .kip-hoja-ruta-text p {
+      font-size: 0.95rem;
+      color: var(--text-60);
+      line-height: 1.6;
+    }
+
+    .kip-hoja-ruta-benefits {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .kip-hoja-ruta-benefits li {
+      font-size: 0.92rem;
+      color: var(--text-60);
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+    }
+
+    .kip-hoja-ruta-benefits li::before {
+      content: "✓";
+      color: var(--gold);
+      font-weight: 700;
+    }
+
+    .kip-hoja-ruta-cta {
+      background: #111111;
+      border: 1px solid var(--gold-15);
+      border-radius: 16px;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    .kip-hoja-ruta-cta .icon {
+      font-size: 2.2rem;
+      margin-bottom: 0.8rem;
+      color: var(--gold);
+    }
+
+    .kip-hoja-ruta-cta h3 {
+      font-size: 1.15rem;
+      font-weight: 600;
+      margin-bottom: 1.4rem;
+      line-height: 1.3;
+    }
+
+    .kip-hoja-ruta-cta button {
+      background: var(--gold);
+      color: #0B0B0B;
+      border: none;
+      padding: 0.9rem 2.2rem;
+      border-radius: 999px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+
+    .kip-hoja-ruta-cta button:hover {
+      background: #E5C383;
+      transform: translateY(-2px);
+    }
+
+    /* ===================== ESTO ES SOLO EL COMIENZO ===================== */
+    .kip-ecosistema {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 3rem 3.5rem;
+      margin-bottom: 3.5rem;
+    }
+
+    .kip-ecosistema-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .kip-ecosistema-title {
+      font-size: 1.45rem;
+      font-weight: 600;
+      margin-bottom: 0.6rem;
+    }
+
+    .kip-ecosistema-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-60);
+      line-height: 1.6;
+    }
+
+    .kip-protocol-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 1.2rem;
+    }
+
+    .kip-protocol-card {
+      background: #111111;
+      border: 1px solid var(--gold-15);
+      border-radius: 14px;
+      padding: 1.4rem 1rem;
+      text-align: center;
+    }
+
+    .kip-protocol-card.active {
+      border-color: var(--gold);
+      box-shadow: 0 0 20px rgba(197, 160, 89, 0.15);
+    }
+
+    .kip-protocol-card.locked {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+
+    .kip-protocol-card .badge {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      margin-bottom: 0.6rem;
+      display: block;
+    }
+
+    .kip-protocol-card .name {
+      font-size: 1.05rem;
+      font-weight: 600;
+      margin-bottom: 0.3rem;
+    }
+
+    .kip-protocol-card .status {
+      font-size: 0.75rem;
+      color: var(--text-60);
+    }
+
+    .kip-protocol-card.active .badge {
+      color: var(--gold);
+    }
+
+    .kip-ecosistema-footer {
+      text-align: center;
+      margin-top: 3rem;
+    }
+
+    .kip-ecosistema-footer .brand {
+      font-size: 1.35rem;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 0.3rem;
+    }
+
+    .kip-ecosistema-footer .tagline {
+      font-size: 0.85rem;
+      color: var(--text-60);
+      letter-spacing: 0.2em;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="reading-container">
+
+    <!-- TOP BAR -->
+    <div class="kip-topbar">
+      <div><strong>KLEOS</strong></div>
+      <div>KIP-001 · KLEOS INSIGHT PROTOCOL</div>
+      <div>
+        <button style="background:transparent; border:1px solid var(--gold-15); color:var(--gold); padding:0.5rem 1.2rem; border-radius:999px; font-size:0.75rem;">
+          DESCARGAR PDF
+        </button>
+      </div>
+    </div>
+
+    <!-- HERO -->
+    <div class="kip-hero-informative">
+      <div class="kip-hero-text">
+        <div class="pretitle">DIAGNÓSTICO COMPLETADO ✦</div>
+        <h1>Tu Diagnóstico <span class="kleos">KLEOS</span> está listo.</h1>
+        <p class="subtitle">
+          Hemos analizado 12 variables clave de percepción, posicionamiento y comunicación.<br>
+          Este es el mapa completo de tu negocio hoy.
+        </p>
+      </div>
+
+      <div class="kip-orbital">
+        <div class="orbit orbit-1"></div>
+        <div class="orbit orbit-2"></div>
+        <div class="orbit orbit-3"></div>
+        <div class="orbit orbit-4"></div>
+        <div class="center-k">K</div>
+        <div class="dot" style="top: 18%; left: 22%;"></div>
+        <div class="dot" style="top: 32%; left: 75%;"></div>
+        <div class="dot" style="top: 62%; left: 18%;"></div>
+        <div class="dot" style="top: 78%; left: 65%;"></div>
+        <div class="dot" style="top: 45%; left: 82%;"></div>
+      </div>
+    </div>
+
+    <!-- TARJETAS KPI -->
+    <div class="kip-metrics-grid">
+      <div class="kip-metric-card">
+        <div class="kip-metric-label">ÍNDICE KLEOS</div>
+        <div class="kip-metric-value">63</div>
+        <div style="font-size:0.75rem; color:var(--text-60);">/100</div>
+        <div style="margin-top:0.4rem; font-size:0.7rem;">Nivel de percepción: <strong>MEDIO</strong></div>
+        <div style="margin-top:0.3rem; font-size:0.7rem; color:var(--text-60);">Superas al 68% de los negocios</div>
+      </div>
+
+      <div class="kip-metric-card">
+        <div class="kip-metric-label">PERFORMANCE</div>
+        <div class="kip-metric-value">72%</div>
+        <div style="margin-top:0.4rem; font-size:0.7rem; color:var(--text-60);">Tu rendimiento percibido</div>
+      </div>
+
+      <div class="kip-metric-card">
+        <div class="kip-metric-label">BRECHA DE PERCEPCIÓN</div>
+        <div class="kip-metric-value">37%</div>
+        <div style="margin-top:0.4rem; font-size:0.7rem; color:var(--text-60);">Diferencia entre valor real y percibido</div>
+      </div>
+
+      <div class="kip-metric-card alert">
+        <div class="kip-metric-label">DIMENSIÓN MÁS BAJA</div>
+        <div class="kip-metric-value" style="color:#f87171;">8</div>
+        <div style="font-size:0.75rem; color:#f87171;">Diferenciación</div>
+        <div style="margin-top:0.3rem; font-size:0.7rem;">Principal punto que limita tu crecimiento</div>
+      </div>
+
+      <div class="kip-metric-card">
+        <div class="kip-metric-label">POTENCIAL SIN LIBERAR</div>
+        <div class="kip-metric-value">42%</div>
+        <div style="margin-top:0.4rem; font-size:0.7rem; color:var(--text-60);">Tu potencial actual no está siendo capturado</div>
+      </div>
+    </div>
+
+    <!-- ESPEJO + FUGA -->
+    <div class="kip-diagnosis-section">
+      <div class="kip-espejo">
+        <div class="kip-espejo-grid">
+          <div class="kip-espejo-col">
+            <div class="kip-espejo-title">Lo que tú crees</div>
+            <div class="kip-attribute"><span class="icon">✓</span> Innovador</div>
+            <div class="kip-attribute"><span class="icon">✓</span> Profesional</div>
+            <div class="kip-attribute"><span class="icon">✓</span> Confiable</div>
+            <div class="kip-attribute"><span class="icon">✓</span> Comprometido</div>
+            <div class="kip-attribute"><span class="icon">✓</span> Orientado a resultados</div>
+          </div>
+          <div class="kip-vs">VS</div>
+          <div class="kip-espejo-col">
+            <div class="kip-espejo-title">Lo que el mercado ve</div>
+            <div class="kip-attribute"><span class="icon">⚠</span> Similar a otras opciones</div>
+            <div class="kip-attribute"><span class="icon">⚠</span> Poco diferenciado</div>
+            <div class="kip-attribute"><span class="icon">⚠</span> Difícil de comprender</div>
+            <div class="kip-attribute"><span class="icon">⚠</span> Falta de pruebas visibles</div>
+            <div class="kip-attribute"><span class="icon">⚠</span> Comunicación poco clara</div>
+          </div>
+        </div>
+        <div class="kip-brecha">
+          <div class="kip-brecha-title">Brecha Detectada</div>
+          <div class="kip-brecha-text">
+            Detectamos una diferencia significativa entre la percepción interna de valor y la percepción externa del mercado.
+          </div>
+        </div>
+      </div>
+
+      <div class="kip-fuga">
+        <div class="kip-fuga-header">
+          <h2 class="kip-fuga-title">Tu Principal Fuga de Crecimiento</h2>
+          <p class="kip-fuga-subtitle">Detectamos el factor que más limita actualmente tu crecimiento.</p>
+        </div>
+        <div class="kip-fuga-card">
+          <div class="kip-fuga-dimension">DIFERENCIACIÓN</div>
+          <div class="kip-fuga-score">8/20</div>
+          <div style="margin-top:0.5rem; color:#f87171; font-size:0.9rem;">⚠ Principal punto de fuga</div>
+        </div>
+        <div class="kip-fuga-section">
+          <div class="kip-fuga-section-title">¿Por qué esto importa?</div>
+          <p style="color: var(--text-60); line-height: 1.6;">
+            Cuando tu negocio no tiene una diferenciación clara, el mercado te percibe como una opción más entre muchas.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== PERFIL ESTRATÉGICO KLEOS ===================== -->
+    <div class="kip-perfil">
+      <div class="kip-perfil-header">
+        <h2 class="kip-perfil-title">Perfil Estratégico KLEOS™</h2>
+        <p class="kip-perfil-subtitle">
+          Esta visualización representa el estado actual de tu negocio en las cinco dimensiones clave del framework KLEOS.
+        </p>
+      </div>
+
+      <div class="kip-perfil-content">
+        <div class="kip-dim-list">
+          <div class="kip-dim-row"><span>Claridad</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:75%"></div></div> <span class="kip-dim-score">15/20</span></div>
+          <div class="kip-dim-row"><span>Valor Percibido</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:70%"></div></div> <span class="kip-dim-score">14/20</span></div>
+          <div class="kip-dim-row"><span>Confianza</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:65%"></div></div> <span class="kip-dim-score">13/20</span></div>
+          <div class="kip-dim-row weak"><span>Diferenciación</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:40%"></div></div> <span class="kip-dim-score">8/20</span></div>
+          <div class="kip-dim-row"><span>Recorrido de Compra</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:65%"></div></div> <span class="kip-dim-score">13/20</span></div>
+        </div>
+
+        <div class="kip-radar-wrapper">
+          <canvas id="radar-chart" width="320" height="320"></canvas>
+        </div>
+
+        <div class="kip-interpret-panel">
+          <div class="kip-interpret-title">¿Qué significan tus puntuaciones?</div>
+          <div class="kip-interpret-item">
+            <span class="kip-interpret-range">16 – 20</span><br>
+            <span style="color:#4ade80; font-weight:600;">Fortaleza</span>
+          </div>
+          <div class="kip-interpret-item">
+            <span class="kip-interpret-range">11 – 15</span><br>
+            <span style="color:#60a5fa; font-weight:600;">Estable</span>
+          </div>
+          <div class="kip-interpret-item">
+            <span class="kip-interpret-range">0 – 10</span><br>
+            <span style="color:#f87171; font-weight:600;">Riesgo</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== VERDAD INCÓMODA ===================== -->
+    <div class="kip-verdad">
+      <div class="kip-verdad-text">
+        <div class="kip-verdad-pretitle">
+          <span class="icon">✦</span> LA VERDAD INCÓMODA
+        </div>
+        <h2 class="kip-verdad-title">
+          Estás compitiendo por precio<br>
+          porque tu propuesta de valor<br>
+          no está siendo percibida correctamente.
+        </h2>
+        <div class="kip-verdad-body">
+          El mercado no compra lo que haces.<br>
+          Compra lo que entiende, valora y considera la mejor opción.<br>
+          Y hoy, tu negocio no está logrando comunicárselo.
+        </div>
+        <div class="kip-verdad-divider"></div>
+        <div class="kip-verdad-footer-card">
+          <div>
+            <strong>No se trata de trabajar más duro.</strong><br>
+            Se trata de construir una percepción que te posicione por encima del resto.
+          </div>
+        </div>
+      </div>
+
+      <img src="assets/images/kleos.png" 
+           alt="Representación visual de sabiduría estratégica" 
+           class="kip-verdad-image">
+    </div>
+
+    <!-- ===================== EL COSTO DE NO RESOLVERLO ===================== -->
+    <div class="kip-costo">
+      <div class="kip-costo-header">
+        <h2 class="kip-costo-title">El Costo de No Resolverlo</h2>
+        <p class="kip-costo-subtitle">Toda decisión tiene un costo. Pero también lo tiene no tomar ninguna.</p>
+      </div>
+
+      <div class="kip-costo-grid">
+        <div class="kip-costo-card loss">
+          <h3 class="kip-costo-card-title">El costo de mantener esta situación</h3>
+          <p class="kip-costo-intro">Si esta dimensión continúa siendo tu principal limitación, estos son algunos efectos probables sobre tu crecimiento:</p>
+          <ul class="kip-costo-list loss">
+            <li>Competirás cada vez más por precio.</li>
+            <li>Los clientes seguirán comparándote con alternativas similares.</li>
+            <li>Tu propuesta perderá fuerza frente a competidores mejor posicionados.</li>
+            <li>El crecimiento dependerá de más esfuerzo comercial para lograr los mismos resultados.</li>
+          </ul>
+        </div>
+
+        <div class="kip-costo-card opportunity">
+          <h3 class="kip-costo-card-title">La oportunidad si lo corriges</h3>
+          <p class="kip-costo-intro">Cuando esta dimensión mejora, el impacto suele extenderse a todo el negocio:</p>
+          <ul class="kip-costo-list opportunity">
+            <li>Aumentarás el valor percibido de tu oferta.</li>
+            <li>Reducirás la comparación directa con competidores.</li>
+            <li>Facilitarás la decisión de compra.</li>
+            <li>Mejorarás la conversión sin depender únicamente de más tráfico.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===================== PRIORIDAD NÚMERO 1 ===================== -->
+    <div class="kip-prioridad">
+      <div class="kip-prioridad-circle">
+        <div class="label">PRIORIDAD</div>
+        <div class="number">#1</div>
+      </div>
+
+      <div class="kip-prioridad-content">
+        <div class="kip-prioridad-pretitle">QUÉ DEBERÍAS HACER PRIMERO</div>
+        <h3 class="kip-prioridad-title">Reformular tu diferenciación.</h3>
+        <p class="kip-prioridad-text">
+          Antes de invertir más en publicidad o contenido, asegúrate de que el mercado entienda por qué eres diferente y por qué elegirte a ti es la mejor decisión.
+        </p>
+      </div>
+
+      <div class="kip-prioridad-icon">
+        🏔️
+      </div>
+    </div>
+
+    <!-- ===================== DESBLOQUEAR HOJA DE RUTA COMPLETA ===================== -->
+    <div class="kip-hoja-ruta">
+      <div class="kip-hoja-ruta-text">
+        <h2>Ya identificamos el problema.<br>Ahora podemos mostrarte la ruta para solucionarlo.</h2>
+        <p>Desbloquea tu Hoja de Ruta Personalizada y accede al plan completo con acciones específicas para tu negocio.</p>
+      </div>
+
+      <div>
+        <ul class="kip-hoja-ruta-benefits">
+          <li>✓ Plan de acción personalizado</li>
+          <li>✓ Prioridades ordenadas por impacto</li>
+          <li>✓ Riesgos detectados y cómo evitarlos</li>
+          <li>✓ Acciones de alto impacto y rápidas de implementar</li>
+          <li>✓ Próximos pasos recomendados por IA</li>
+        </ul>
+      </div>
+
+      <div class="kip-hoja-ruta-cta">
+        <div class="icon">🔒</div>
+        <h3>DESBLOQUEAR<br>HOJA DE RUTA<br>COMPLETA</h3>
+        <button>OBTENER MI PLAN</button>
+      </div>
+    </div>
+
+    <!-- ===================== ESTO ES SOLO EL COMIENZO ===================== -->
+    <div class="kip-ecosistema">
+
+      <div class="kip-ecosistema-header">
+        <h2 class="kip-ecosistema-title">ESTO ES SOLO EL COMIENZO</h2>
+        <p class="kip-ecosistema-subtitle">
+          KIP-001 es el primer protocolo del Ecosistema KLEOS.<br>
+          Cada protocolo detecta una parte crítica de tu negocio.<br>
+          Juntos forman la arquitectura completa de crecimiento.
+        </p>
+      </div>
+
+      <div class="kip-protocol-grid">
+
+        <div class="kip-protocol-card active">
+          <div class="badge">★</div>
+          <div class="name">KIP-001</div>
+          <div class="status">Insight • Percepción</div>
+        </div>
+
+        <div class="kip-protocol-card locked">
+          <div class="badge">🔒</div>
+          <div class="name">KIP-002</div>
+          <div class="status">Posicionamiento • Próximamente</div>
+        </div>
+
+        <div class="kip-protocol-card locked">
+          <div class="badge">🔒</div>
+          <div class="name">KIP-003</div>
+          <div class="status">Oferta • Próximamente</div>
+        </div>
+
+        <div class="kip-protocol-card locked">
+          <div class="badge">🔒</div>
+          <div class="name">KIP-004</div>
+          <div class="status">Conversión • Próximamente</div>
+        </div>
+
+        <div class="kip-protocol-card locked">
+          <div class="badge">🔒</div>
+          <div class="name">KIP-005</div>
+          <div class="status">Operaciones • Próximamente</div>
+        </div>
+
+        <div class="kip-protocol-card locked">
+          <div class="badge">🔒</div>
+          <div class="name">KIP-006</div>
+          <div class="status">Liderazgo • Próximamente</div>
+        </div>
+
+      </div>
+
+      <div class="kip-ecosistema-footer">
+        <div class="brand">KLEOS</div>
+        <div class="tagline">INTELIGENCIA DIAGNÓSTICA EMPRESARIAL</div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    const data = {
+      dimensions: [
+        { name: "Claridad", score: 15 },
+        { name: "Valor Percibido", score: 14 },
+        { name: "Confianza", score: 13 },
+        { name: "Diferenciación", score: 8 },
+        { name: "Recorrido", score: 13 }
+      ]
+    };
+
+    function drawRadar() {
+      const ctx = document.getElementById('radar-chart').getContext('2d');
+
+      new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: data.dimensions.map(d => d.name),
+          datasets: [{
+            label: 'Tu puntuación',
+            data: data.dimensions.map(d => d.score),
+            backgroundColor: 'rgba(197,160,89,0.2)',
+            borderColor: '#C5A059',
+            borderWidth: 2,
+            pointBackgroundColor: '#C5A059',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            r: {
+              min: 0,
+              max: 20,
+              ticks: { stepSize: 5, color: 'rgba(255,255,255,0.3)' },
+              grid: { color: 'rgba(197,160,89,0.15)' },
+              angleLines: { color: 'rgba(197,160,89,0.2)' },
+              pointLabels: { color: '#C5A059', font: { size: 12 } }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+    }
+
+    window.onload = function() {
+      drawRadar();
+    };
+  </script>
+
+</body>
+</html>
