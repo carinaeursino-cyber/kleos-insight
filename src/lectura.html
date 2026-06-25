@@ -85,16 +85,49 @@
       opacity: 0.85;
     }
 
-    @media (max-width: 768px) {
+    /* ===================== RESPONSIVE HEADER ===================== */
+    @media (max-width: 900px) {
       .kip-header-premium {
         flex-wrap: wrap;
-        padding: 1.1rem 1.25rem;
+        gap: 1rem;
+        padding: 1.1rem 1.4rem;
       }
 
       .kip-header-protocol {
         order: 3;
         width: 100%;
+        text-align: left;
+        font-size: 0.65rem;
+        padding-top: 0.4rem;
+        border-top: 1px solid rgba(197, 160, 89, 0.1);
+        margin-top: 0.6rem;
+      }
+
+      .kip-header-button {
+        font-size: 0.65rem;
+        padding: 0.6rem 1.1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .kip-header-premium {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+      }
+
+      .kip-header-protocol {
+        order: 2;
+        width: 100%;
+        text-align: left;
         font-size: 0.62rem;
+        padding-top: 0.5rem;
+      }
+
+      .kip-header-button {
+        width: 100%;
+        justify-content: center;
+        font-size: 0.68rem;
       }
     }
     .kip-hero-informative {
@@ -105,7 +138,7 @@
       overflow: hidden;
       min-height: 520px;
       position: relative;
-      background-image: url('assets/images/kleos_banner.png');
+      background-image: url('assets/images/banner.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -121,18 +154,18 @@
 
     .kip-hero-content {
       max-width: 620px;
-      padding: 3.5rem 4rem;
+      padding: 3.8rem 4rem 3.2rem;
       position: relative;
       z-index: 2;
     }
 
     .kip-hero-content .pretitle {
       font-family: 'JetBrains Mono', Consolas, monospace;
-      font-size: 0.72rem;
-      letter-spacing: 0.45em;
+      font-size: 0.7rem;
+      letter-spacing: 0.5em;
       color: var(--gold);
-      margin-bottom: 1.1rem;
-      font-weight: 600;
+      margin-bottom: 2.2rem;
+      font-weight: 400;
       display: flex;
       align-items: center;
     }
@@ -155,40 +188,46 @@
 
     .kip-hero-title {
       font-family: 'Playfair Display', Georgia, serif;
-      font-size: 2.75rem;
-      line-height: 1.05;
-      font-weight: 600;
-      margin-bottom: 1.2rem;
+      font-size: 3.35rem;
+      line-height: 1.02;
+      font-weight: 400;
+      margin-bottom: 2.8rem;
       color: #F5F5F5;
     }
 
     .kleos-brand {
       font-family: 'Playfair Display', Georgia, serif;
       color: var(--gold);
-      font-weight: 600;
-      letter-spacing: 0.12em;
+      font-weight: 400;
+      letter-spacing: 0.15em;
     }
 
     .is-ready {
       font-family: 'Playfair Display', Georgia, serif;
       color: #F5F5F5;
-      font-weight: 600;
+      font-weight: 400;
     }
 
     .kip-hero-subtitle {
-      font-size: 1.02rem;
+      font-size: 1.05rem;
       color: var(--text-60);
-      line-height: 1.65;
-      max-width: 520px;
+      line-height: 1.7;
+      max-width: 480px;
+      margin-top: 1.8rem;
     }
 
     @media (max-width: 768px) {
       .kip-hero-content {
-        padding: 2.2rem 1.8rem;
+        padding: 2.4rem 1.8rem 2rem;
       }
       
       .kip-hero-title {
-        font-size: 2.15rem;
+        font-size: 2.45rem;
+        margin-bottom: 2rem;
+      }
+      
+      .kip-hero-subtitle {
+        font-size: 0.98rem;
       }
     }
 
@@ -1700,5 +1739,5 @@
     window.generarPDF = generarPDF;
   </script>
 
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a114c57809313557',t:'MTc4MjM5ODg4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a11505c8bf1fdb36',t:'MTc4MjQwMTUyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
