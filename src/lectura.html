@@ -6,7 +6,7 @@
   <title>Lectura Completa | KIP-001 — KLEOS INSIGHT™</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,600;1,400;1,500&family=Inter:wght@300;400;500&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/css/styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <style>
@@ -138,7 +138,7 @@
       overflow: hidden;
       min-height: 520px;
       position: relative;
-      background-image: url('assets/images/banner.png');
+      background-image: url('assets/images/kleos_banner.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -209,11 +209,13 @@
     }
 
     .kip-hero-subtitle {
+      font-family: 'Inter', system-ui, sans-serif;
       font-size: 1.05rem;
       color: var(--text-60);
       line-height: 1.7;
       max-width: 480px;
       margin-top: 1.8rem;
+      font-weight: 400;
     }
 
     @media (max-width: 768px) {
@@ -234,20 +236,21 @@
     .kip-metrics-grid {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 1.2rem;
+      gap: 0.95rem;
       margin-bottom: 3.5rem;
     }
 
     @media (max-width: 1200px) {
       .kip-metrics-grid {
         grid-template-columns: repeat(3, 1fr);
+        gap: 1.2rem;
       }
     }
 
     @media (max-width: 768px) {
       .kip-metrics-grid {
         grid-template-columns: repeat(2, 1fr);
-        gap: 1rem;
+        gap: 1.1rem;
       }
     }
 
@@ -258,11 +261,18 @@
     }
 
     .kip-metric-card {
-      background: #111111;
-      border: 1px solid var(--gold-15);
-      border-radius: 14px;
-      padding: 1.5rem 1.3rem;
-      text-align: center;
+      min-height: 138px !important;
+      padding-top: 1.05rem !important;
+      padding-bottom: 1.05rem !important;
+      border: 1px solid var(--gold-15) !important;
+      text-align: center !important;
+      align-items: center !important;
+      border-radius: 18px !important;
+    }
+
+    /* Centrado para tarjetas normales */
+    .kip-metric-card:not(.special-first):not(.special-alert) {
+      text-align: center !important;
     }
 
     .kip-metric-card.alert {
@@ -273,15 +283,438 @@
       font-size: 0.58rem;
       letter-spacing: 0.3em;
       color: var(--text-60);
-      margin-bottom: 0.5rem;
+      margin-bottom: 1rem;
       text-transform: uppercase;
     }
 
-    .kip-metric-value {
-      font-size: 2.5rem;
+    .kip-metric-big {
+      display: flex;
+      align-items: baseline;
+      justify-content: center;
+      gap: 2px;
+      margin-bottom: 0.75rem;
+    }
+
+    .big-number {
+      font-size: 3.85rem;
       font-weight: 700;
       color: var(--gold);
       line-height: 1;
+    }
+
+    .big-sub {
+      font-size: 1.55rem;
+      color: var(--text-60);
+      font-weight: 500;
+      margin-left: 4px;
+    }
+
+    .kip-metric-badge {
+      display: inline-block;
+      background: rgba(197, 160, 89, 0.15);
+      color: var(--gold);
+      font-size: 0.65rem;
+      padding: 0.15rem 0.65rem;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.9rem;
+    }
+
+    .kip-metric-desc {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.75rem;
+      color: var(--text-60);
+      line-height: 1.45;
+      max-width: 180px;
+      font-weight: 400;
+    }
+
+    .kip-metric-desc-bottom {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-size: 0.78rem;
+      color: var(--text-60);
+      line-height: 1.5;
+      max-width: 210px;
+      font-weight: 400;
+      margin-top: auto;
+      padding-top: 0.35rem;
+    }
+
+    /* Alineación específica para tarjetas especiales */
+    .kip-metric-card.special-first .kip-metric-desc-bottom,
+    .kip-metric-card.special-alert .kip-metric-desc-bottom {
+      margin-top: 4.2rem;
+    }
+
+    /* ===================== TARJETA ALERTA (Cuarta) ===================== */
+    .kip-metric-card.special-alert {
+      padding: 1.8rem 1.6rem;
+      text-align: center !important;
+      align-items: center !important;
+      border-color: #f87171;
+    }
+
+    .kip-metric-card.special-alert .kip-metric-label {
+      text-align: center !important;
+      width: 100% !important;
+      display: block !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .kip-metric-card.special-alert .kip-metric-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      color: #f87171;
+      margin-bottom: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .alert-badge {
+      background: rgba(248, 113, 113, 0.15);
+      color: #f87171;
+      font-size: 0.65rem;
+      padding: 0.15rem 0.65rem;
+      border-radius: 999px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+
+    /* ===================== TIPOGRAFÍA GLOBAL ===================== */
+    .kip-hero-content p,
+    .kip-metric-desc,
+    .kip-metric-desc-bottom,
+    .kip-brecha-text,
+    .kip-fuga p,
+    .kip-perfil-subtitle,
+    .kip-verdad-body,
+    .kip-costo-subtitle,
+    .kip-costo-intro,
+    .kip-costo-list li,
+    .kip-prioridad-text,
+    .kip-hoja-ruta-text p,
+    .kip-hoja-ruta-benefits li,
+    .kip-ecosistema-subtitle {
+      font-family: 'Inter', system-ui, sans-serif;
+      font-weight: 400;
+    }
+
+    /* ===================== TARJETA ESPECIAL (Primera) ===================== */
+    .kip-metric-card.special-first {
+      padding: 1.1rem 1.05rem !important;
+      text-align: center !important;
+      align-items: center !important;
+      min-height: 138px !important;
+      justify-content: center !important;
+    }
+
+    /* Centrado forzado de títulos de tarjetas especiales */
+    /* ===== CENTRADO DE TÍTULOS DE TARJETAS ESPECIALES ===== */
+    /* ===== CENTRADO FORZADO DE TÍTULOS ===== */
+    .kip-metric-card.special-first .kip-metric-label,
+    .kip-metric-card.special-alert .kip-metric-label {
+      text-align: center !important;
+      width: 100% !important;
+      display: block !important;
+      margin: 0 auto 1.4rem auto !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+    }
+
+    .kip-metric-card.special-first .kip-metric-label {
+      font-size: 0.58rem;
+      letter-spacing: 0.3em;
+      color: var(--text-60);
+      margin-bottom: 1.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .info-icon {
+      font-size: 0.85rem;
+      opacity: 0.6;
+      cursor: default;
+    }
+
+    .metric-row {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin: 1.1rem 0 1.4rem;
+    }
+
+    .metric-label-small {
+      font-size: 0.78rem;
+      color: var(--text-60);
+    }
+
+    .kip-metric-desc-bottom {
+      font-size: 0.78rem;
+      color: var(--text-60);
+      line-height: 1.5;
+      max-width: 210px;
+    }
+
+    /* ===================== DONUT CHARTS ===================== */
+    .kip-metric-chart {
+      position: relative;
+      width: 148px;
+      height: 148px;
+      margin: 0.15rem 0 1.15rem;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-sizing: content-box;
+      overflow: visible;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .chart-center {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      line-height: 1;
+    }
+
+    .chart-value {
+      font-size: 2.35rem;
+      font-weight: 700;
+      color: var(--gold);
+      display: block;
+      line-height: 1;
+    }
+
+    .chart-unit {
+      font-size: 0.95rem;
+      color: var(--text-60);
+      font-weight: 500;
+    }
+
+    /* ===================== SECCIÓN ESPEJO + FUGA (NUEVA) ===================== */
+    .kip-espejo-fuga-section {
+      margin-bottom: 3.5rem;
+    }
+
+    .kip-espejo-fuga-grid {
+      display: grid;
+      grid-template-columns: 65% 35%;
+      gap: 28px;
+      align-items: stretch;
+    }
+
+    @media (max-width: 900px) {
+      .kip-espejo-fuga-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* PANEL IZQUIERDO */
+    .kip-espejo-panel {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 2.4rem 2.6rem;
+    }
+
+    .kip-espejo-header {
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.6rem;
+      font-weight: 500;
+    }
+
+    .kip-espejo-comparison {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      gap: 1.8rem;
+      align-items: center;
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 16px;
+      padding: 1.8rem;
+    }
+
+    .kip-espejo-col {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kip-espejo-col-title {
+      font-size: 0.92rem;
+      font-weight: 600;
+      margin-bottom: 1.1rem;
+      letter-spacing: 0.5px;
+    }
+
+    .kip-espejo-col.left .kip-espejo-col-title {
+      color: #E5E5E5;
+    }
+
+    .kip-espejo-col.right .kip-espejo-col-title {
+      color: #E5E5E5;
+    }
+
+    .kip-espejo-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .kip-espejo-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.92rem;
+      color: #E5E5E5;
+    }
+
+    .kip-espejo-item .icon {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      flex-shrink: 0;
+    }
+
+    .kip-espejo-item .icon.check {
+      background: rgba(197, 160, 89, 0.15);
+      color: var(--gold);
+      border: 1px solid var(--gold-15);
+    }
+
+    .kip-espejo-item .icon.cross {
+      background: rgba(248, 113, 113, 0.15);
+      color: #f87171;
+      border: 1px solid rgba(248, 113, 113, 0.3);
+    }
+
+    /* DIVISOR CENTRAL */
+    .kip-espejo-divider {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      position: relative;
+    }
+
+    .kip-espejo-divider::before {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: linear-gradient(
+        to bottom,
+        transparent,
+        var(--gold),
+        transparent
+      );
+      opacity: 0.7;
+    }
+
+    .vs-circle {
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      background: #111111;
+      border: 2px solid var(--gold);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--gold);
+      box-shadow: 0 0 20px rgba(197, 160, 89, 0.3);
+      z-index: 2;
+    }
+
+    /* PANEL DERECHO - FUGA */
+    .kip-fuga-panel {
+      background: #0B0B0B;
+      border: 1px solid var(--gold-15);
+      border-radius: 20px;
+      padding: 2.4rem 2.6rem;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .kip-fuga-header {
+      font-size: 0.72rem;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.8rem;
+      font-weight: 500;
+    }
+
+    .kip-fuga-main {
+      margin-bottom: 1.4rem;
+    }
+
+    .kip-fuga-title {
+      font-size: 1.85rem;
+      font-weight: 500;
+      color: #E8D2A0;
+      margin-bottom: 0.4rem;
+    }
+
+    .kip-fuga-score {
+      display: flex;
+      align-items: baseline;
+      gap: 4px;
+    }
+
+    .kip-fuga-score .score-main {
+      font-size: 3.8rem;
+      font-weight: 300;
+      color: #D95E5E;
+      line-height: 1;
+    }
+
+    .kip-fuga-score .score-sub {
+      font-size: 1.65rem;
+      color: rgba(255,255,255,0.5);
+      font-weight: 400;
+    }
+
+    .kip-fuga-desc {
+      font-size: 0.95rem;
+      color: rgba(255,255,255,0.75);
+      line-height: 1.65;
+      margin-bottom: 1.8rem;
+    }
+
+    .kip-fuga-info {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.65rem;
+      background: rgba(212, 162, 78, 0.06);
+      border: 1px solid rgba(212, 162, 78, 0.15);
+      border-radius: 12px;
+      padding: 1rem 1.2rem;
+      font-size: 0.85rem;
+      color: #CFA85E;
+      line-height: 1.5;
+    }
+
+    .kip-fuga-info .info-icon {
+      color: var(--gold);
+      margin-top: 2px;
+      flex-shrink: 0;
     }
 
     /* ===================== SECCIÓN COMBINADA (ESPEJO + FUGA) ===================== */
@@ -1013,87 +1446,154 @@
 
     <!-- TARJETAS KPI -->
     <div class="kip-metrics-grid">
-      <div class="kip-metric-card">
+      
+      <!-- Tarjeta 1: Índice Kleos -->
+      <div class="kip-metric-card special-first">
         <div class="kip-metric-label">ÍNDICE KLEOS</div>
-        <div class="kip-metric-value">63</div>
-        <div style="font-size:0.75rem; color:var(--text-60);">/100</div>
-        <div style="margin-top:0.4rem; font-size:0.7rem;">Nivel de percepción: <strong>MEDIO</strong></div>
-        <div style="margin-top:0.3rem; font-size:0.7rem; color:var(--text-60);">Superas al 68% de los negocios</div>
+        
+        <div class="kip-metric-big">
+          <span class="big-number">63</span>
+          <span class="big-sub">/100</span>
+        </div>
+        
+        <div class="metric-row">
+          <span class="metric-label-small">Nivel de percepción</span>
+          <span class="kip-metric-badge">MEDIO</span>
+        </div>
+        
+        <div class="kip-metric-desc-bottom">
+          Percentil: Superas al 68% de los negocios analizados.
+        </div>
       </div>
 
+      <!-- Tarjeta 2: Performance -->
       <div class="kip-metric-card">
         <div class="kip-metric-label">PERFORMANCE</div>
-        <div class="kip-metric-value">72%</div>
-        <div style="margin-top:0.4rem; font-size:0.7rem; color:var(--text-60);">Tu rendimiento percibido</div>
+        <div class="kip-metric-chart">
+          <canvas id="chart-performance" width="128" height="128"></canvas>
+          <div class="chart-center">
+            <span class="chart-value">72</span>
+            <span class="chart-unit">%</span>
+          </div>
+        </div>
+        <div class="kip-metric-desc-bottom" style="text-align: center !important; width: 100% !important; display: block !important; margin: 0 auto !important;">Tu rendimiento percibido frente al mercado</div>
       </div>
 
+      <!-- Tarjeta 3: Brecha de Percepción -->
       <div class="kip-metric-card">
         <div class="kip-metric-label">BRECHA DE PERCEPCIÓN</div>
-        <div class="kip-metric-value">37%</div>
-        <div style="margin-top:0.4rem; font-size:0.7rem; color:var(--text-60);">Diferencia entre valor real y percibido</div>
+        <div class="kip-metric-chart">
+          <canvas id="chart-brecha" width="128" height="128"></canvas>
+          <div class="chart-center">
+            <span class="chart-value">37</span>
+            <span class="chart-unit">%</span>
+          </div>
+        </div>
+        <div class="kip-metric-desc-bottom" style="text-align: center !important; width: 100% !important; display: block !important; margin: 0 auto !important;">Diferencia entre valor real y lo que el mercado percibe</div>
       </div>
 
-      <div class="kip-metric-card alert">
-        <div class="kip-metric-label">DIMENSIÓN MÁS BAJA</div>
-        <div class="kip-metric-value" style="color:#f87171;">8</div>
-        <div style="font-size:0.75rem; color:#f87171;">Diferenciación</div>
-        <div style="margin-top:0.3rem; font-size:0.7rem;">Principal punto que limita tu crecimiento</div>
+      <!-- Tarjeta 4: Dimensión más baja -->
+      <div class="kip-metric-card alert special-alert">
+        <div class="kip-metric-label" style="display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;text-align:center!important;margin:0 auto 1.4rem auto!important;">DIMENSIÓN MÁS BAJA</div>
+        
+        <div class="kip-metric-big">
+          <span class="big-number" style="color:#f87171;">8</span>
+          <span class="big-sub" style="color:#f87171;">/20</span>
+        </div>
+        
+        <div class="metric-row">
+          <span class="metric-label-small">Diferenciación</span>
+          <span class="kip-metric-badge alert-badge">CRÍTICA</span>
+        </div>
+        
+        <div class="kip-metric-desc-bottom" style="color:#f87171;">
+          Principal punto que limita tu crecimiento.
+        </div>
       </div>
 
+      <!-- Tarjeta 5: Potencial sin liberar -->
       <div class="kip-metric-card">
         <div class="kip-metric-label">POTENCIAL SIN LIBERAR</div>
-        <div class="kip-metric-value">42%</div>
-        <div style="margin-top:0.4rem; font-size:0.7rem; color:var(--text-60);">Tu potencial actual no está siendo capturado</div>
+        <div class="kip-metric-chart">
+          <canvas id="chart-potencial" width="128" height="128"></canvas>
+          <div class="chart-center">
+            <span class="chart-value">42</span>
+            <span class="chart-unit">%</span>
+          </div>
+        </div>
+        <div class="kip-metric-desc-bottom">De tu potencial actual no está siendo capturado</div>
       </div>
+
     </div>
 
-    <!-- ESPEJO + FUGA -->
-    <div class="kip-diagnosis-section">
-      <div class="kip-espejo">
-        <div class="kip-espejo-grid">
-          <div class="kip-espejo-col">
-            <div class="kip-espejo-title">Lo que tú crees</div>
-            <div class="kip-attribute"><span class="icon">✓</span> Innovador</div>
-            <div class="kip-attribute"><span class="icon">✓</span> Profesional</div>
-            <div class="kip-attribute"><span class="icon">✓</span> Confiable</div>
-            <div class="kip-attribute"><span class="icon">✓</span> Comprometido</div>
-            <div class="kip-attribute"><span class="icon">✓</span> Orientado a resultados</div>
-          </div>
-          <div class="kip-vs">VS</div>
-          <div class="kip-espejo-col">
-            <div class="kip-espejo-title">Lo que el mercado ve</div>
-            <div class="kip-attribute"><span class="icon">⚠</span> Similar a otras opciones</div>
-            <div class="kip-attribute"><span class="icon">⚠</span> Poco diferenciado</div>
-            <div class="kip-attribute"><span class="icon">⚠</span> Difícil de comprender</div>
-            <div class="kip-attribute"><span class="icon">⚠</span> Falta de pruebas visibles</div>
-            <div class="kip-attribute"><span class="icon">⚠</span> Comunicación poco clara</div>
+    <!-- ===================== SECCIÓN ESPEJO + FUGA (NUEVA) ===================== -->
+    <div class="kip-espejo-fuga-section">
+
+      <div class="kip-espejo-fuga-grid">
+
+        <!-- PANEL IZQUIERDO: ESPEJO DE PERCEPCIÓN -->
+        <div class="kip-espejo-panel">
+          <div class="kip-espejo-header">ESPEJO DE PERCEPCIÓN</div>
+
+          <div class="kip-espejo-comparison">
+
+            <!-- Columna Izquierda -->
+            <div class="kip-espejo-col left">
+              <div class="kip-espejo-col-title">LO QUE TÚ CREES</div>
+              <div class="kip-espejo-list">
+                <div class="kip-espejo-item"><span class="icon check">✓</span> Innovador</div>
+                <div class="kip-espejo-item"><span class="icon check">✓</span> Profesional</div>
+                <div class="kip-espejo-item"><span class="icon check">✓</span> Confiable</div>
+                <div class="kip-espejo-item"><span class="icon check">✓</span> Comprometido</div>
+                <div class="kip-espejo-item"><span class="icon check">✓</span> Orientado a resultados</div>
+              </div>
+            </div>
+
+            <!-- Divisor Central -->
+            <div class="kip-espejo-divider">
+              <div class="vs-circle">VS</div>
+            </div>
+
+            <!-- Columna Derecha -->
+            <div class="kip-espejo-col right">
+              <div class="kip-espejo-col-title">LO QUE EL MERCADO VE</div>
+              <div class="kip-espejo-list">
+                <div class="kip-espejo-item"><span class="icon cross">✕</span> Similar a otras opciones</div>
+                <div class="kip-espejo-item"><span class="icon cross">✕</span> Poco diferenciado</div>
+                <div class="kip-espejo-item"><span class="icon cross">✕</span> Difícil de comprender</div>
+                <div class="kip-espejo-item"><span class="icon cross">✕</span> Falta de pruebas visibles</div>
+                <div class="kip-espejo-item"><span class="icon cross">✕</span> Comunicación poco clara</div>
+              </div>
+            </div>
+
           </div>
         </div>
-        <div class="kip-brecha">
-          <div class="kip-brecha-title">Brecha Detectada</div>
-          <div class="kip-brecha-text">
-            Detectamos una diferencia significativa entre la percepción interna de valor y la percepción externa del mercado.
+
+        <!-- PANEL DERECHO: FUGA DE CRECIMIENTO -->
+        <div class="kip-fuga-panel">
+          <div class="kip-fuga-header">TU PRINCIPAL FUGA DE CRECIMIENTO</div>
+
+          <div class="kip-fuga-main">
+            <div class="kip-fuga-title">DIFERENCIACIÓN</div>
+            <div class="kip-fuga-score">
+              <span class="score-main">8</span>
+              <span class="score-sub">/20</span>
+            </div>
+          </div>
+
+          <div class="kip-fuga-desc">
+            No estás perdiendo ventas porque tu producto sea malo.<br>
+            Las estás perdiendo porque el mercado no entiende por qué debería elegirte.
+          </div>
+
+          <div class="kip-fuga-info">
+            <span class="info-icon">◆</span>
+            <span>Esta es la dimensión que más está impactando tus resultados actualmente.</span>
           </div>
         </div>
+
       </div>
 
-      <div class="kip-fuga">
-        <div class="kip-fuga-header">
-          <h2 class="kip-fuga-title">Tu Principal Fuga de Crecimiento</h2>
-          <p class="kip-fuga-subtitle">Detectamos el factor que más limita actualmente tu crecimiento.</p>
-        </div>
-        <div class="kip-fuga-card">
-          <div class="kip-fuga-dimension">DIFERENCIACIÓN</div>
-          <div class="kip-fuga-score">8/20</div>
-          <div style="margin-top:0.5rem; color:#f87171; font-size:0.9rem;">⚠ Principal punto de fuga</div>
-        </div>
-        <div class="kip-fuga-section">
-          <div class="kip-fuga-section-title" style="font-size: 0.85rem; font-weight: 600; color: var(--gold); margin-bottom: 0.6rem;">¿Por qué esto importa?</div>
-          <p style="color: var(--text-60); line-height: 1.6;">
-            Cuando tu negocio no tiene una diferenciación clara, el mercado te percibe como una opción más entre muchas.
-          </p>
-        </div>
-      </div>
     </div>
 
     <!-- ===================== PERFIL ESTRATÉGICO KLEOS ===================== -->
@@ -1360,7 +1860,46 @@
 
     window.onload = function() {
       drawRadar();
+      drawDonutCharts();
     };
+
+    function drawDonutCharts() {
+      // Performance - 72%
+      createDonut('chart-performance', 72, '#C5A059');
+
+      // Brecha de Percepción - 37%
+      createDonut('chart-brecha', 37, '#C5A059');
+
+      // Potencial sin liberar - 42%
+      createDonut('chart-potencial', 42, '#C5A059');
+    }
+
+    function createDonut(canvasId, percentage, color) {
+      const ctx = document.getElementById(canvasId);
+      if (!ctx) return;
+
+      new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+          datasets: [{
+            data: [percentage, 100 - percentage],
+            backgroundColor: [color, 'rgba(197, 160, 89, 0.12)'],
+            borderWidth: 0,
+            borderColor: 'transparent'
+          }]
+        },
+        options: {
+          cutout: '76%',
+          responsive: false,
+          maintainAspectRatio: true,
+          aspectRatio: 1,
+          plugins: {
+            legend: { display: false },
+            tooltip: { enabled: false }
+          }
+        }
+      });
+    }
     function generarPDF() {
       const { jsPDF } = window.jspdf;
       const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -1739,5 +2278,5 @@
     window.generarPDF = generarPDF;
   </script>
 
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a11505c8bf1fdb36',t:'MTc4MjQwMTUyMg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a11620234f08ca16',t:'MTc4MjQxMzA4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
