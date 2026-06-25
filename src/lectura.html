@@ -76,6 +76,10 @@
       border-color: rgba(197, 160, 89, 0.30);
     }
 
+    .kip-header-button:active {
+      transform: scale(0.985);
+    }
+
     .kip-header-button-icon {
       flex-shrink: 0;
       opacity: 0.85;
@@ -97,83 +101,94 @@
       background: #0B0B0B;
       border: 1px solid var(--gold-15);
       border-radius: 24px;
-      padding: 4rem 4rem;
       margin-bottom: 3.5rem;
-      display: grid;
-      grid-template-columns: 55% 45%;
-      gap: 4rem;
-      align-items: center;
+      overflow: hidden;
       min-height: 520px;
+      position: relative;
+      background-image: url('assets/images/kleos_banner.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      display: flex;
+      align-items: center;
     }
 
-    .kip-hero-text .pretitle {
-      font-size: 0.75rem;
-      letter-spacing: 0.4em;
+    @media (max-width: 900px) {
+      .kip-hero-informative {
+        min-height: 420px;
+      }
+    }
+
+    .kip-hero-content {
+      max-width: 620px;
+      padding: 3.5rem 4rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .kip-hero-content .pretitle {
+      font-family: 'JetBrains Mono', Consolas, monospace;
+      font-size: 0.72rem;
+      letter-spacing: 0.45em;
       color: var(--gold);
-      margin-bottom: 1rem;
+      margin-bottom: 1.1rem;
       font-weight: 600;
+      display: flex;
+      align-items: center;
     }
 
-    .kip-hero-text h1 {
-      font-size: 2.85rem;
-      line-height: 1.1;
+    .pretitle-dot {
+      display: inline-block;
+      width: 6px;
+      height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      margin-right: 0.65rem;
+      animation: pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.25; }
+    }
+
+    .kip-hero-title {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2.75rem;
+      line-height: 1.05;
+      font-weight: 600;
       margin-bottom: 1.2rem;
+      color: #F5F5F5;
+    }
+
+    .kleos-brand {
+      font-family: 'Playfair Display', Georgia, serif;
+      color: var(--gold);
+      font-weight: 600;
+      letter-spacing: 0.12em;
+    }
+
+    .is-ready {
+      font-family: 'Playfair Display', Georgia, serif;
+      color: #F5F5F5;
       font-weight: 600;
     }
 
-    .kip-hero-text .kleos {
-      color: var(--gold);
-    }
-
-    .kip-hero-text .subtitle {
+    .kip-hero-subtitle {
       font-size: 1.02rem;
       color: var(--text-60);
       line-height: 1.65;
       max-width: 520px;
     }
 
-    .kip-hero-visual {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 0 0.5rem;
-    }
-
-    .kip-hero-visual img {
-      width: 100%;
-      max-width: 100%;
-      height: auto;
-      object-fit: contain;
-      opacity: 0.95;
-      display: block;
-    }
-
-    @media (max-width: 1024px) {
-      .kip-hero-informative {
-        grid-template-columns: 52% 48%;
-        gap: 2.5rem;
-      }
-
-      .kip-hero-visual img {
-        max-width: 92%;
-      }
-    }
-
     @media (max-width: 768px) {
-      .kip-hero-informative {
-        grid-template-columns: 1fr;
-        gap: 2.5rem;
-        min-height: auto;
+      .kip-hero-content {
+        padding: 2.2rem 1.8rem;
       }
-
-      .kip-hero-visual {
-        order: 2;
-        padding: 0 1rem;
-      }
-
-      .kip-hero-visual img {
-        max-width: 85%;
-        margin: 0 auto;
+      
+      .kip-hero-title {
+        font-size: 2.15rem;
       }
     }
 
@@ -182,6 +197,25 @@
       grid-template-columns: repeat(5, 1fr);
       gap: 1.2rem;
       margin-bottom: 3.5rem;
+    }
+
+    @media (max-width: 1200px) {
+      .kip-metrics-grid {
+        grid-template-columns: repeat(3, 1fr);
+      }
+    }
+
+    @media (max-width: 768px) {
+      .kip-metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .kip-metrics-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .kip-metric-card {
@@ -259,6 +293,13 @@
       gap: 0.75rem;
       font-size: 0.92rem;
       padding: 0.5rem 0;
+    }
+
+    .kip-attribute .icon {
+      color: var(--gold);
+      font-size: 0.9rem;
+      width: 18px;
+      display: inline-block;
     }
 
     .kip-vs {
@@ -344,11 +385,40 @@
       margin-bottom: 3.5rem;
     }
 
+    .kip-perfil-header {
+      margin-bottom: 2.4rem;
+    }
+
+    .kip-perfil-title {
+      font-size: 1.55rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+    }
+
+    .kip-perfil-subtitle {
+      font-size: 0.95rem;
+      color: var(--text-60);
+      line-height: 1.6;
+      max-width: 620px;
+    }
+
     .kip-perfil-content {
       display: grid;
       grid-template-columns: 1.1fr 1fr 1fr;
       gap: 2.5rem;
       align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .kip-perfil-content {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .kip-perfil-content {
+        grid-template-columns: 1fr;
+      }
     }
 
     .kip-dim-list {
@@ -438,6 +508,16 @@
       gap: 0;
       align-items: stretch;
       overflow: hidden;
+    }
+
+    @media (max-width: 900px) {
+      .kip-verdad {
+        grid-template-columns: 1fr;
+      }
+      .kip-verdad-image {
+        height: 320px;
+        border-radius: 0 0 20px 20px;
+      }
     }
 
     .kip-verdad-text {
@@ -732,6 +812,29 @@
       transform: translateY(-2px);
     }
 
+    /* Footer */
+    .kip-footer {
+      text-align: center;
+      margin-top: 5rem;
+      padding-top: 2.5rem;
+      border-top: 1px solid var(--gold-15);
+    }
+
+    .kip-footer .brand {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--gold);
+      letter-spacing: 0.05em;
+    }
+
+    .kip-footer .tagline {
+      font-size: 0.72rem;
+      color: var(--text-60);
+      letter-spacing: 0.3em;
+      margin-top: 0.35rem;
+    }
+
     /* ===================== ESTO ES SOLO EL COMIENZO ===================== */
     .kip-ecosistema {
       background: #0B0B0B;
@@ -831,34 +934,41 @@
     <div class="kip-header-premium">
       <div class="kip-header-logo">KLEOS</div>
       <div class="kip-header-protocol">KIP-001 · KLEOS INSIGHT PROTOCOL</div>
-      <button type="button" class="kip-header-button" onclick="generarPDF()">
-        <svg class="kip-header-button-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="M12 3v12"/>
-          <path d="M7 10l5 5 5-5"/>
-          <path d="M5 21h14"/>
-        </svg>
-        <span>DESCARGAR PDF</span>
-      </button>
+      <div style="display:flex; gap:0.75rem; align-items:center;">
+        <button type="button" class="kip-header-button" onclick="window.location.href='index.html'">
+          <span>VOLVER AL INICIO</span>
+        </button>
+        <button type="button" class="kip-header-button" onclick="generarPDF()">
+          <svg class="kip-header-button-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v12"/>
+            <path d="M7 10l5 5 5-5"/>
+            <path d="M5 21h14"/>
+          </svg>
+          <span>DESCARGAR PDF</span>
+        </button>
+      </div>
     </div>
 
     <!-- HERO -->
     <div class="kip-hero-informative">
-      <div class="kip-hero-text">
-        <div class="pretitle">DIAGNÓSTICO COMPLETADO ✦</div>
-        <h1>Tu Diagnóstico <span class="kleos">KLEOS</span> está listo.</h1>
-        <p class="subtitle">
+      <div class="kip-hero-content">
+        
+        <div class="pretitle">
+          <span class="pretitle-dot"></span> 
+          DIAGNÓSTICO COMPLETADO
+        </div>
+
+        <h1 class="kip-hero-title">
+          Tu Diagnóstico<br>
+          <span class="kleos-brand">K·L·E·O·S</span><br>
+          <span class="is-ready">está listo.</span>
+        </h1>
+
+        <p class="kip-hero-subtitle">
           Hemos analizado 12 variables clave de percepción, posicionamiento y comunicación.<br>
           Este es el mapa completo de tu negocio hoy.
         </p>
-      </div>
 
-      <div class="kip-hero-visual">
-        <img
-          src="assets/images/kleos_constelacion.png"
-          alt="Constelación KLEOS — mapa de inteligencia diagnóstica"
-          width="1716"
-          height="917"
-        >
       </div>
     </div>
 
@@ -939,7 +1049,7 @@
           <div style="margin-top:0.5rem; color:#f87171; font-size:0.9rem;">⚠ Principal punto de fuga</div>
         </div>
         <div class="kip-fuga-section">
-          <div class="kip-fuga-section-title">¿Por qué esto importa?</div>
+          <div class="kip-fuga-section-title" style="font-size: 0.85rem; font-weight: 600; color: var(--gold); margin-bottom: 0.6rem;">¿Por qué esto importa?</div>
           <p style="color: var(--text-60); line-height: 1.6;">
             Cuando tu negocio no tiene una diferenciación clara, el mercado te percibe como una opción más entre muchas.
           </p>
@@ -1089,7 +1199,8 @@
       <div class="kip-hoja-ruta-cta">
         <div class="icon">🔒</div>
         <h3>DESBLOQUEAR<br>HOJA DE RUTA<br>COMPLETA</h3>
-        <button>OBTENER MI PLAN</button>
+        <button onclick="window.location.href='informe.html'">OBTENER MI PLAN</button>
+        <p style="margin-top:1rem; font-size:0.68rem; color:var(--text-40);">Acceso al informe detallado + PDF</p>
       </div>
     </div>
 
@@ -1150,6 +1261,12 @@
         <div class="tagline">INTELIGENCIA DIAGNÓSTICA EMPRESARIAL</div>
       </div>
 
+    </div>
+
+    <!-- FOOTER -->
+    <div class="kip-footer">
+      <div class="brand">KLEOS INSIGHT™</div>
+      <div class="tagline">KIP-001 · LECTURA COMPLETA</div>
     </div>
 
   </div>
@@ -1583,5 +1700,5 @@
     window.generarPDF = generarPDF;
   </script>
 
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a114c57809313557',t:'MTc4MjM5ODg4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
