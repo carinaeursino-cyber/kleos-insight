@@ -138,7 +138,7 @@
       overflow: hidden;
       min-height: 520px;
       position: relative;
-      background-image: url('assets/images/kleos_banner.png');
+      background-image: url('assets/images/banner.png');
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
@@ -848,124 +848,216 @@
       color: #f87171;
     }
 
-    /* ===================== PERFIL ESTRATÉGICO KLEOS ===================== */
-    .kip-perfil {
-      background: #0B0B0B;
-      border: 1px solid var(--gold-15);
-      border-radius: 20px;
-      padding: 2.8rem 3rem;
+    /* ===================== PERFIL ESTRATÉGICO KLEOS (NUEVO) ===================== */
+    .kip-perfil-premium {
+      background: linear-gradient(180deg, rgba(20,20,20,0.95), rgba(8,8,8,1));
+      border: 1px solid rgba(212,162,78,.08);
+      border-radius: 22px;
+      padding: 32px;
       margin-bottom: 3.5rem;
+      box-shadow: 
+        0 0 0 1px rgba(212,162,78,.03),
+        0 20px 60px rgba(0,0,0,.45);
     }
 
     .kip-perfil-header {
-      margin-bottom: 2.4rem;
+      margin-bottom: 2.6rem;
     }
 
     .kip-perfil-title {
-      font-size: 1.55rem;
+      font-size: 1.65rem;
       font-weight: 600;
-      margin-bottom: 0.4rem;
+      margin-bottom: 0.5rem;
+      color: #F2F2F2;
     }
 
     .kip-perfil-subtitle {
-      font-size: 0.95rem;
-      color: var(--text-60);
+      font-size: 0.98rem;
+      color: rgba(255,255,255,.65);
       line-height: 1.6;
       max-width: 620px;
     }
 
-    .kip-perfil-content {
+    .kip-perfil-grid {
       display: grid;
-      grid-template-columns: 1.1fr 1fr 1fr;
-      gap: 2.5rem;
+      grid-template-columns: 35% 65%;
+      gap: 40px;
       align-items: start;
     }
 
     @media (max-width: 1100px) {
-      .kip-perfil-content {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 768px) {
-      .kip-perfil-content {
+      .kip-perfil-grid {
         grid-template-columns: 1fr;
       }
     }
 
-    .kip-dim-list {
+    .kip-legend-wrapper {
       display: flex;
-      flex-direction: column;
-      gap: 1.1rem;
+      justify-content: center;
+      margin-top: 32px;
     }
 
-    .kip-dim-row {
+    .kip-legend-card {
+      background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,255,255,.05);
+      border-radius: 18px;
+      padding: 28px 36px;
+      width: 100%;
+      max-width: 720px;
+    }
+
+    /* MÉTRICAS */
+    .kip-metrics-column {
+      display: flex;
+      flex-direction: column;
+      gap: 1.3rem;
+    }
+
+    .kip-metric-row {
       display: flex;
       align-items: center;
       gap: 1rem;
-      font-size: 0.9rem;
     }
 
-    .kip-dim-row.weak {
-      background: #1a1111;
-      border: 1px solid #f87171;
-      border-radius: 10px;
-      padding: 0.6rem 0.8rem;
+    .metric-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #111111;
+      border: 1px solid rgba(212,162,78,.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--gold);
+      flex-shrink: 0;
     }
 
-    .kip-dim-name {
-      width: 130px;
-      font-weight: 500;
-    }
-
-    .kip-dim-bar {
+    .metric-content {
       flex: 1;
+    }
+
+    .metric-name {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: #F2F2F2;
+      margin-bottom: 0.45rem;
+    }
+
+    .metric-bar {
       height: 6px;
-      background: var(--gold-15);
+      background: rgba(255,255,255,.08);
       border-radius: 3px;
       overflow: hidden;
     }
 
-    .kip-dim-fill {
+    .metric-fill {
       height: 100%;
-      background: var(--gold);
+      background: linear-gradient(90deg, #D4A24E, #F0D089);
+      border-radius: 3px;
+      transition: width 1s ease;
     }
 
-    .kip-dim-score {
-      width: 55px;
+    .metric-fill.risk {
+      background: linear-gradient(90deg, #D95B4F, #FF6A5A);
+    }
+
+    .metric-score {
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: #EAEAEA;
+      min-width: 58px;
       text-align: right;
-      font-weight: 600;
-      color: var(--gold);
     }
 
-    .kip-radar-wrapper {
+    .kip-metric-row.risk .metric-score {
+      color: #D95B4F;
+    }
+
+    /* RADAR */
+    .kip-radar-column {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* LEYENDA */
+    .kip-legend-column {
       display: flex;
       justify-content: center;
     }
 
-    .kip-interpret-panel {
-      background: #111111;
-      border: 1px solid var(--gold-15);
-      border-radius: 14px;
-      padding: 1.8rem;
-      height: 100%;
+    .kip-legend-card {
+      background: rgba(255,255,255,.02);
+      border: 1px solid rgba(255,255,255,.05);
+      border-radius: 18px;
+      padding: 28px;
+      width: 100%;
+      max-width: 380px;
+      margin: 0 auto;
     }
 
-    .kip-interpret-title {
-      font-size: 0.95rem;
+    .legend-title {
+      font-size: 0.92rem;
       font-weight: 600;
-      color: var(--gold);
-      margin-bottom: 1.3rem;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,.9);
+      margin-bottom: 1.8rem;
     }
 
-    .kip-interpret-item {
-      margin-bottom: 1.1rem;
-      font-size: 0.9rem;
+    .legend-item {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1.6rem;
     }
 
-    .kip-interpret-range {
+    .legend-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .legend-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.85rem;
       font-weight: 600;
-      color: var(--gold);
+      flex-shrink: 0;
+    }
+
+    .legend-icon.gold {
+      background: rgba(212,162,78,.15);
+      border: 1px solid #D4A24E;
+      color: #E8C67A;
+    }
+
+    .legend-icon.gold-light {
+      background: rgba(212,162,78,.08);
+      border: 1px solid rgba(212,162,78,.3);
+      color: #E8C67A;
+    }
+
+    .legend-icon.red {
+      background: rgba(217,91,79,.15);
+      border: 1px solid #D95B4F;
+      color: #D95B4F;
+    }
+
+    .legend-label {
+      font-size: 1.15rem;
+      font-weight: 600;
+      color: #F2F2F2;
+      margin-bottom: 0.25rem;
+    }
+
+    .legend-desc {
+      font-size: 0.92rem;
+      color: rgba(255,255,255,.65);
+      line-height: 1.5;
     }
 
     /* ===================== VERDAD INCÓMODA ===================== */
@@ -1597,7 +1689,8 @@
     </div>
 
     <!-- ===================== PERFIL ESTRATÉGICO KLEOS ===================== -->
-    <div class="kip-perfil">
+    <div class="kip-perfil-premium">
+
       <div class="kip-perfil-header">
         <h2 class="kip-perfil-title">Perfil Estratégico KLEOS™</h2>
         <p class="kip-perfil-subtitle">
@@ -1605,32 +1698,90 @@
         </p>
       </div>
 
-      <div class="kip-perfil-content">
-        <div class="kip-dim-list">
-          <div class="kip-dim-row"><span>Claridad</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:75%"></div></div> <span class="kip-dim-score">15/20</span></div>
-          <div class="kip-dim-row"><span>Valor Percibido</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:70%"></div></div> <span class="kip-dim-score">14/20</span></div>
-          <div class="kip-dim-row"><span>Confianza</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:65%"></div></div> <span class="kip-dim-score">13/20</span></div>
-          <div class="kip-dim-row weak"><span>Diferenciación</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:40%"></div></div> <span class="kip-dim-score">8/20</span></div>
-          <div class="kip-dim-row"><span>Recorrido de Compra</span> <div class="kip-dim-bar"><div class="kip-dim-fill" style="width:65%"></div></div> <span class="kip-dim-score">13/20</span></div>
+      <div class="kip-perfil-grid">
+
+        <!-- COLUMNA IZQUIERDA: MÉTRICAS -->
+        <div class="kip-metrics-column">
+          <div class="kip-metric-row">
+            <div class="metric-icon">01</div>
+            <div class="metric-content">
+              <div class="metric-name">Claridad</div>
+              <div class="metric-bar"><div class="metric-fill" style="width:75%"></div></div>
+            </div>
+            <div class="metric-score">15/20</div>
+          </div>
+
+          <div class="kip-metric-row">
+            <div class="metric-icon">02</div>
+            <div class="metric-content">
+              <div class="metric-name">Valor Percibido</div>
+              <div class="metric-bar"><div class="metric-fill" style="width:70%"></div></div>
+            </div>
+            <div class="metric-score">14/20</div>
+          </div>
+
+          <div class="kip-metric-row">
+            <div class="metric-icon">03</div>
+            <div class="metric-content">
+              <div class="metric-name">Confianza</div>
+              <div class="metric-bar"><div class="metric-fill" style="width:65%"></div></div>
+            </div>
+            <div class="metric-score">13/20</div>
+          </div>
+
+          <div class="kip-metric-row risk">
+            <div class="metric-icon">04</div>
+            <div class="metric-content">
+              <div class="metric-name">Diferenciación</div>
+              <div class="metric-bar"><div class="metric-fill risk" style="width:40%"></div></div>
+            </div>
+            <div class="metric-score" style="color:#D95B4F;">8/20</div>
+          </div>
+
+          <div class="kip-metric-row">
+            <div class="metric-icon">05</div>
+            <div class="metric-content">
+              <div class="metric-name">Recorrido de Compra</div>
+              <div class="metric-bar"><div class="metric-fill" style="width:65%"></div></div>
+            </div>
+            <div class="metric-score">13/20</div>
+          </div>
         </div>
 
-        <div class="kip-radar-wrapper">
+        <!-- COLUMNA DERECHA: RADAR -->
+        <div class="kip-radar-column">
           <canvas id="radar-chart" width="320" height="320"></canvas>
         </div>
 
-        <div class="kip-interpret-panel">
-          <div class="kip-interpret-title">¿Qué significan tus puntuaciones?</div>
-          <div class="kip-interpret-item">
-            <span class="kip-interpret-range">16 – 20</span><br>
-            <span style="color:#4ade80; font-weight:600;">Fortaleza</span>
+      </div>
+
+      <!-- TARJETA DE LEYENDA CENTRADA -->
+      <div class="kip-legend-wrapper">
+        <div class="kip-legend-card">
+          <div class="legend-title">¿QUÉ SIGNIFICAN TUS PUNTUACIONES?</div>
+
+          <div class="legend-item">
+            <div class="legend-icon gold">16–20</div>
+            <div>
+              <div class="legend-label">Fortaleza</div>
+              <div class="legend-desc">Estás por encima del promedio del mercado.</div>
+            </div>
           </div>
-          <div class="kip-interpret-item">
-            <span class="kip-interpret-range">11 – 15</span><br>
-            <span style="color:#60a5fa; font-weight:600;">Estable</span>
+
+          <div class="legend-item">
+            <div class="legend-icon gold-light">11–15</div>
+            <div>
+              <div class="legend-label">Estable</div>
+              <div class="legend-desc">Tienes oportunidades importantes de mejora.</div>
+            </div>
           </div>
-          <div class="kip-interpret-item">
-            <span class="kip-interpret-range">0 – 10</span><br>
-            <span style="color:#f87171; font-weight:600;">Riesgo</span>
+
+          <div class="legend-item">
+            <div class="legend-icon red">0–10</div>
+            <div>
+              <div class="legend-label">Riesgo</div>
+              <div class="legend-desc">Esta dimensión está limitando tu crecimiento.</div>
+            </div>
           </div>
         </div>
       </div>
@@ -2278,5 +2429,5 @@
     window.generarPDF = generarPDF;
   </script>
 
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a11620234f08ca16',t:'MTc4MjQxMzA4Nw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1163ad3e80dca16',t:'MTc4MjQxNDE4MA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
