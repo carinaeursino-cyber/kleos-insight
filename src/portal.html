@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal KLEOS | Acceso a Protocolos</title>
+    <title>Perfil KLEOS | Espacio Personal</title>
     
     <!-- Tipografías KLEOS -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,9 +14,9 @@
     <link rel="stylesheet" href="assets/css/styles.css">
     
     <style>
-        /* ===================== CONFIGURACIÓN PORTAL ===================== */
+        /* ===================== CONFIGURACIÓN GLOBAL ===================== */
         body { 
-            background-color: #000000; /* Obsidiana puro */
+            background-color: #000000; 
             color: #F5F5F5; 
             display: flex; 
             flex-direction: column; 
@@ -24,23 +24,23 @@
             margin: 0;
             padding: 0;
             background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.03) 0%, transparent 70%);
+            font-family: 'Inter', system-ui, sans-serif;
         }
+
+        /* Envoltura principal con transición de Vistas */
+        #view-login { display: flex; flex-direction: column; flex: 1; justify-content: center; }
+        #view-dashboard { display: none; flex-direction: column; flex: 1; padding-top: 4rem; }
         
         .portal-wrapper { 
             max-width: 640px; 
             margin: 0 auto; 
             padding: 7rem 2rem 5rem; 
-            flex: 1; 
-            display: flex; 
-            flex-direction: column; 
-            justify-content: center; 
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* ===================== HERO ===================== */
-        .portal-hero { 
-            text-align: center; 
-            margin-bottom: 4.5rem; 
-        }
+        /* ===================== LOGIN VIEW ===================== */
+        .portal-hero { text-align: center; margin-bottom: 4.5rem; }
         .portal-label { 
             font-family: 'JetBrains Mono', Consolas, monospace; 
             font-size: 0.75rem; 
@@ -61,7 +61,6 @@
             letter-spacing: -0.02em;
         }
         .portal-subtitle { 
-            font-family: 'Inter', system-ui, sans-serif; 
             font-size: 1.05rem; 
             color: rgba(255,255,255,0.65); 
             line-height: 1.6; 
@@ -70,7 +69,6 @@
             font-weight: 300; 
         }
 
-        /* ===================== FORMULARIO ===================== */
         .portal-form-card { 
             background: #070707; 
             border: 1px solid var(--gold-15); 
@@ -79,13 +77,9 @@
             margin-bottom: 5rem; 
             box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02) inset; 
         }
-        .portal-form-group { 
-            margin-bottom: 2.5rem; 
-            text-align: left; 
-        }
+        .portal-form-group { margin-bottom: 2.5rem; text-align: left; }
         .portal-form-label { 
             display: block; 
-            font-family: 'Inter', system-ui, sans-serif; 
             font-size: 0.85rem; 
             color: rgba(255,255,255,0.8); 
             margin-bottom: 1rem; 
@@ -110,10 +104,7 @@
             background: #111111; 
             box-shadow: 0 0 0 1px rgba(197, 160, 89, 0.15); 
         }
-        .portal-input::placeholder { 
-            color: rgba(255,255,255,0.2); 
-            font-weight: 300;
-        }
+        .portal-input::placeholder { color: rgba(255,255,255,0.2); font-weight: 300; }
         .portal-btn { 
             width: 100%; 
             background: var(--gold); 
@@ -129,65 +120,167 @@
             letter-spacing: 0.02em; 
             box-sizing: border-box;
         }
-        .portal-btn:hover { 
-            background: #E5C383; 
-            transform: translateY(-2px); 
-            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2); 
+        .portal-btn:hover { background: #E5C383; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2); }
+
+        /* ===================== DASHBOARD VIEW (PERFIL KLEOS) ===================== */
+        .dashboard-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 0 2rem 6rem;
+            width: 100%;
+            box-sizing: border-box;
         }
 
-        /* ===================== CÓMO FUNCIONA ===================== */
-        .portal-how { 
-            margin-bottom: 5rem; 
-            padding: 0 1.5rem;
+        /* HEADER DEL PERFIL */
+        .dash-header {
+            margin-bottom: 5rem;
+            border-bottom: 1px solid var(--gold-15);
+            padding-bottom: 3.5rem;
         }
-        .portal-how-title { 
-            font-family: 'Playfair Display', Georgia, serif; 
-            font-size: 1.8rem; 
-            font-weight: 400; 
-            margin-bottom: 2.5rem; 
-            color: var(--gold); 
-            text-align: center; 
+        .dash-seal {
+            font-family: 'JetBrains Mono', Consolas, monospace;
+            font-size: 0.7rem;
+            letter-spacing: 0.4em;
+            color: var(--gold);
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
         }
-        .portal-how-list { 
-            display: flex; 
-            flex-direction: column; 
-            gap: 1.5rem; 
+        .dash-seal::before {
+            content: ''; display: inline-block; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; margin-right: 0.8rem;
         }
-        .portal-how-item { 
-            display: flex; 
-            align-items: flex-start; 
-            gap: 1.2rem; 
-            font-family: 'Inter', system-ui, sans-serif; 
-            font-size: 0.95rem; 
-            color: rgba(255,255,255,0.65); 
-            line-height: 1.6; 
-            font-weight: 300; 
+        .dash-greeting {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 2.8rem;
+            font-weight: 400;
+            color: #FFFFFF;
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
         }
-        .portal-how-num { 
-            font-family: 'JetBrains Mono', Consolas, monospace; 
-            font-size: 0.75rem; 
-            color: var(--gold); 
-            background: rgba(212, 175, 55, 0.1); 
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            width: 26px; 
-            height: 26px; 
-            display: flex; 
-            align-items: center; 
-            justify-content: center; 
-            border-radius: 50%; 
-            flex-shrink: 0; 
-            margin-top: 0.15rem; 
+        .dash-meta {
+            display: flex;
+            gap: 2.5rem;
+            margin-top: 2rem;
+        }
+        .meta-col {
+            display: flex;
+            flex-direction: column;
+            gap: 0.4rem;
+        }
+        .meta-label {
+            font-family: 'JetBrains Mono', Consolas, monospace;
+            font-size: 0.65rem;
+            color: rgba(255,255,255,0.4);
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+        }
+        .meta-value {
+            font-size: 0.95rem;
+            color: rgba(255,255,255,0.85);
+            font-weight: 300;
         }
 
-        /* ===================== PIE DE PÁGINA ===================== */
+        /* PROTOCOLOS GRID */
+        .dash-section-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.8rem;
+            color: #FFFFFF;
+            margin-bottom: 2.5rem;
+            font-weight: 400;
+        }
+        
+        .protocols-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.5rem;
+        }
+
+        /* CARDS DE PROTOCOLOS */
+        .protocol-card {
+            background: #0B0B0C;
+            border: 1px solid rgba(255,255,255,0.06);
+            border-radius: 20px;
+            padding: 2.5rem;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            overflow: hidden;
+        }
+        .protocol-card.unlocked {
+            border-color: rgba(197, 160, 89, 0.25);
+            cursor: pointer;
+        }
+        .protocol-card.unlocked:hover {
+            border-color: var(--gold);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 0 1px rgba(197, 160, 89, 0.1) inset;
+        }
+        .protocol-card.unlocked::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold), transparent); opacity: 0.5;
+        }
+        .protocol-card.locked {
+            opacity: 0.6;
+            cursor: not-allowed;
+            background: #050505;
+        }
+
+        /* Contenido Card */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+        .card-code {
+            font-family: 'JetBrains Mono', Consolas, monospace;
+            font-size: 0.75rem;
+            color: rgba(255,255,255,0.5);
+            letter-spacing: 0.15em;
+        }
+        .protocol-card.unlocked .card-code { color: var(--gold); }
+        .card-icon {
+            font-size: 1rem;
+        }
+        .protocol-card.unlocked .card-icon { color: var(--gold); }
+        .protocol-card.locked .card-icon { color: rgba(255,255,255,0.2); }
+        
+        .card-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.6rem;
+            color: #FFFFFF;
+            margin-bottom: 0.8rem;
+            font-weight: 400;
+        }
+        .card-status {
+            margin-top: auto;
+            padding-top: 2rem;
+            font-family: 'Inter', system-ui, sans-serif;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.4);
+            font-weight: 400;
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .protocol-card.unlocked .card-status {
+            color: rgba(255,255,255,0.7);
+        }
+        .protocol-card.unlocked .card-status::before {
+            content: ''; display: inline-block; width: 6px; height: 6px; background: var(--gold); border-radius: 50%;
+        }
+
+        /* ===================== FOOTER ===================== */
         .portal-footer { 
             text-align: center; 
             border-top: 1px solid var(--gold-15); 
             padding-top: 3.5rem; 
-            margin-top: 2rem; 
+            margin-top: auto; 
+            margin-bottom: 3rem;
         }
         .portal-footer-note { 
-            font-family: 'Inter', system-ui, sans-serif; 
             font-size: 0.85rem; 
             color: rgba(255,255,255,0.4); 
             line-height: 1.6; 
@@ -196,15 +289,17 @@
             font-weight: 300;
         }
         
-        /* ===================== RESPONSIVE ===================== */
         @media (max-width: 768px) {
             .portal-wrapper { padding: 4rem 1.5rem 3rem; }
             .portal-title { font-size: 2.6rem; }
             .portal-form-card { padding: 3rem 2rem; }
-            .portal-how { padding: 0; }
+            .dash-header { margin-bottom: 3.5rem; padding-bottom: 2.5rem; }
+            .dash-greeting { font-size: 2.2rem; }
+            .protocols-grid { grid-template-columns: 1fr; }
+            .dash-meta { flex-direction: column; gap: 1.5rem; }
         }
         
-        /* ===================== KLEOS INTELLIGENCE TRANSITION™ ===================== */
+        /* ===================== TRANSICIÓN KLEOS ===================== */
         .kleos-transition {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -222,14 +317,8 @@
             opacity: 1;
             pointer-events: all;
         }
-        .kt-isotype {
-            width: 150px;
-            height: 150px;
-            margin-bottom: 3.5rem;
-        }
-        .kt-ring {
-            transform-origin: 105px 105px;
-        }
+        .kt-isotype { width: 150px; height: 150px; margin-bottom: 3.5rem; }
+        .kt-ring { transform-origin: 105px 105px; }
         @keyframes rotateRingCW { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         @keyframes rotateRingCCW { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
         .kt-ring-1 { animation: rotateRingCW 35s linear infinite; }
@@ -239,22 +328,9 @@
         .kt-ring-5 { animation: rotateRingCW 75s linear infinite; }
         .kt-ring-6 { animation: rotateRingCCW 85s linear infinite; }
         .kt-ring-7 { animation: rotateRingCW 95s linear infinite; }
-        
-        .kt-circle { 
-            fill: none; 
-            stroke: rgba(197, 160, 89, 0.12); 
-            stroke-width: 0.6; 
-        }
-        .kt-star { 
-            fill: rgba(197, 160, 89, 0.85); 
-            animation: starPulse 4s ease-in-out infinite alternate; 
-            opacity: 0; 
-        }
-        @keyframes starPulse { 
-            0%, 20% { opacity: 0; filter: drop-shadow(0 0 0 rgba(197,160,89,0)); } 
-            100% { opacity: 1; filter: drop-shadow(0 0 4px rgba(197,160,89,0.8)); } 
-        }
-        /* Distribuimos el encendido de las estrellas */
+        .kt-circle { fill: none; stroke: rgba(197, 160, 89, 0.12); stroke-width: 0.6; }
+        .kt-star { fill: rgba(197, 160, 89, 0.85); animation: starPulse 4s ease-in-out infinite alternate; opacity: 0; }
+        @keyframes starPulse { 0%, 20% { opacity: 0; filter: drop-shadow(0 0 0 rgba(197,160,89,0)); } 100% { opacity: 1; filter: drop-shadow(0 0 4px rgba(197,160,89,0.8)); } }
         .kt-ring-1 .kt-star { animation-delay: 0.5s; }
         .kt-ring-2 .kt-star { animation-delay: 1.8s; }
         .kt-ring-3 .kt-star { animation-delay: 3.2s; }
@@ -262,132 +338,143 @@
         .kt-ring-5 .kt-star { animation-delay: 2.7s; }
         .kt-ring-6 .kt-star { animation-delay: 4.5s; }
         .kt-ring-7 .kt-star { animation-delay: 0.2s; }
-
-        .kt-text-container {
-            text-align: center;
-            opacity: 0;
-            transition: opacity 0.5s ease;
-            min-height: 80px; 
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: flex-start;
-        }
-        .kt-title {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 1.7rem;
-            color: #F5F5F5;
-            font-weight: 400;
-            margin: 0 0 0.7rem 0;
-            letter-spacing: 0.01em;
-        }
-        .kt-subtitle {
-            font-family: 'JetBrains Mono', Consolas, monospace;
-            font-size: 0.75rem;
-            color: var(--gold);
-            font-weight: 500;
-            margin: 0;
-            letter-spacing: 0.15em;
-            text-transform: uppercase;
-        }
-        .kt-k {
-            font-family: 'Playfair Display', Georgia, serif;
-            font-size: 58px;
-            fill: #C5A059;
-            font-weight: 400;
-        }
+        .kt-text-container { text-align: center; opacity: 0; transition: opacity 0.5s ease; min-height: 80px; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; }
+        .kt-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.7rem; color: #F5F5F5; font-weight: 400; margin: 0 0 0.7rem 0; letter-spacing: 0.01em; }
+        .kt-subtitle { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.75rem; color: var(--gold); font-weight: 500; margin: 0; letter-spacing: 0.15em; text-transform: uppercase; }
+        .kt-k { font-family: 'Playfair Display', Georgia, serif; font-size: 58px; fill: #C5A059; font-weight: 400; }
     </style>
 </head>
 <body>
 
-    <main class="portal-wrapper">
-        
-        <!-- HEADER -->
+    <!-- VISTA 1: FORMULARIO DE ACCESO -->
+    <main id="view-login" class="portal-wrapper">
         <header class="portal-hero">
-            <span class="portal-label">PORTAL KLEOS</span>
-            <h1 class="portal-title">Bienvenido nuevamente.</h1>
-            <p class="portal-subtitle">Accede a tus protocolos utilizando el mismo correo electrónico con el que realizaste tu diagnóstico.</p>
+            <span class="portal-label">ECOSISTEMA KLEOS</span>
+            <h1 class="portal-title">Acceso a tu Perfil.</h1>
+            <p class="portal-subtitle">Ingresa utilizando el mismo correo electrónico con el que realizaste tu diagnóstico.</p>
         </header>
 
-        <!-- FORMULARIO DE ACCESO -->
         <section class="portal-form-card">
             <form id="portal-form" class="portal-form">
                 <div class="portal-form-group">
                     <label for="email" class="portal-form-label">Correo electrónico</label>
-                    <input 
-                        type="email" 
-                        id="email" 
-                        class="portal-input" 
-                        placeholder="nombre@correo.com" 
-                        required 
-                        autocomplete="email"
-                    >
+                    <input type="email" id="email" class="portal-input" placeholder="nombre@correo.com" required autocomplete="email">
                 </div>
-                <button type="submit" class="portal-btn">Continuar</button>
+                <button type="submit" class="portal-btn">Acceder al Perfil</button>
             </form>
         </section>
 
-        <!-- EXPLICACIÓN: CÓMO FUNCIONA -->
-        <section class="portal-how">
-            <h2 class="portal-how-title">¿Cómo funciona?</h2>
-            <div class="portal-how-list">
-                <div class="portal-how-item">
-                    <div class="portal-how-num">1</div>
-                    <div>Introduce el correo utilizado durante tu diagnóstico.</div>
+        <footer class="portal-footer">
+            <p class="portal-footer-note">Tu Perfil KLEOS es tu espacio personal donde residen permanentemente todos tus diagnósticos, informes y protocolos activos.</p>
+        </footer>
+    </main>
+
+    <!-- VISTA 2: DASHBOARD (PERFIL KLEOS) -->
+    <main id="view-dashboard" class="dashboard-container">
+        <header class="dash-header">
+            <div class="dash-seal">PERFIL KLEOS</div>
+            <h1 class="dash-greeting" id="dash-name">Hola, Usuario</h1>
+            
+            <div class="dash-meta">
+                <div class="meta-col">
+                    <span class="meta-label">CORREO ELECTRÓNICO</span>
+                    <span class="meta-value" id="dash-email">usuario@correo.com</span>
                 </div>
-                <div class="portal-how-item">
-                    <div class="portal-how-num">2</div>
-                    <div>Localizaremos automáticamente tus protocolos disponibles.</div>
+                <div class="meta-col">
+                    <span class="meta-label">ID DE PERFIL</span>
+                    <span class="meta-value" id="dash-id">usr_XXXXXXXX</span>
                 </div>
-                <div class="portal-how-item">
-                    <div class="portal-how-num">3</div>
-                    <div>Si tu Lectura Completa está desbloqueada accederás directamente a ella.</div>
+                <div class="meta-col">
+                    <span class="meta-label">ÚLTIMO ACCESO</span>
+                    <span class="meta-value" id="dash-last-access">Hoy</span>
                 </div>
-                <div class="portal-how-item">
-                    <div class="portal-how-num">4</div>
-                    <div>A medida que adquieras nuevos protocolos aparecerán disponibles dentro del mismo portal.</div>
+            </div>
+        </header>
+
+        <section class="dash-protocols">
+            <h2 class="dash-section-title">Tus Protocolos</h2>
+            
+            <div class="protocols-grid" id="protocols-grid">
+                <!-- Se inyecta dinámicamente con JS, aquí va el template base del HTML -->
+                
+                <!-- KIP-001 (Activo por defecto si el servidor lo autoriza) -->
+                <a href="#" class="protocol-card unlocked" id="card-kip001" style="display:none;">
+                    <div class="card-header">
+                        <span class="card-code">KIP-001</span>
+                        <span class="card-icon">✓</span>
+                    </div>
+                    <h3 class="card-title">Diagnóstico</h3>
+                    <div class="card-status">Disponible</div>
+                </a>
+
+                <!-- KIP-002 (Próximamente) -->
+                <div class="protocol-card locked">
+                    <div class="card-header">
+                        <span class="card-code">KIP-002</span>
+                        <span class="card-icon">🔒</span>
+                    </div>
+                    <h3 class="card-title">Posicionamiento</h3>
+                    <div class="card-status">Próximamente</div>
                 </div>
+
+                <!-- KIP-003 (Próximamente) -->
+                <div class="protocol-card locked">
+                    <div class="card-header">
+                        <span class="card-code">KIP-003</span>
+                        <span class="card-icon">🔒</span>
+                    </div>
+                    <h3 class="card-title">Oferta</h3>
+                    <div class="card-status">Próximamente</div>
+                </div>
+
+                <!-- KIP-004 (Próximamente) -->
+                <div class="protocol-card locked">
+                    <div class="card-header">
+                        <span class="card-code">KIP-004</span>
+                        <span class="card-icon">🔒</span>
+                    </div>
+                    <h3 class="card-title">Conversión</h3>
+                    <div class="card-status">Próximamente</div>
+                </div>
+
+                <!-- KIP-005 (Próximamente) -->
+                <div class="protocol-card locked">
+                    <div class="card-header">
+                        <span class="card-code">KIP-005</span>
+                        <span class="card-icon">🔒</span>
+                    </div>
+                    <h3 class="card-title">Operaciones</h3>
+                    <div class="card-status">Próximamente</div>
+                </div>
+
+                <!-- KIP-006 (Próximamente) -->
+                <div class="protocol-card locked">
+                    <div class="card-header">
+                        <span class="card-code">KIP-006</span>
+                        <span class="card-icon">🔒</span>
+                    </div>
+                    <h3 class="card-title">Liderazgo</h3>
+                    <div class="card-status">Próximamente</div>
+                </div>
+
             </div>
         </section>
 
-        <!-- FOOTER -->
-        <footer class="portal-footer">
-            <p class="portal-footer-note">El Portal KLEOS será el punto de acceso permanente a todos tus diagnósticos, informes y protocolos.</p>
+        <footer class="portal-footer" style="margin-top: 6rem; border: none;">
+            <p class="portal-footer-note">KLEOS DIGITAL STUDIO</p>
         </footer>
-
     </main>
 
     <!-- KLEOS INTELLIGENCE TRANSITION™ -->
     <div id="kleos-transition" class="kleos-transition">
         <svg viewBox="0 0 210 210" class="kt-isotype">
-            <g class="kt-ring kt-ring-1">
-                <circle cx="105" cy="105" r="35" class="kt-circle"/>
-                <circle cx="105" cy="70" r="1.5" class="kt-star"/>
-            </g>
-            <g class="kt-ring kt-ring-2">
-                <circle cx="105" cy="105" r="46" class="kt-circle"/>
-                <circle cx="151" cy="105" r="1.5" class="kt-star"/>
-            </g>
-            <g class="kt-ring kt-ring-3">
-                <circle cx="105" cy="105" r="57" class="kt-circle"/>
-                <circle cx="105" cy="162" r="1.5" class="kt-star"/>
-            </g>
-            <g class="kt-ring kt-ring-4">
-                <circle cx="105" cy="105" r="68" class="kt-circle"/>
-                <circle cx="37" cy="105" r="1.5" class="kt-star"/>
-            </g>
-            <g class="kt-ring kt-ring-5">
-                <circle cx="105" cy="105" r="79" class="kt-circle"/>
-                <circle cx="160.86" cy="49.14" r="1.5" class="kt-star"/>
-            </g>
-            <g class="kt-ring kt-ring-6">
-                <circle cx="105" cy="105" r="90" class="kt-circle"/>
-                <circle cx="41.36" cy="168.64" r="1.5" class="kt-star"/>
-            </g>
-            <g class="kt-ring kt-ring-7">
-                <circle cx="105" cy="105" r="101" class="kt-circle"/>
-                <circle cx="105" cy="4" r="1.5" class="kt-star"/>
-            </g>
+            <g class="kt-ring kt-ring-1"><circle cx="105" cy="105" r="35" class="kt-circle"/><circle cx="105" cy="70" r="1.5" class="kt-star"/></g>
+            <g class="kt-ring kt-ring-2"><circle cx="105" cy="105" r="46" class="kt-circle"/><circle cx="151" cy="105" r="1.5" class="kt-star"/></g>
+            <g class="kt-ring kt-ring-3"><circle cx="105" cy="105" r="57" class="kt-circle"/><circle cx="105" cy="162" r="1.5" class="kt-star"/></g>
+            <g class="kt-ring kt-ring-4"><circle cx="105" cy="105" r="68" class="kt-circle"/><circle cx="37" cy="105" r="1.5" class="kt-star"/></g>
+            <g class="kt-ring kt-ring-5"><circle cx="105" cy="105" r="79" class="kt-circle"/><circle cx="160.86" cy="49.14" r="1.5" class="kt-star"/></g>
+            <g class="kt-ring kt-ring-6"><circle cx="105" cy="105" r="90" class="kt-circle"/><circle cx="41.36" cy="168.64" r="1.5" class="kt-star"/></g>
+            <g class="kt-ring kt-ring-7"><circle cx="105" cy="105" r="101" class="kt-circle"/><circle cx="105" cy="4" r="1.5" class="kt-star"/></g>
             <text x="105" y="124" text-anchor="middle" class="kt-k">K</text>
         </svg>
         <div id="kt-text-container" class="kt-text-container">
@@ -409,11 +496,12 @@
             btn.style.opacity = '0.7';
             btn.style.pointerEvents = 'none';
 
-            // Limpiar error anterior si existe
+            // Limpiar error anterior
             const oldErr = document.getElementById('portal-error');
             if(oldErr) oldErr.remove();
             
             try {
+                // LLAMADA AL ENDPOINT CREADO EN LA ETAPA ANTERIOR
                 const response = await fetch('/api/portal-auth', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -423,82 +511,96 @@
                 const data = await response.json();
 
                 if (data.success && data.exists) {
-                    // FASE 1.5: Usuario localizado. Token de Sesión generado.
+                    // EL USUARIO EXISTE: Ocultar login, lanzar transición y luego mostrar el Dashboard
                     const overlay = document.getElementById('kleos-transition');
                     overlay.classList.add('is-active');
-                    runIntelligenceSequence(data.token);
+                    runIntelligenceSequence(data);
                 } else {
-                    // Mostrar error elegante
-                    const errorMsg = document.createElement('p');
-                    errorMsg.id = 'portal-error';
-                    errorMsg.className = 'mono';
-                    errorMsg.style.cssText = 'color: #D95B4F; font-size: 0.8rem; margin-top: 1.5rem; text-align: center; letter-spacing: 0.05em; line-height: 1.5;';
-                    errorMsg.textContent = data.message || "No se encontró ningún diagnóstico asociado a este correo.";
-                    this.appendChild(errorMsg);
-                    
-                    // Restaurar botón
-                    btn.textContent = originalBtnText;
-                    btn.style.opacity = '1';
-                    btn.style.pointerEvents = 'all';
+                    mostrarError(this, data.message || "No se encontró ninguna cuenta asociada a este correo.", originalBtnText, btn);
                 }
             } catch (err) {
-                const errorMsg = document.createElement('p');
-                errorMsg.id = 'portal-error';
-                errorMsg.className = 'mono';
-                errorMsg.style.cssText = 'color: #D95B4F; font-size: 0.8rem; margin-top: 1.5rem; text-align: center; letter-spacing: 0.05em; line-height: 1.5;';
-                errorMsg.textContent = "Error de conexión. Por favor intente más tarde.";
-                this.appendChild(errorMsg);
-                
-                btn.textContent = originalBtnText;
-                btn.style.opacity = '1';
-                btn.style.pointerEvents = 'all';
+                mostrarError(this, "Error de conexión. Por favor intente más tarde.", originalBtnText, btn);
             }
         });
 
-        function runIntelligenceSequence(diagnosisId) {
+        function mostrarError(form, mensaje, oldText, btn) {
+            const errorMsg = document.createElement('p');
+            errorMsg.id = 'portal-error';
+            errorMsg.className = 'mono';
+            errorMsg.style.cssText = 'color: #D95B4F; font-size: 0.8rem; margin-top: 1.5rem; text-align: center; letter-spacing: 0.05em; line-height: 1.5;';
+            errorMsg.textContent = mensaje;
+            form.appendChild(errorMsg);
+            
+            btn.textContent = oldText;
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'all';
+        }
+
+        function runIntelligenceSequence(data) {
             const titleEl = document.getElementById('kt-title');
             const subEl = document.getElementById('kt-subtitle');
             const textContainer = document.getElementById('kt-text-container');
             
             const steps = [
-                { t: "Estamos localizando tu diagnóstico.", s: "Recuperando tu perfil estratégico...", d: 2000 },
-                { t: "Analizando protocolos disponibles.", s: "Preparando la información asociada a tu perfil.", d: 2000 },
-                { t: "Preparando tu experiencia KLEOS.", s: "Todo está listo.", d: 1500 }
+                { t: "Autenticando identidad.", s: "Localizando perfil estratégico...", d: 1800 },
+                { t: "Analizando arquitectura.", s: "Desbloqueando protocolos asociados.", d: 1800 },
+                { t: "Preparando entorno KLEOS.", s: "Todo está listo.", d: 1200 }
             ];
             
             let i = 0;
             
             function showStep() {
                 if (i >= steps.length) {
-                    // Redirigir a lectura completa enviando únicamente el Session Token
-                    // En el futuro, esto redirigirá al dashboard del usuario, 
-                    // pero por ahora asume KIP-001 como default y abre su lectura
-                    document.body.style.transition = "opacity 0.8s ease";
-                    document.body.style.opacity = "0";
+                    // La transición terminó. Cambiamos las vistas por detrás del telón.
+                    document.getElementById('view-login').style.display = 'none';
+                    document.getElementById('view-dashboard').style.display = 'flex';
+                    
+                    // Inyectar datos del perfil en el Dashboard
+                    prepararPerfil(data);
+
+                    // Hacer fade out al overlay
+                    const overlay = document.getElementById('kleos-transition');
+                    overlay.style.opacity = '0';
                     setTimeout(() => {
-                        window.location.href = 'lectura.html?token=' + diagnosisId; // El backend nos devolvió un 'token' de sesión, lo inyectamos en la lectura
-                    }, 800);
+                        overlay.classList.remove('is-active');
+                        overlay.style.opacity = '1'; // Reset for future
+                    }, 600);
                     return;
                 }
                 
-                // Fade out del texto
                 textContainer.style.opacity = 0;
-                
                 setTimeout(() => {
                     titleEl.textContent = steps[i].t;
                     subEl.textContent = steps[i].s;
-                    
-                    // Fade in del texto
                     textContainer.style.opacity = 1;
                     
                     setTimeout(() => {
                         i++;
                         showStep();
                     }, steps[i].d);
-                }, 500); // Duración del fade out
+                }, 500);
             }
-            
             setTimeout(showStep, 400);
+        }
+
+        function prepararPerfil(data) {
+            // Llenar metadatos del header
+            const firstName = data.user.name ? data.user.name.split(' ')[0] : "Usuario";
+            document.getElementById('dash-name').textContent = `Hola, ${firstName}`;
+            document.getElementById('dash-email').textContent = data.user.email;
+            document.getElementById('dash-id').textContent = data.user.id.toUpperCase();
+
+            // Configurar la fecha (Hoy)
+            const dateOpts = { day: '2-digit', month: 'short', year: 'numeric' };
+            document.getElementById('dash-last-access').textContent = new Date().toLocaleDateString('es-ES', dateOpts).toUpperCase();
+
+            // Activar las tarjetas de los protocolos que posee
+            const cardKip001 = document.getElementById('card-kip001');
+            if (data.protocols && data.protocols.includes("KIP-001")) {
+                cardKip001.style.display = "flex";
+                // Este enlace sí debe llamar a la lectura pasándole el token por seguridad
+                cardKip001.href = `lectura.html?token=${data.token}`;
+            }
         }
     </script>
 </body>
