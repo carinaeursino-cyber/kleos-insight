@@ -311,7 +311,6 @@
 
         <!-- FORMULARIO DE ACCESO -->
         <section class="portal-form-card">
-            <!-- No hay lógica real aún, onsubmit previene recarga -->
             <form id="portal-form" class="portal-form">
                 <div class="portal-form-group">
                     <label for="email" class="portal-form-label">Correo electrónico</label>
@@ -398,25 +397,65 @@
     </div>
 
     <script>
-        document.getElementById('portal-form').addEventListener('submit', function(e) {
+        document.getElementById('portal-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const btn = this.querySelector('.portal-btn');
+            const emailInput = document.getElementById('email');
+            const email = emailInput.value.trim();
+            const originalBtnText = btn.textContent;
+            
             btn.textContent = 'Comprobando acceso...';
             btn.style.opacity = '0.7';
             btn.style.pointerEvents = 'none';
+
+            // Limpiar error anterior si existe
+            const oldErr = document.getElementById('portal-error');
+            if(oldErr) oldErr.remove();
             
-            // Paso 1: Botón carga suavemente, luego inicia fundido
-            setTimeout(() => {
-                const overlay = document.getElementById('kleos-transition');
-                overlay.classList.add('is-active');
+            try {
+                const response = await fetch('/api/portal-auth', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
+                });
+
+                const data = await response.json();
+
+                if (data.success && data.exists) {
+                    // FASE 1.5: Usuario localizado. Token de Sesión generado.
+                    const overlay = document.getElementById('kleos-transition');
+                    overlay.classList.add('is-active');
+                    runIntelligenceSequence(data.token);
+                } else {
+                    // Mostrar error elegante
+                    const errorMsg = document.createElement('p');
+                    errorMsg.id = 'portal-error';
+                    errorMsg.className = 'mono';
+                    errorMsg.style.cssText = 'color: #D95B4F; font-size: 0.8rem; margin-top: 1.5rem; text-align: center; letter-spacing: 0.05em; line-height: 1.5;';
+                    errorMsg.textContent = data.message || "No se encontró ningún diagnóstico asociado a este correo.";
+                    this.appendChild(errorMsg);
+                    
+                    // Restaurar botón
+                    btn.textContent = originalBtnText;
+                    btn.style.opacity = '1';
+                    btn.style.pointerEvents = 'all';
+                }
+            } catch (err) {
+                const errorMsg = document.createElement('p');
+                errorMsg.id = 'portal-error';
+                errorMsg.className = 'mono';
+                errorMsg.style.cssText = 'color: #D95B4F; font-size: 0.8rem; margin-top: 1.5rem; text-align: center; letter-spacing: 0.05em; line-height: 1.5;';
+                errorMsg.textContent = "Error de conexión. Por favor intente más tarde.";
+                this.appendChild(errorMsg);
                 
-                // Iniciar secuencia de mensajes
-                runIntelligenceSequence();
-            }, 400); 
+                btn.textContent = originalBtnText;
+                btn.style.opacity = '1';
+                btn.style.pointerEvents = 'all';
+            }
         });
 
-        function runIntelligenceSequence() {
+        function runIntelligenceSequence(diagnosisId) {
             const titleEl = document.getElementById('kt-title');
             const subEl = document.getElementById('kt-subtitle');
             const textContainer = document.getElementById('kt-text-container');
@@ -431,11 +470,13 @@
             
             function showStep() {
                 if (i >= steps.length) {
-                    // Finalización: Navegar a la Lectura Completa con fundido
+                    // Redirigir a lectura completa enviando únicamente el Session Token
+                    // En el futuro, esto redirigirá al dashboard del usuario, 
+                    // pero por ahora asume KIP-001 como default y abre su lectura
                     document.body.style.transition = "opacity 0.8s ease";
                     document.body.style.opacity = "0";
                     setTimeout(() => {
-                        window.location.href = 'lectura.html?test=true';
+                        window.location.href = 'lectura.html?token=' + diagnosisId; // El backend nos devolvió un 'token' de sesión, lo inyectamos en la lectura
                     }, 800);
                     return;
                 }
@@ -457,9 +498,8 @@
                 }, 500); // Duración del fade out
             }
             
-            // Pequeño retraso para que termine de entrar el overlay
             setTimeout(showStep, 400);
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1793cba293ed7ef',t:'MTc4MzQ1MjM0OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

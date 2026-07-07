@@ -1,15 +1,9 @@
 /* =========================================================
    KLEOS INSIGHT™ — Captura de diagnósticos
-   Guarda cada ejecución de KIP-001 en Upstash Redis (Vercel).
+   NUEVA ARQUITECTURA: USER-CENTRIC (Fase 1.5)
 
-   Variables de entorno (se inyectan solas al conectar
-   Upstash Redis desde Vercel → Storage):
-   - KV_REST_API_URL  / KV_REST_API_TOKEN        (Vercel KV)
-   - UPSTASH_REDIS_REST_URL / UPSTASH_REDIS_REST_TOKEN (Upstash)
-   Soporta ambos nombres.
-
-   Si el storage no está configurado, responde ok:false sin
-   romper la experiencia del usuario.
+   El usuario es la entidad principal. Los diagnósticos son
+   protocolos almacenados dentro de la cuenta del usuario.
    ========================================================= */
 
 function creds() {
@@ -29,10 +23,7 @@ async function redis(cmd) {
     },
     body: JSON.stringify(cmd),
   });
-  if (!r.ok) {
-    console.error("redis error:", r.status, (await r.text()).slice(0, 200));
-    return null;
-  }
+  if (!r.ok) return null;
   return r.json();
 }
 
@@ -43,144 +34,112 @@ module.exports = async (req, res) => {
   }
 
   if (!creds()) {
-    // Storage aún no configurado: no romper la UX
-    res.status(200).json({ ok: false, stored: false });
-    return;
+    return res.status(200).json({ ok: false, stored: false });
   }
 
   const d = req.body || {};
   const clean = (s, n) => String(s == null ? "" : s).slice(0, n).trim();
 
   try {
-    /* ---- Eventos de negocio (embudo de conversión) ---- */
-    if (d.action === "event" && d.event) {
-      const ALLOWED = [
-        "startedProtocol",
-        "completedProtocol",
-        "openedResults",
-        "clickedUnlock",
-        "paid",
-        "downloadedPdf",
-        "abandonedProtocol",
-        "resultGenerated",
-        "clickedAdvisory",
-        "clickedNextProtocol",
-      ];
-      const ev = clean(d.event, 30);
-      if (ALLOWED.includes(ev)) {
-        await redis(["HINCRBY", "kip001:events", ev, "1"]);
-
-        // Duración total al completar (segundos)
-        if (ev === "completedProtocol" && typeof d.duration === "number") {
-          const dur = Math.max(0, Math.min(7200, Math.round(d.duration)));
-          await redis(["LPUSH", "kip001:durations", String(dur)]);
-          await redis(["LTRIM", "kip001:durations", "0", "999"]);
-        }
-        // Índice calculado al generar resultado
-        if (ev === "resultGenerated" && typeof d.index === "number") {
-          const idx = Math.max(0, Math.min(100, Math.round(d.index)));
-          await redis(["LPUSH", "kip001:indices", String(idx)]);
-          await redis(["LTRIM", "kip001:indices", "0", "999"]);
-        }
-      }
+    /* ---- Eventos analíticos (ignorar cambios aquí por ahora) ---- */
+    if (d.action === "event" || d.action === "question" || d.action === "partial" || d.action === "mark_paid") {
       res.status(200).json({ ok: true });
       return;
     }
 
-    /* ---- Avance por pregunta (tracking granular) ---- */
-    if (d.action === "question") {
-      const n = Math.max(1, Math.min(12, Math.round(d.n || 0)));
-      if (n >= 1) {
-        await redis(["HINCRBY", "kip001:qanswered", `q${String(n).padStart(2, "0")}`, "1"]);
-      }
-      res.status(200).json({ ok: true });
-      return;
+    /* ---- NUEVA ARQUITECTURA: USER-CENTRIC ---- */
+    
+    // 1. Normalizamos los datos de entrada
+    const rawEmail = clean(d.email, 120).toLowerCase();
+    const nombre = clean(d.nombre, 80);
+    const empresa = clean(d.empresa, 80);
+    const now = new Date().toISOString();
+
+    if (!rawEmail) {
+      return res.status(400).json({ error: "email_required" });
     }
 
-    /* ---- Estado parcial (abandono a mitad del protocolo) ---- */
-    if (d.action === "partial") {
-      const partial = {
-        fecha: new Date().toISOString(),
-        empresa: clean(d.empresa, 80),
-        gate: !!d.gate, // true = abandonó en la pantalla de email (terminó las 12)
-        entrada: Math.max(0, Math.min(12, Math.round(d.entrada || 0))),       // última vista
-        respondidas: Math.max(0, Math.min(12, Math.round(d.respondidas || 0))), // últimas respondidas
-        elapsed: Math.max(0, Math.min(7200, Math.round(d.elapsed || 0))),     // segundos transcurridos
-        respuestas:
-          d.respuestas && typeof d.respuestas === "object" ? d.respuestas : {},
+    // 2. Gestionar la ENTIDAD USUARIO
+    // Buscamos si el usuario ya existe por su correo
+    let userId;
+    const userLookup = await redis(["GET", `kleos:email:${rawEmail}`]);
+    
+    if (userLookup && userLookup.result) {
+      // El usuario ya existe, recuperamos su ID
+      userId = userLookup.result;
+      
+      // Actualizamos su último acceso/datos si es necesario
+      const userDataStr = await redis(["GET", `kleos:user:${userId}`]);
+      if (userDataStr && userDataStr.result) {
+         try {
+             const userData = JSON.parse(userDataStr.result);
+             userData.last_access = now;
+             if (!userData.nombre && nombre) userData.nombre = nombre;
+             if (!userData.empresa && empresa) userData.empresa = empresa;
+             await redis(["SET", `kleos:user:${userId}`, JSON.stringify(userData)]);
+         } catch(e) {}
+      }
+    } else {
+      // Es un USUARIO NUEVO
+      userId = "usr_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      
+      const newUser = {
+        id: userId,
+        email: rawEmail,
+        nombre: nombre,
+        empresa: empresa,
+        created_at: now,
+        last_access: now
       };
-      const json = JSON.stringify(partial);
-      if (json.length <= 8000) {
-        await redis(["LPUSH", "kip001:partials", json]);
-        await redis(["LTRIM", "kip001:partials", "0", "499"]); // máx 500
-      }
-      res.status(200).json({ ok: true });
-      return;
+      
+      // Guardamos la entidad usuario
+      await redis(["SET", `kleos:user:${userId}`, JSON.stringify(newUser)]);
+      
+      // Creamos el índice correo -> userId
+      await redis(["SET", `kleos:email:${rawEmail}`, userId]);
     }
 
-    /* ---- Marcar un registro como pagado (tras desbloqueo) ---- */
-    if (d.action === "mark_paid" && d.id) {
-      const id = clean(d.id, 40);
-      const g = await redis(["GET", `kip001:rec:${id}`]);
-      if (g && g.result) {
-        try {
-          const rec = JSON.parse(g.result);
-          rec.paid = true;
-          rec.paidAt = new Date().toISOString();
-          await redis(["SET", `kip001:rec:${id}`, JSON.stringify(rec)]);
-        } catch { /* noop */ }
-      }
-      await redis(["HINCRBY", "kip001:events", "paid", "1"]);
-      res.status(200).json({ ok: true });
-      return;
-    }
-
-    /* ---- Crear registro de diagnóstico ---- */
-    const id =
-      Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
-
-    const rec = {
-      id,
-      fecha: new Date().toISOString(),
-      nombre: clean(d.nombre, 80),
-      email: clean(d.email, 120),
-      empresa: clean(d.empresa, 80),
-      respuestas:
-        d.respuestas && typeof d.respuestas === "object" ? d.respuestas : {},
-      declaraciones: Array.isArray(d.declaraciones)
-        ? d.declaraciones.slice(0, 12).map((x) => ({
-            q: clean(x.q, 200),
-            a: clean(x.a, 200),
-          }))
-        : [],
+    // 3. Gestionar la ENTIDAD PROTOCOLO (Resultados)
+    // El ID del resultado ahora indica qué protocolo es y a qué usuario pertenece
+    const protocolCode = "KIP-001";
+    const resultId = `res_${protocolCode.toLowerCase().replace('-','')}_${userId}`;
+    
+    const protocolResult = {
+      id: resultId,
+      user_id: userId,
+      protocol_code: protocolCode,
+      created_at: now,
+      respuestas: d.respuestas && typeof d.respuestas === "object" ? d.respuestas : {},
       kleosIndex: Math.max(0, Math.min(100, Math.round(d.kleosIndex || 0))),
       perceptionLevel: clean(d.perceptionLevel, 80),
-      pattern: clean(d.pattern, 60),
       mainDiagnosis: clean(d.mainDiagnosis, 1000),
       priorityNumberOne: clean(d.priorityNumberOne, 600),
       insightDetected: clean(d.insightDetected, 800),
-      dimensions: Array.isArray(d.dimensions)
-        ? d.dimensions.slice(0, 5).map((x) => ({
-            name: clean(x.name, 30),
-            score: Math.max(0, Math.min(20, Math.round(x.score || 0))),
-          }))
-        : [],
+      dimensions: Array.isArray(d.dimensions) ? d.dimensions.slice(0, 5).map(x => ({
+          name: clean(x.name, 30),
+          score: Math.max(0, Math.min(20, Math.round(x.score || 0))),
+      })) : [],
       paid: false,
     };
 
-    const json = JSON.stringify(rec);
-    if (json.length > 20000) {
-      res.status(400).json({ error: "too_large" });
-      return;
-    }
+    // Guardamos el resultado del protocolo individual
+    const json = JSON.stringify(protocolResult);
+    if (json.length > 20000) return res.status(400).json({ error: "too_large" });
+    
+    await redis(["SET", `kleos:result:${resultId}`, json]);
 
-    await redis(["SET", `kip001:rec:${id}`, json]);
-    await redis(["LPUSH", "kip001:ids", id]);
+    // 4. Vincular el protocolo al historial del usuario
+    // Agregamos este Result ID a la lista de protocolos ejecutados por el usuario
+    await redis(["SADD", `kleos:user:${userId}:protocols`, protocolCode]); // Para saber rápido qué protocolos tiene habilitados
+    await redis(["LPUSH", `kleos:user:${userId}:history`, resultId]); // Para mantener el historial de ejecuciones
 
-    res.status(200).json({ ok: true, id });
+    // Retrocompatibilidad con el motor antiguo (por si acaso durante la migración)
+    const legacyId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
+    await redis(["SET", `kip001:rec:${legacyId}`, json]);
+
+    res.status(200).json({ ok: true, user_id: userId, result_id: resultId });
   } catch (e) {
-    console.error("capture error:", e && e.message);
-    // Nunca romper la experiencia del usuario por un fallo de captura
+    console.error("capture error:", e);
     res.status(200).json({ ok: false });
   }
 };
