@@ -232,15 +232,19 @@
 .kip-costo-header { text-align: center; margin-bottom: 3rem; }
 .kip-costo-title { font-size: 1.45rem; font-weight: 600; margin-bottom: 0.5rem; }
 .kip-costo-subtitle { font-size: 0.95rem; color: var(--text-60); }
-.kip-costo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; position: relative; }
-.kip-costo-grid::before { content: "→"; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 2.4rem; color: var(--gold); z-index: 2; font-weight: 300; opacity: 0.7; text-shadow: 0 0 30px rgba(197,160,89,0.3); }
-@media (max-width: 768px) { .kip-costo-grid { grid-template-columns: 1fr; gap: 1.5rem; } .kip-costo-grid::before { display: none; } }
-.kip-costo-card { background: #111111; border: 1px solid var(--gold-15); border-radius: 16px; padding: 2.2rem; position: relative; overflow: hidden; }
-.kip-costo-card.loss { border-color: rgba(248, 113, 113, 0.25); border-right: none; border-radius: 16px 0 0 16px; }
-.kip-costo-card.loss::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #f87171, transparent); }
-.kip-costo-card.opportunity { border-color: var(--gold-15); border-left: none; border-radius: 0 16px 16px 0; box-shadow: 0 0 30px rgba(197, 160, 89, 0.06); }
-.kip-costo-card.opportunity::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold)); }
-@media (max-width: 768px) { .kip-costo-card.loss { border-right: 1px solid rgba(248, 113, 113, 0.25); border-radius: 16px; } .kip-costo-card.opportunity { border-left: 1px solid var(--gold-15); border-radius: 16px; } }
+@keyframes rotateLight { 0% { transform: translate(-50%, -50%) rotate(0deg); } 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+.kip-costo-wrapper { position: relative; border-radius: 18px; padding: 2px; overflow: hidden; z-index: 1; }
+.kip-costo-wrapper::before { content: ''; position: absolute; top: 50%; left: 50%; width: 250%; height: 250%; background: conic-gradient(from 0deg, transparent 75%, var(--gold) 100%); transform: translate(-50%, -50%); animation: rotateLight 4s linear infinite; z-index: -2; }
+.kip-costo-wrapper::after { content: ''; position: absolute; inset: 2px; background: #0B0B0B; border-radius: 16px; z-index: -1; }
+.kip-costo-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0; align-items: stretch; position: relative; z-index: 1; border-radius: 16px; overflow: hidden; background: #111111; }
+@media (max-width: 768px) { .kip-costo-grid { grid-template-columns: 1fr; gap: 1px; background: rgba(197,160,89,0.1); } }
+.kip-costo-card { background: #111111; padding: 2.5rem; position: relative; z-index: 1; }
+.kip-costo-card.loss { border-radius: 16px 0 0 16px; }
+.kip-costo-card.loss::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, #f87171, transparent); opacity: 0.5; }
+.kip-costo-card.opportunity { border-radius: 0 16px 16px 0; box-shadow: -10px 0 30px rgba(0,0,0,0.5); }
+.kip-costo-card.opportunity::before { content: ""; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: linear-gradient(90deg, transparent, var(--gold)); opacity: 0.5; }
+@media (max-width: 768px) { .kip-costo-card.loss { border-radius: 16px 16px 0 0; } .kip-costo-card.opportunity { border-radius: 0 0 16px 16px; box-shadow: none; } }
+
 .kip-costo-card-icon { font-size: 2rem; margin-bottom: 0.6rem; display: block; }
 .kip-costo-card-title { font-size: 1.1rem; font-weight: 600; margin-bottom: 0.6rem; }
 .kip-costo-card.loss .kip-costo-card-title { color: #f87171; }
@@ -254,7 +258,7 @@
 .kip-costo-list.loss li::before { content: "╳"; position: absolute; left: 0; color: rgba(248, 113, 113, 0.5); font-size: 0.75rem; }
 .kip-costo-list.opportunity li::before { content: "✓"; position: absolute; left: 0; color: var(--gold); font-size: 0.75rem; font-weight: 700; }
 
-.kip-prioridad { background: #0B0B0C; border: 1px solid rgba(197,160,89,0.12); border-radius: 20px; padding: 2.2rem 3.5rem; margin-bottom: 3.5rem; display: grid; grid-template-columns: 110px 1fr 200px; gap: 3rem; align-items: center; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+.kip-prioridad { background: #0B0B0C; border: 1px solid rgba(197,160,89,0.12); border-radius: 20px; padding: 2.2rem 3.5rem; margin-bottom: 3.5rem; display: grid; grid-template-columns: 110px 1fr 240px; gap: 3rem; align-items: center; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
 .kip-prioridad:hover { border-color: rgba(197,160,89,0.25); box-shadow: 0 0 40px rgba(197,160,89,0.05); }
 .kip-prioridad-circle { width: 108px; height: 108px; border: 1.5px solid var(--gold); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold); font-weight: 600; box-shadow: 0 0 24px rgba(197, 160, 89, 0.18); text-align: center; }
 .kip-prioridad-circle .label { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; display: block; text-align: center; line-height: 1; margin-bottom: 4px; }
@@ -264,19 +268,34 @@
 .kip-prioridad-title { font-family: 'Playfair Display', Georgia, serif; font-size: 1.6rem; font-weight: 300; line-height: 1.2; color: #F5F5F5; letter-spacing: -0.01em; }
 .kip-prioridad-text { font-family: 'Inter', system-ui, sans-serif; font-weight: 300; font-size: 0.9rem; color: rgba(245,245,245,0.65); line-height: 1.6; max-width: 46ch; }
 .kip-prioridad-icon { display: flex; align-items: center; justify-content: center; opacity: 0.78; }
-.kip-prioridad-icon img { width: 100%; max-width: 200px; height: auto; display: block; }
+.kip-prioridad-icon img { width: 100%; max-width: 240px; height: auto; display: block; transform: scale(1.15); }
 
-.kip-hoja-ruta { background: #0B0B0B; border: 1px solid var(--gold-15); border-radius: 20px; padding: 3rem 3.5rem; margin-bottom: 3.5rem; display: grid; grid-template-columns: 1.1fr 1fr 1fr; gap: 2.5rem; align-items: center; }
-.kip-hoja-ruta-text h2 { font-size: 1.55rem; font-weight: 600; line-height: 1.3; margin-bottom: 1rem; }
-.kip-hoja-ruta-text p { font-size: 0.95rem; color: var(--text-60); line-height: 1.6; }
-.kip-hoja-ruta-benefits { display: flex; flex-direction: column; gap: 0.7rem; }
-.kip-hoja-ruta-benefits li { font-size: 0.92rem; color: var(--text-60); display: flex; align-items: flex-start; gap: 0.6rem; }
-.kip-hoja-ruta-benefits li::before { content: "✓"; color: var(--gold); font-weight: 700; }
-.kip-hoja-ruta-cta { background: #111111; border: 1px solid var(--gold-15); border-radius: 16px; padding: 2rem; text-align: center; }
-.kip-hoja-ruta-cta .icon { font-size: 2.2rem; margin-bottom: 0.8rem; color: var(--gold); }
-.kip-hoja-ruta-cta h3 { font-size: 1.15rem; font-weight: 600; margin-bottom: 1.4rem; line-height: 1.3; }
-.kip-hoja-ruta-cta button { background: var(--gold); color: #0B0B0B; border: none; padding: 0.9rem 2.2rem; border-radius: 999px; font-weight: 700; font-size: 0.9rem; cursor: pointer; transition: all 0.3s ease; }
-.kip-hoja-ruta-cta button:hover { background: #E5C383; transform: translateY(-2px); }
+/* HOJA DE RUTA / SIGUIENTE ETAPA */
+.kip-hoja-ruta { background: linear-gradient(145deg, #111111 0%, #080808 100%); border: 1px solid var(--gold-15); border-radius: 24px; padding: 4rem; margin-bottom: 4rem; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: center; position: relative; overflow: hidden; }
+.kip-hoja-ruta::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 50%); pointer-events: none; }
+.kip-ruta-left { position: relative; z-index: 1; }
+.kip-ruta-label { color: var(--gold); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; display: inline-block; border: 1px solid var(--gold-30); padding: 0.4rem 1rem; border-radius: 100px; background: rgba(212, 175, 55, 0.05); }
+.kip-ruta-title { font-size: 1.85rem; font-weight: 500; line-height: 1.35; margin-bottom: 1.2rem; color: #FFFFFF; font-family: 'Playfair Display', Georgia, serif; }
+.kip-ruta-subtitle { font-size: 1.05rem; color: var(--gold); line-height: 1.6; margin-bottom: 2.5rem; font-weight: 500; }
+.kip-ruta-list { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-bottom: 2.5rem; }
+.kip-ruta-item { display: flex; align-items: flex-start; gap: 1rem; font-size: 0.95rem; color: var(--text-80); line-height: 1.5; font-family: 'Inter', system-ui, sans-serif; }
+@keyframes goldTwinkle { 0%, 100% { opacity: 0.3; box-shadow: 0 0 0px rgba(212,175,55,0); transform: scale(0.8); } 50% { opacity: 1; box-shadow: 0 0 8px rgba(212,175,55,0.8); transform: scale(1.2); } }
+.ruta-icon { display: block; width: 6px; height: 6px; background-color: var(--gold); border-radius: 50%; margin-top: 0.45rem; flex-shrink: 0; animation: goldTwinkle 2s infinite ease-in-out; }
+.kip-ruta-item:nth-child(2) .ruta-icon { animation-delay: 0.3s; }
+.kip-ruta-item:nth-child(3) .ruta-icon { animation-delay: 0.8s; }
+.kip-ruta-item:nth-child(4) .ruta-icon { animation-delay: 0.1s; }
+.kip-ruta-item:nth-child(5) .ruta-icon { animation-delay: 0.6s; }
+.kip-ruta-item:nth-child(6) .ruta-icon { animation-delay: 0.4s; }
+.kip-ruta-note { font-size: 0.85rem; color: var(--text-40); line-height: 1.5; padding-top: 2rem; border-top: 1px solid var(--gold-15); font-family: 'Inter', system-ui, sans-serif; }
+.kip-ruta-cta { background: #000000; border: 1px solid var(--gold-15); border-radius: 20px; padding: 3.5rem 2.5rem; text-align: center; position: relative; z-index: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; }
+.kip-ruta-cta .lock-icon { font-size: 2.2rem; margin-bottom: 1.5rem; color: var(--gold); background: rgba(212, 175, 55, 0.08); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--gold-15); }
+.cta-pretitle { color: var(--gold); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.15em; margin-bottom: 0.7rem; font-family: 'Inter', system-ui, sans-serif; }
+.cta-title { font-size: 1.8rem; font-weight: 500; color: #FFFFFF; line-height: 1.25; margin-bottom: 2.5rem; font-family: 'Playfair Display', Georgia, serif; }
+.btn-ruta { background: var(--gold); color: #000000; border: none; padding: 1.1rem 2.2rem; border-radius: 100px; font-size: 0.95rem; font-weight: 700; cursor: pointer; width: 100%; transition: all 0.3s ease; margin-bottom: 1.5rem; font-family: 'Inter', system-ui, sans-serif; letter-spacing: 0.02em; }
+.btn-ruta:hover { background: #E5C383; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(212, 175, 55, 0.25); }
+.cta-footnote { font-size: 0.8rem; color: var(--text-60); line-height: 1.5; font-family: 'Inter', system-ui, sans-serif; }
+@media (max-width: 992px) { .kip-hoja-ruta { grid-template-columns: 1fr; padding: 3rem 2rem; gap: 3rem; } }
+
 
 .kip-footer { text-align: center; margin-top: 5rem; padding-top: 2.5rem; border-top: 1px solid var(--gold-15); }
 .kip-footer .brand { font-family: 'Playfair Display', Georgia, serif; font-size: 1.25rem; font-weight: 600; color: var(--gold); letter-spacing: 0.05em; }
@@ -517,6 +536,7 @@
 <h2 class="kip-costo-title">El Costo de No Resolverlo</h2>
 <p class="kip-costo-subtitle">Toda decisión tiene un costo. Pero también lo tiene no tomar ninguna.</p>
 </div>
+<div class="kip-costo-wrapper">
 <div class="kip-costo-grid">
 <div class="kip-costo-card loss">
 <h3 class="kip-costo-card-title">El costo de mantener esta situación</h3>
@@ -540,6 +560,7 @@
 </div>
 </div>
 </div>
+</div>
 
 <div class="kip-prioridad">
 <div class="kip-prioridad-circle">
@@ -552,7 +573,7 @@
 <p class="kip-prioridad-text">Antes de invertir más en publicidad o contenido, asegúrate de que el mercado entienda por qué eres diferente y por qué elegirte a ti es la mejor decisión.</p>
 </div>
 <div class="kip-prioridad-icon">
-<img src="assets/images/icono.png" alt="Icono estratégico" width="180" height="180">
+<img src="assets/images/icono.png" alt="Icono estratégico" width="240" height="240">
 </div>
 </div>
 
@@ -565,12 +586,12 @@
 <p class="kip-ruta-subtitle">La Hoja de Ruta KLEOS transforma tu diagnóstico en un plan estratégico personalizado con prioridades claras, acciones concretas y recomendaciones adaptadas a los resultados obtenidos.</p>
 
 <div class="kip-ruta-list">
-<div class="kip-ruta-item"><span class="ruta-icon">✦</span> Prioridades ordenadas según el impacto real en tu negocio.</div>
-<div class="kip-ruta-item"><span class="ruta-icon">✦</span> Acciones concretas que puedes comenzar a implementar desde hoy.</div>
-<div class="kip-ruta-item"><span class="ruta-icon">✦</span> Explicación estratégica del porqué de cada recomendación.</div>
-<div class="kip-ruta-item"><span class="ruta-icon">✦</span> Riesgos que debes evitar durante la implementación.</div>
-<div class="kip-ruta-item"><span class="ruta-icon">✦</span> Plan de trabajo organizado por etapas y prioridades.</div>
-<div class="kip-ruta-item"><span class="ruta-icon">✦</span> Recomendaciones personalizadas generadas según tu diagnóstico.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Prioridades ordenadas según el impacto real en tu negocio.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Acciones concretas que puedes comenzar a implementar desde hoy.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Explicación estratégica del porqué de cada recomendación.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Riesgos que debes evitar durante la implementación.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Plan de trabajo organizado por etapas y prioridades.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Recomendaciones personalizadas generadas según tu diagnóstico.</div>
 </div>
 
 <p class="kip-ruta-note">La Hoja de Ruta no pretende resolver completamente cada dimensión del negocio. Su objetivo es ofrecerte una dirección estratégica clara, priorizada y accionable para que puedas comenzar a generar mejoras reales desde el primer día.</p>
@@ -733,5 +754,5 @@ doc.save('KIP-001_Informe_Ejecutivo.pdf');
 window.generarPDF = generarPDF;
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1725948db9e14a0',t:'MTc4MzM4MDExNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1725948db9e14a0',t:'MTc4MzM4MDExNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1781a862d61e845',t:'MTc4MzQ0MDQ2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
