@@ -24,17 +24,18 @@
 @media (max-width: 900px) { .kip-header-premium { flex-wrap: wrap; gap: 1rem; padding: 1.1rem 1.4rem; } .kip-header-protocol { order: 3; width: 100%; text-align: left; font-size: 0.65rem; padding-top: 0.4rem; border-top: 1px solid rgba(197, 160, 89, 0.1); margin-top: 0.6rem; } .kip-header-button { font-size: 0.65rem; padding: 0.6rem 1.1rem; } }
 @media (max-width: 480px) { .kip-header-premium { flex-direction: column; align-items: flex-start; gap: 0.75rem; } .kip-header-protocol { order: 2; width: 100%; text-align: left; font-size: 0.62rem; padding-top: 0.5rem; } .kip-header-button { width: 100%; justify-content: center; font-size: 0.68rem; } }
 
-.kip-hero-informative { background: #0B0B0B; border: 1px solid var(--gold-15); border-radius: 24px; margin-bottom: 3.5rem; overflow: hidden; min-height: 520px; position: relative; background-image: url('assets/images/banner.png'); background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; }
-@media (max-width: 900px) { .kip-hero-informative { min-height: 420px; } }
-.kip-hero-content { max-width: 620px; padding: 3.8rem 4rem 3.2rem; position: relative; z-index: 2; }
+/* NIVEL A - HERO */
+.kip-hero-informative { background: #0B0B0B; border: 1px solid var(--gold-15); border-radius: 24px; margin-bottom: 5.5rem; overflow: hidden; min-height: 520px; position: relative; background-image: url('assets/images/banner.png'); background-size: cover; background-position: center; background-repeat: no-repeat; display: flex; align-items: center; }
+@media (max-width: 900px) { .kip-hero-informative { min-height: 420px; margin-bottom: 4rem; } }
+.kip-hero-content { max-width: 620px; padding: 6rem 4rem 5rem; position: relative; z-index: 2; }
 .kip-hero-content .pretitle { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.7rem; letter-spacing: 0.5em; color: var(--gold); margin-bottom: 2.2rem; font-weight: 400; display: flex; align-items: center; }
 .pretitle-dot { display: inline-block; width: 6px; height: 6px; background: var(--gold); border-radius: 50%; margin-right: 0.65rem; animation: pulse 2s ease-in-out infinite; flex-shrink: 0; }
 @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.25; } }
-.kip-hero-title { font-family: 'Playfair Display', Georgia, serif; font-weight: 300; font-size: clamp(2.8rem, 6.5vw, 4.2rem); line-height: 0.98; margin-bottom: 2.8rem; color: #F5F5F5; letter-spacing: -0.02em; }
+.kip-hero-title { font-family: 'Playfair Display', Georgia, serif; font-weight: 300; font-size: clamp(3rem, 7vw, 4.6rem); line-height: 1; margin-bottom: 2.8rem; color: #F5F5F5; letter-spacing: -0.02em; }
 .kleos-brand { font-family: 'Playfair Display', Georgia, serif; color: var(--gold); font-weight: 300; font-size: 1.15em; letter-spacing: 0.18em; display: inline-block; text-shadow: 0 0 30px rgba(197,160,89,0.15); }
 .is-ready { font-family: 'Playfair Display', Georgia, serif; color: #F5F5F5; font-weight: 400; }
 .kip-hero-subtitle { font-family: 'Inter', system-ui, sans-serif; font-size: 1.05rem; color: var(--text-60); line-height: 1.7; max-width: 480px; margin-top: 1.8rem; font-weight: 400; }
-@media (max-width: 768px) { .kip-hero-content { padding: 2.4rem 1.8rem 2rem; } .kip-hero-title { font-size: 2.45rem; margin-bottom: 2rem; } .kip-hero-subtitle { font-size: 0.98rem; } }
+@media (max-width: 768px) { .kip-hero-content { padding: 4rem 1.8rem; } .kip-hero-title { font-size: 2.8rem; margin-bottom: 2rem; } .kip-hero-subtitle { font-size: 0.98rem; } }
 
 .kip-metrics-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0.95rem; margin-bottom: 3.5rem; }
 @media (max-width: 1200px) { .kip-metrics-grid { grid-template-columns: repeat(3, 1fr); gap: 1.2rem; } }
@@ -63,7 +64,8 @@
 .info-icon { font-size: 0.85rem; opacity: 0.6; cursor: default; }
 .metric-row { display: flex; align-items: center; gap: 0.75rem; margin: 1.1rem 0 1.4rem; }
 .metric-label-small { font-size: 0.78rem; color: var(--text-60); }
-.kip-metric-desc-bottom { font-size: 0.78rem; color: var(--text-60); line-height: 1.5; max-width: 210px; }
+/* NIVEL C - APOYO */
+.kip-metric-desc-bottom { font-size: 0.72rem; color: var(--text-60); line-height: 1.5; max-width: 210px; opacity: 0.85; }
 
 .kip-metric-chart { position: relative; width: 148px; height: 148px; margin: 0.15rem 0 1.15rem; padding: 12px; display: flex; align-items: center; justify-content: center; box-sizing: content-box; overflow: visible; margin-left: auto; margin-right: auto; }
 .chart-center { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; line-height: 1; }
@@ -218,14 +220,16 @@
 
 @media (max-width: 900px) { .kip-legend-card { grid-template-columns: 1fr; } .legend-item { } }
 
-.kip-verdad { background: #070707; border: 1px solid var(--gold-15); border-radius: 20px; padding: 0; margin-bottom: 3.5rem; display: grid; grid-template-columns: 42% 58%; gap: 0; align-items: stretch; overflow: hidden; }
-@media (max-width: 900px) { .kip-verdad { grid-template-columns: 1fr; } .kip-verdad-image { height: 320px; border-radius: 0 0 20px 20px; } }
-.kip-verdad-text { padding: 3.5rem 3.8rem; display: flex; flex-direction: column; gap: 1.1rem; }
-.kip-verdad-pretitle { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.72rem; letter-spacing: 0.4em; color: var(--gold); font-weight: 500; }
-.kip-verdad-title { font-size: 1.85rem; font-weight: 600; line-height: 1.2; color: var(--gold); }
-.kip-verdad-body { font-size: 0.98rem; line-height: 1.7; color: var(--text-60); }
-.kip-verdad-divider { height: 1px; background: linear-gradient(to right, var(--gold), transparent); margin: 0.6rem 0; }
-.kip-verdad-footer-card { background: #111111; border: 1px solid var(--gold-15); border-radius: 12px; padding: 1rem 1.4rem; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.9rem; color: var(--text-60); margin-top: 0.5rem; }
+/* NIVEL A - VERDAD INCÓMODA */
+.kip-verdad { background: #070707; border: 1px solid var(--gold-15); border-radius: 20px; padding: 0; margin-top: 6rem; margin-bottom: 6.5rem; display: grid; grid-template-columns: 42% 58%; gap: 0; align-items: stretch; overflow: hidden; }
+@media (max-width: 900px) { .kip-verdad { grid-template-columns: 1fr; margin-top: 4.5rem; margin-bottom: 4.5rem; } .kip-verdad-image { height: 320px; border-radius: 0 0 20px 20px; } }
+.kip-verdad-text { padding: 4.5rem 4rem; display: flex; flex-direction: column; gap: 1.2rem; justify-content: center; }
+.kip-verdad-pretitle { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.72rem; letter-spacing: 0.4em; color: var(--gold); font-weight: 500; margin-bottom: 0.5rem; }
+.kip-verdad-title { font-size: 2.4rem; font-weight: 500; line-height: 1.2; color: var(--gold); font-family: 'Playfair Display', Georgia, serif; }
+.kip-verdad-body { font-size: 0.98rem; line-height: 1.7; color: var(--text-60); margin-top: 0.5rem; }
+.kip-verdad-divider { height: 1px; background: linear-gradient(to right, var(--gold), transparent); margin: 1rem 0; }
+/* NIVEL C - APOYO */
+.kip-verdad-footer-card { background: #111111; border: 1px solid var(--gold-15); border-radius: 12px; padding: 0.8rem 1.2rem; font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.82rem; color: var(--text-40); margin-top: 0.5rem; opacity: 0.85; }
 .kip-verdad-image { width: 100%; height: 100%; object-fit: cover; border-radius: 0 20px 20px 0; border: none; box-shadow: none; display: block; }
 
 .kip-costo { background: #0B0B0B; border: 1px solid var(--gold-15); border-radius: 20px; padding: 3rem; margin-bottom: 3.5rem; position: relative; overflow: hidden; }
@@ -270,12 +274,12 @@
 .kip-prioridad-icon { display: flex; align-items: center; justify-content: center; opacity: 0.78; }
 .kip-prioridad-icon img { width: 100%; max-width: 240px; height: auto; display: block; transform: scale(1.15); }
 
-/* HOJA DE RUTA / SIGUIENTE ETAPA */
-.kip-hoja-ruta { background: linear-gradient(145deg, #111111 0%, #080808 100%); border: 1px solid var(--gold-15); border-radius: 24px; padding: 4rem; margin-bottom: 4rem; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: center; position: relative; overflow: hidden; }
+/* NIVEL A - HOJA DE RUTA */
+.kip-hoja-ruta { background: linear-gradient(145deg, #111111 0%, #080808 100%); border: 1px solid var(--gold-15); border-radius: 24px; padding: 5.5rem 4rem; margin-top: 6rem; margin-bottom: 6.5rem; display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 4rem; align-items: center; position: relative; overflow: hidden; }
 .kip-hoja-ruta::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: radial-gradient(circle at center, rgba(212, 175, 55, 0.05) 0%, transparent 50%); pointer-events: none; }
 .kip-ruta-left { position: relative; z-index: 1; }
 .kip-ruta-label { color: var(--gold); font-size: 0.75rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; margin-bottom: 1.5rem; display: inline-block; border: 1px solid var(--gold-30); padding: 0.4rem 1rem; border-radius: 100px; background: rgba(212, 175, 55, 0.05); }
-.kip-ruta-title { font-size: 1.85rem; font-weight: 500; line-height: 1.35; margin-bottom: 1.2rem; color: #FFFFFF; font-family: 'Playfair Display', Georgia, serif; }
+.kip-ruta-title { font-size: 2.2rem; font-weight: 500; line-height: 1.3; margin-bottom: 1.2rem; color: #FFFFFF; font-family: 'Playfair Display', Georgia, serif; }
 .kip-ruta-subtitle { font-size: 1.05rem; color: var(--gold); line-height: 1.6; margin-bottom: 2.5rem; font-weight: 500; }
 .kip-ruta-list { display: grid; grid-template-columns: 1fr; gap: 1.2rem; margin-bottom: 2.5rem; }
 .kip-ruta-item { display: flex; align-items: flex-start; gap: 1rem; font-size: 0.95rem; color: var(--text-80); line-height: 1.5; font-family: 'Inter', system-ui, sans-serif; }
@@ -286,14 +290,16 @@
 .kip-ruta-item:nth-child(4) .ruta-icon { animation-delay: 0.1s; }
 .kip-ruta-item:nth-child(5) .ruta-icon { animation-delay: 0.6s; }
 .kip-ruta-item:nth-child(6) .ruta-icon { animation-delay: 0.4s; }
-.kip-ruta-note { font-size: 0.85rem; color: var(--text-40); line-height: 1.5; padding-top: 2rem; border-top: 1px solid var(--gold-15); font-family: 'Inter', system-ui, sans-serif; }
+/* NIVEL C - APOYO */
+.kip-ruta-note { font-size: 0.82rem; color: var(--text-40); line-height: 1.5; padding-top: 1.8rem; border-top: 1px solid var(--gold-15); font-family: 'Inter', system-ui, sans-serif; opacity: 0.85; }
 .kip-ruta-cta { background: #000000; border: 1px solid var(--gold-15); border-radius: 20px; padding: 3.5rem 2.5rem; text-align: center; position: relative; z-index: 1; box-shadow: 0 20px 40px rgba(0,0,0,0.5); display: flex; flex-direction: column; align-items: center; }
 .kip-ruta-cta .lock-icon { font-size: 2.2rem; margin-bottom: 1.5rem; color: var(--gold); background: rgba(212, 175, 55, 0.08); width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; border-radius: 50%; border: 1px solid var(--gold-15); }
 .cta-pretitle { color: var(--gold); font-size: 0.8rem; font-weight: 600; letter-spacing: 0.15em; margin-bottom: 0.7rem; font-family: 'Inter', system-ui, sans-serif; }
 .cta-title { font-size: 1.8rem; font-weight: 500; color: #FFFFFF; line-height: 1.25; margin-bottom: 2.5rem; font-family: 'Playfair Display', Georgia, serif; }
 .btn-ruta { background: var(--gold); color: #000000; border: none; padding: 1.1rem 2.2rem; border-radius: 100px; font-size: 0.95rem; font-weight: 700; cursor: pointer; width: 100%; transition: all 0.3s ease; margin-bottom: 1.5rem; font-family: 'Inter', system-ui, sans-serif; letter-spacing: 0.02em; }
 .btn-ruta:hover { background: #E5C383; transform: translateY(-2px); box-shadow: 0 10px 25px rgba(212, 175, 55, 0.25); }
-.cta-footnote { font-size: 0.8rem; color: var(--text-60); line-height: 1.5; font-family: 'Inter', system-ui, sans-serif; }
+/* NIVEL C - APOYO */
+.cta-footnote { font-size: 0.78rem; color: var(--text-60); line-height: 1.5; font-family: 'Inter', system-ui, sans-serif; opacity: 0.85; }
 @media (max-width: 992px) { .kip-hoja-ruta { grid-template-columns: 1fr; padding: 3rem 2rem; gap: 3rem; } }
 
 
@@ -301,10 +307,12 @@
 .kip-footer .brand { font-family: 'Playfair Display', Georgia, serif; font-size: 1.25rem; font-weight: 600; color: var(--gold); letter-spacing: 0.05em; }
 .kip-footer .tagline { font-size: 0.72rem; color: var(--text-60); letter-spacing: 0.3em; margin-top: 0.35rem; }
 
-.kip-ecosistema { background: #0B0B0B; border: 1px solid var(--gold-15); border-radius: 20px; padding: 3rem 3.5rem; margin-bottom: 3.5rem; }
-.kip-ecosistema-header { text-align: center; margin-bottom: 2.5rem; }
-.kip-ecosistema-title { font-size: 1.45rem; font-weight: 600; margin-bottom: 0.6rem; }
-.kip-ecosistema-subtitle { font-size: 0.95rem; color: var(--text-60); line-height: 1.6; }
+/* NIVEL A - ECOSISTEMA KLEOS */
+.kip-ecosistema { background: #0B0B0B; border: 1px solid var(--gold-15); border-radius: 20px; padding: 5rem 4rem; margin-top: 6rem; margin-bottom: 5rem; }
+.kip-ecosistema-header { text-align: center; margin-bottom: 3.5rem; }
+.kip-ecosistema-title { font-size: 2.2rem; font-weight: 500; margin-bottom: 0.8rem; font-family: 'Playfair Display', Georgia, serif; color: var(--gold); }
+/* NIVEL C - APOYO */
+.kip-ecosistema-subtitle { font-size: 0.92rem; color: var(--text-60); line-height: 1.6; opacity: 0.85; }
 .kip-protocol-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 1.2rem; }
 .kip-protocol-card { background: #111111; border: 1px solid var(--gold-15); border-radius: 14px; padding: 1.4rem 1rem; text-align: center; }
 .kip-protocol-card.active { border-color: var(--gold); box-shadow: 0 0 20px rgba(197, 160, 89, 0.15); }
@@ -339,37 +347,37 @@
 <div class="kip-hero-content">
 <div class="pretitle"><span class="pretitle-dot"></span> DIAGNÓSTICO COMPLETADO</div>
 <h1 class="kip-hero-title">Tu Diagnóstico<br><span class="kleos-brand">K·L·E·O·S</span><br><span class="is-ready">está listo.</span></h1>
-<p class="kip-hero-subtitle">Hemos analizado 12 variables clave de percepción, posicionamiento y comunicación.<br>Este es el mapa completo de tu negocio hoy.</p>
+<p class="kip-hero-subtitle">12 variables de percepción, posicionamiento y comunicación analizadas.<br>Este es el mapa estratégico actual de tu negocio.</p>
 </div>
 </div>
 
 <!-- TARJETAS KPI -->
-<div class="kip-metrics-grid">
+<div class="kip-metrics-grid" id="dynamic-metrics-grid">
 <div class="kip-metric-card special-first">
 <div class="kip-metric-label">ÍNDICE KLEOS</div>
-<div class="kip-metric-big"><span class="big-number">63</span><span class="big-sub">/100</span></div>
-<div class="metric-row"><span class="metric-label-small">Nivel de percepción</span><span class="kip-metric-badge">MEDIO</span></div>
-<div class="kip-metric-desc-bottom">Percentil: Superas al 68% de los negocios analizados.</div>
+<div class="kip-metric-big"><span class="big-number" id="val-indice">[--]</span><span class="big-sub">/100</span></div>
+<div class="metric-row"><span class="metric-label-small">Nivel de percepción</span><span class="kip-metric-badge" id="lbl-indice">[NIVEL]</span></div>
+<div class="kip-metric-desc-bottom">Posición frente a la media del mercado.</div>
 </div>
 <div class="kip-metric-card">
 <div class="kip-metric-label">PERFORMANCE</div>
-<div class="kip-metric-chart"><canvas id="chart-performance" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value">72</span><span class="chart-unit">%</span></div></div>
-<div class="kip-metric-desc-bottom" style="text-align:center!important;width:100%!important;display:block!important;margin:0 auto!important;">Tu rendimiento percibido frente al mercado</div>
+<div class="kip-metric-chart"><canvas id="chart-performance" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value" id="val-performance">[--]</span><span class="chart-unit">%</span></div></div>
+<div class="kip-metric-desc-bottom" style="text-align:center!important;width:100%!important;display:block!important;margin:0 auto!important;">Rendimiento competitivo percibido.</div>
 </div>
 <div class="kip-metric-card">
 <div class="kip-metric-label">BRECHA DE PERCEPCIÓN</div>
-<div class="kip-metric-chart"><canvas id="chart-brecha" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value">37</span><span class="chart-unit">%</span></div></div>
+<div class="kip-metric-chart"><canvas id="chart-brecha" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value" id="val-brecha">[--]</span><span class="chart-unit">%</span></div></div>
 <div class="kip-metric-desc-bottom" style="text-align:center!important;width:100%!important;display:block!important;margin:0 auto!important;">Diferencia entre valor real y lo que el mercado percibe</div>
 </div>
 <div class="kip-metric-card alert special-alert">
 <div class="kip-metric-label" style="display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;text-align:center!important;margin:0 auto 1.4rem auto!important;">DIMENSIÓN MÁS BAJA</div>
-<div class="kip-metric-big"><span class="big-number" style="color:#f87171;">8</span><span class="big-sub" style="color:#f87171;">/20</span></div>
-<div class="metric-row"><span class="metric-label-small">Diferenciación</span><span class="kip-metric-badge alert-badge">CRÍTICA</span></div>
+<div class="kip-metric-big"><span class="big-number" style="color:#f87171;" id="val-critica">[--]</span><span class="big-sub" style="color:#f87171;">/20</span></div>
+<div class="metric-row"><span class="metric-label-small" id="lbl-critica">[DIMENSIÓN CRÍTICA]</span><span class="kip-metric-badge alert-badge">CRÍTICA</span></div>
 <div class="kip-metric-desc-bottom" style="color:#f87171;">Principal punto que limita tu crecimiento.</div>
 </div>
 <div class="kip-metric-card">
 <div class="kip-metric-label">POTENCIAL SIN LIBERAR</div>
-<div class="kip-metric-chart"><canvas id="chart-potencial" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value">42</span><span class="chart-unit">%</span></div></div>
+<div class="kip-metric-chart"><canvas id="chart-potencial" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value" id="val-potencial">[--]</span><span class="chart-unit">%</span></div></div>
 <div class="kip-metric-desc-bottom">De tu potencial actual no está siendo capturado</div>
 </div>
 </div>
@@ -382,23 +390,19 @@
 <div class="kip-espejo-comparison">
 <div class="kip-espejo-col left">
 <div class="kip-espejo-col-title">LO QUE TÚ CREES</div>
-<div class="kip-espejo-list">
-<div class="kip-espejo-item"><span class="icon check">✓</span> Innovador</div>
-<div class="kip-espejo-item"><span class="icon check">✓</span> Profesional</div>
-<div class="kip-espejo-item"><span class="icon check">✓</span> Confiable</div>
-<div class="kip-espejo-item"><span class="icon check">✓</span> Comprometido</div>
-<div class="kip-espejo-item"><span class="icon check">✓</span> Orientado a resultados</div>
+<div class="kip-espejo-list" id="list-crees">
+<div class="kip-espejo-item"><span class="icon check">✓</span> [Atributo interno 1]</div>
+<div class="kip-espejo-item"><span class="icon check">✓</span> [Atributo interno 2]</div>
+<div class="kip-espejo-item"><span class="icon check">✓</span> [Atributo interno 3]</div>
 </div>
 </div>
 <div class="kip-espejo-divider"><div class="vs-circle">VS</div></div>
 <div class="kip-espejo-col right">
 <div class="kip-espejo-col-title">LO QUE EL MERCADO VE</div>
-<div class="kip-espejo-list">
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Similar a otras opciones</div>
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Poco diferenciado</div>
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Difícil de comprender</div>
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Falta de pruebas visibles</div>
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Comunicación poco clara</div>
+<div class="kip-espejo-list" id="list-mercado">
+<div class="kip-espejo-item"><span class="icon cross">✕</span> [Percepción externa 1]</div>
+<div class="kip-espejo-item"><span class="icon cross">✕</span> [Percepción externa 2]</div>
+<div class="kip-espejo-item"><span class="icon cross">✕</span> [Percepción externa 3]</div>
 </div>
 </div>
 </div>
@@ -406,11 +410,11 @@
 <div class="kip-fuga-panel">
 <div class="kip-fuga-header">TU PRINCIPAL FUGA DE CRECIMIENTO</div>
 <div class="kip-fuga-main">
-<div class="kip-fuga-title">DIFERENCIACIÓN</div>
-<div class="kip-fuga-score"><span class="score-main">8</span><span class="score-sub">/20</span></div>
+<div class="kip-fuga-title" id="fuga-titulo">[DIMENSIÓN CRÍTICA]</div>
+<div class="kip-fuga-score"><span class="score-main" id="fuga-score">[--]</span><span class="score-sub">/20</span></div>
 </div>
-<div class="kip-fuga-desc">No estás perdiendo ventas porque tu producto sea malo.<br>Las estás perdiendo porque el mercado no entiende por qué debería elegirte.</div>
-<div class="kip-fuga-info"><span class="info-icon">◆</span><span>Esta es la dimensión que más está impactando tus resultados actualmente.</span></div>
+<div class="kip-fuga-desc" id="fuga-desc">[Diagnóstico de fuga generado por IA. Describe por qué esta dimensión en específico está causando pérdida de tracción en el mercado actual.]</div>
+<div class="kip-fuga-info"><span class="info-icon">◆</span><span>Dimensión de mayor impacto operativo detectada.</span></div>
 </div>
 </div>
 </div>
@@ -425,31 +429,31 @@
 
 <!-- COLUMNA IZQUIERDA: MÉTRICAS (INTACTA) -->
 <div class="kip-metrics-card">
-<div class="kip-metrics-column">
+<div class="kip-metrics-column" id="radar-metrics-container">
 <div class="kip-metric-row">
 <div class="metric-icon">01</div>
-<div class="metric-content"><div class="metric-name">Claridad</div><div class="metric-bar"><div class="metric-fill" style="width:75%"></div></div></div>
-<div class="metric-score">15/20</div>
+<div class="metric-content"><div class="metric-name">Claridad</div><div class="metric-bar"><div class="metric-fill" id="radar-claridad-fill" style="width:0%"></div></div></div>
+<div class="metric-score" id="radar-claridad-score">--/20</div>
 </div>
 <div class="kip-metric-row">
 <div class="metric-icon">02</div>
-<div class="metric-content"><div class="metric-name">Valor Percibido</div><div class="metric-bar"><div class="metric-fill" style="width:70%"></div></div></div>
-<div class="metric-score">14/20</div>
+<div class="metric-content"><div class="metric-name">Valor Percibido</div><div class="metric-bar"><div class="metric-fill" id="radar-valor-fill" style="width:0%"></div></div></div>
+<div class="metric-score" id="radar-valor-score">--/20</div>
 </div>
 <div class="kip-metric-row">
 <div class="metric-icon">03</div>
-<div class="metric-content"><div class="metric-name">Confianza</div><div class="metric-bar"><div class="metric-fill" style="width:65%"></div></div></div>
-<div class="metric-score">13/20</div>
+<div class="metric-content"><div class="metric-name">Confianza</div><div class="metric-bar"><div class="metric-fill" id="radar-confianza-fill" style="width:0%"></div></div></div>
+<div class="metric-score" id="radar-confianza-score">--/20</div>
 </div>
-<div class="kip-metric-row risk">
+<div class="kip-metric-row risk" id="radar-row-critica">
 <div class="metric-icon">04</div>
-<div class="metric-content"><div class="metric-name">Diferenciación</div><div class="metric-bar"><div class="metric-fill risk" style="width:40%"></div></div></div>
-<div class="metric-score" style="color:#D95B4F;">8/20</div>
+<div class="metric-content"><div class="metric-name">Diferenciación</div><div class="metric-bar"><div class="metric-fill risk" id="radar-diferenciacion-fill" style="width:0%"></div></div></div>
+<div class="metric-score" style="color:#D95B4F;" id="radar-diferenciacion-score">--/20</div>
 </div>
 <div class="kip-metric-row">
 <div class="metric-icon">05</div>
-<div class="metric-content"><div class="metric-name">Recorrido de Compra</div><div class="metric-bar"><div class="metric-fill" style="width:65%"></div></div></div>
-<div class="metric-score">13/20</div>
+<div class="metric-content"><div class="metric-name">Recorrido de Compra</div><div class="metric-bar"><div class="metric-fill" id="radar-recorrido-fill" style="width:0%"></div></div></div>
+<div class="metric-score" id="radar-recorrido-score">--/20</div>
 </div>
 </div>
 </div>
@@ -478,12 +482,12 @@
 
 <div class="kip-diagnosis-block">
 <div class="kip-diagnosis-title">Diagnóstico Ejecutivo</div>
-<div class="kip-diagnosis-text" id="diagnosis-text">Tu negocio presenta una base sólida de claridad, confianza y valor percibido. Sin embargo, la baja diferenciación está limitando el impacto del resto de tus fortalezas. Actualmente este es el principal cuello de botella del sistema.</div>
+<div class="kip-diagnosis-text" id="diagnosis-text">[El diagnóstico ejecutivo dinámico analizando la combinación de dimensiones y puntuaciones se inyectará aquí]</div>
 </div>
 
 <div class="kip-insight-block">
 <div class="kip-insight-title">INSIGHT PRINCIPAL</div>
-<div class="kip-insight-text" id="insight-text">"La percepción de tu negocio es superior a su capacidad de diferenciarse."</div>
+<div class="kip-insight-text" id="insight-text">"[El insight principal generado por el motor de IA aparecerá aquí]"</div>
 </div>
 
 </div>
@@ -522,10 +526,10 @@
 <div class="kip-verdad">
 <div class="kip-verdad-text">
 <div class="kip-verdad-pretitle"><span class="pretitle-dot"></span> LA VERDAD INCÓMODA</div>
-<h2 class="kip-verdad-title">Estás compitiendo por precio<br>porque tu propuesta de valor<br>no está siendo percibida correctamente.</h2>
-<div class="kip-verdad-body">El mercado no compra lo que haces.<br>Compra lo que entiende, valora y considera la mejor opción.<br>Y hoy, tu negocio no está logrando comunicárselo.</div>
+<h3 class="kip-verdad-title" id="verdad-title">[Título Dinámico: La Verdad Incómoda]</h3>
+<div class="kip-verdad-body" id="verdad-body">[Desarrollo dinámico explicando la raíz del problema principal detectado y su impacto en la percepción del mercado.]</div>
 <div class="kip-verdad-divider"></div>
-<div class="kip-verdad-footer-card"><div><strong>No se trata de trabajar más duro.</strong><br>Se trata de construir una percepción que te posicione por encima del resto.</div></div>
+<div class="kip-verdad-footer-card"><div id="verdad-consecuencia"><strong>CONSECUENCIA OPERATIVA:</strong><br>[Consecuencia dinámica de la dimensión afectada]</div></div>
 </div>
 <img src="assets/images/kleos.png" alt="Representación visual de sabiduría estratégica" class="kip-verdad-image">
 </div>
@@ -534,28 +538,26 @@
 <div class="kip-costo">
 <div class="kip-costo-header">
 <h2 class="kip-costo-title">El Costo de No Resolverlo</h2>
-<p class="kip-costo-subtitle">Toda decisión tiene un costo. Pero también lo tiene no tomar ninguna.</p>
+<p class="kip-costo-subtitle">Decidir tiene un costo. La inacción, también.</p>
 </div>
 <div class="kip-costo-wrapper">
 <div class="kip-costo-grid">
 <div class="kip-costo-card loss">
-<h3 class="kip-costo-card-title">El costo de mantener esta situación</h3>
-<p class="kip-costo-intro">Si esta dimensión continúa siendo tu principal limitación, estos son algunos efectos probables sobre tu crecimiento:</p>
-<ul class="kip-costo-list loss">
-<li>Competirás cada vez más por precio.</li>
-<li>Los clientes seguirán comparándote con alternativas similares.</li>
-<li>Tu propuesta perderá fuerza frente a competidores mejor posicionados.</li>
-<li>El crecimiento dependerá de más esfuerzo comercial para lograr los mismos resultados.</li>
+<h3 class="kip-costo-card-title">El costo de la inacción</h3>
+<p class="kip-costo-intro">El impacto proyectado si la dimensión crítica no se corrige:</p>
+<ul class="kip-costo-list loss" id="list-costo">
+<li>[Efecto negativo dinámico 1]</li>
+<li>[Efecto negativo dinámico 2]</li>
+<li>[Efecto negativo dinámico 3]</li>
 </ul>
 </div>
 <div class="kip-costo-card opportunity">
-<h3 class="kip-costo-card-title">La oportunidad si lo corriges</h3>
-<p class="kip-costo-intro">Cuando esta dimensión mejora, el impacto suele extenderse a todo el negocio:</p>
-<ul class="kip-costo-list opportunity">
-<li>Aumentarás el valor percibido de tu oferta.</li>
-<li>Reducirás la comparación directa con competidores.</li>
-<li>Facilitarás la decisión de compra.</li>
-<li>Mejorarás la conversión sin depender únicamente de más tráfico.</li>
+<h3 class="kip-costo-card-title">La ventana de oportunidad</h3>
+<p class="kip-costo-intro">El efecto multiplicador al resolver la fricción:</p>
+<ul class="kip-costo-list opportunity" id="list-oportunidad">
+<li>[Efecto positivo dinámico 1]</li>
+<li>[Efecto positivo dinámico 2]</li>
+<li>[Efecto positivo dinámico 3]</li>
 </ul>
 </div>
 </div>
@@ -569,8 +571,8 @@
 </div>
 <div class="kip-prioridad-content">
 <div class="kip-prioridad-pretitle">QUÉ DEBERÍAS HACER PRIMERO</div>
-<h3 class="kip-prioridad-title">Reformular tu diferenciación.</h3>
-<p class="kip-prioridad-text">Antes de invertir más en publicidad o contenido, asegúrate de que el mercado entienda por qué eres diferente y por qué elegirte a ti es la mejor decisión.</p>
+<h3 class="kip-prioridad-title" id="prioridad-title">[Acción Estratégica Principal]</h3>
+<p class="kip-prioridad-text" id="prioridad-text">[Racional dinámico que justifica por qué esta es la primera acción que el negocio debe ejecutar antes que cualquier otra, alineada a la dimensión más crítica detectada.]</p>
 </div>
 <div class="kip-prioridad-icon">
 <img src="assets/images/icono.png" alt="Icono estratégico" width="240" height="240">
@@ -582,19 +584,19 @@
 <!-- COLUMNA IZQUIERDA -->
 <div class="kip-ruta-left">
 <div class="kip-ruta-label">SIGUIENTE ETAPA</div>
-<h2 class="kip-ruta-title">Ya sabes qué está limitando el crecimiento de tu negocio.<br>Ahora necesitas un plan claro para empezar a cambiarlo.</h2>
-<p class="kip-ruta-subtitle">La Hoja de Ruta KLEOS transforma tu diagnóstico en un plan estratégico personalizado con prioridades claras, acciones concretas y recomendaciones adaptadas a los resultados obtenidos.</p>
+<h2 class="kip-ruta-title">El diagnóstico terminó.<br>Ahora comienza la estrategia.</h2>
+<p class="kip-ruta-subtitle">De los datos a la acción. Un plan trazado a partir de tu diagnóstico, diseñado para ejecutarse de inmediato.</p>
 
 <div class="kip-ruta-list">
-<div class="kip-ruta-item"><span class="ruta-icon"></span> Prioridades ordenadas según el impacto real en tu negocio.</div>
-<div class="kip-ruta-item"><span class="ruta-icon"></span> Acciones concretas que puedes comenzar a implementar desde hoy.</div>
-<div class="kip-ruta-item"><span class="ruta-icon"></span> Explicación estratégica del porqué de cada recomendación.</div>
-<div class="kip-ruta-item"><span class="ruta-icon"></span> Riesgos que debes evitar durante la implementación.</div>
-<div class="kip-ruta-item"><span class="ruta-icon"></span> Plan de trabajo organizado por etapas y prioridades.</div>
-<div class="kip-ruta-item"><span class="ruta-icon"></span> Recomendaciones personalizadas generadas según tu diagnóstico.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Prioridades ordenadas por impacto en el negocio.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Acciones técnicas de ejecución inmediata.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Racional estratégico de cada movimiento.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Mapeo de riesgos operativos.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Cronograma estructurado por etapas.</div>
+<div class="kip-ruta-item"><span class="ruta-icon"></span> Directrices adaptadas a tu escenario actual.</div>
 </div>
 
-<p class="kip-ruta-note">La Hoja de Ruta no pretende resolver completamente cada dimensión del negocio. Su objetivo es ofrecerte una dirección estratégica clara, priorizada y accionable para que puedas comenzar a generar mejoras reales desde el primer día.</p>
+<p class="kip-ruta-note">Esta ruta no es teórica. Es una dirección estratégica priorizada para generar tracción táctica y resultados medibles.</p>
 </div>
 
 <!-- COLUMNA DERECHA -->
@@ -603,15 +605,15 @@
 <div class="cta-pretitle">DESBLOQUEAR</div>
 <div class="cta-title">Hoja de Ruta<br>Estratégica</div>
 <button class="btn-ruta" onclick="window.location.href='informe.html'">Desbloquear mi Hoja de Ruta</button>
-<p class="cta-footnote">Incluye acceso inmediato al informe estratégico en formato PDF, listo para consultar, imprimir y utilizar como guía de implementación.</p>
+<p class="cta-footnote">Descarga inmediata del informe ejecutivo en PDF. Tu mapa operativo.</p>
 </div>
 
 </div>
 
 <div class="kip-ecosistema">
 <div class="kip-ecosistema-header">
-<h2 class="kip-ecosistema-title">ESTO ES SOLO EL COMIENZO</h2>
-<p class="kip-ecosistema-subtitle">KIP-001 es el primer protocolo del Ecosistema KLEOS.<br>Cada protocolo detecta una parte crítica de tu negocio.<br>Juntos forman la arquitectura completa de crecimiento.</p>
+<h2 class="kip-ecosistema-title">LA ARQUITECTURA COMPLETA</h2>
+<p class="kip-ecosistema-subtitle">KIP-001 es la capa inicial del Ecosistema KLEOS.<br>Cada protocolo audita una dimensión crítica.<br>Juntos, construyen crecimiento escalable.</p>
 </div>
 <div class="kip-protocol-grid">
 <div class="kip-protocol-card active"><div class="badge">★</div><div class="name">KIP-001</div><div class="status">Insight • Percepción</div></div>
@@ -695,57 +697,57 @@ y = writeMetricRow(y, 'Brecha de Percepción', '37%', 'Diferencia entre valor re
 y = writeMetricRow(y, 'Dimensión más baja', '8 / 20 — Diferenciación', 'Principal punto que limita tu crecimiento');
 y = writeMetricRow(y, 'Potencial sin liberar', '42%', 'Tu potencial actual no está siendo capturado');
 y += 4;
-y = writeParagraph(y, 'El Índice KLEOS de 63/100 sitúa al negocio en un nivel de percepción medio, con una brecha relevante entre el valor entregado y la percepción del mercado. La dimensión más crítica es Diferenciación (8/20), generando competencia principalmente por precio y pérdida de oportunidades de posicionamiento.');
+y = writeParagraph(y, '[El resumen ejecutivo dinámico generado por el motor de interpretación se inyectará aquí, evaluando el Índice General y la brecha principal detectada.]');
 
 y = startContentPage();
 y = writeSectionTitle(y, 3, 'Espejo de Percepción');
 y = writeSubheading(y, 'Lo que tú crees');
-y = writeBulletList(y, [ 'Innovador', 'Profesional', 'Confiable', 'Comprometido', 'Orientado a resultados' ]);
+y = writeBulletList(y, [ '[Atributo interno detectado 1]', '[Atributo interno detectado 2]', '[Atributo interno detectado 3]' ]);
 y = writeSubheading(y, 'Lo que el mercado ve');
-y = writeBulletList(y, [ 'Similar a otras opciones', 'Poco diferenciado', 'Difícil de comprender', 'Falta de pruebas visibles', 'Comunicación poco clara' ]);
+y = writeBulletList(y, [ '[Percepción externa detectada 1]', '[Percepción externa detectada 2]', '[Percepción externa detectada 3]' ]);
 y = writeSubheading(y, 'Brecha Detectada');
-y = writeParagraph(y, 'Detectamos una diferencia significativa entre la percepción interna de valor y la percepción externa del mercado.');
+y = writeParagraph(y, '[Análisis dinámico de la brecha entre la identidad interna y la percepción externa.]');
 
 y = startContentPage();
 y = writeSectionTitle(y, 4, 'Principal Fuga de Crecimiento');
-y = writeMetricRow(y, 'Dimensión crítica', 'DIFERENCIACIÓN — 8/20', 'Principal punto de fuga detectado');
+y = writeMetricRow(y, 'Dimensión crítica', '[DIMENSIÓN] — [--]/20', 'Principal punto de fuga detectado');
 y = writeSubheading(y, '¿Por qué esto importa?');
-y = writeParagraph(y, 'Cuando tu negocio no tiene una diferenciación clara, el mercado te percibe como una opción más entre muchas. Esto hace que las decisiones de compra se tomen principalmente por precio y limita tu capacidad de crecer sin depender de descuentos o mayor esfuerzo comercial.');
+y = writeParagraph(y, '[Racional dinámico explicando por qué esta dimensión en específico está frenando el crecimiento comercial.]');
 
 y = startContentPage();
 y = writeSectionTitle(y, 5, 'Radar Completo — Perfil Estratégico KLEOS');
 y = writeParagraph(y, 'Visualización del estado actual del negocio en las cinco dimensiones clave del framework KLEOS.');
-const dimensions = [ { name: 'Claridad', score: '15/20', level: 'Estable' }, { name: 'Valor Percibido', score: '14/20', level: 'Estable' }, { name: 'Confianza', score: '13/20', level: 'Estable' }, { name: 'Diferenciación', score: '8/20', level: 'Riesgo — Principal limitación' }, { name: 'Recorrido de Compra', score: '13/20', level: 'Estable' } ];
+const dimensions = [ { name: 'Claridad', score: '[--]/20', level: '[Nivel]' }, { name: 'Valor Percibido', score: '[--]/20', level: '[Nivel]' }, { name: 'Confianza', score: '[--]/20', level: '[Nivel]' }, { name: 'Diferenciación', score: '[--]/20', level: '[Nivel]' }, { name: 'Recorrido de Compra', score: '[--]/20', level: '[Nivel]' } ];
 dimensions.forEach(function(dim) { y = ensureSpace(y, 10); doc.setFont('times', 'bold'); doc.setFontSize(10); doc.setTextColor(...dark); doc.text(dim.name, margin, y); doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...gold); doc.text(dim.score, pageW - margin, y, { align: 'right' }); y += 5; doc.setFontSize(8); doc.setTextColor(...gray); doc.text(dim.level, margin, y); y += 8; });
 
 y = startContentPage();
 y = writeSectionTitle(y, 6, 'Verdad Incómoda');
-y = writeParagraph(y, 'Estás compitiendo por precio porque tu propuesta de valor no está siendo percibida correctamente.');
-y = writeParagraph(y, 'El mercado no compra lo que haces. Compra lo que entiende, valora y considera la mejor opción. Y hoy, tu negocio no está logrando comunicárselo.');
-y = writeParagraph(y, 'No se trata de trabajar más duro. Se trata de construir una percepción que te posicione por encima del resto.');
+y = writeParagraph(y, '[Título dinámico de la Verdad Incómoda]');
+y = writeParagraph(y, '[Desarrollo dinámico de la Verdad Incómoda explicando la raíz del problema principal.]');
+y = writeParagraph(y, 'CONSECUENCIA OPERATIVA: [Consecuencia dinámica generada por el motor]');
 
 y = startContentPage();
-y = writeSectionTitle(y, 7, 'Costo de No Resolverlo');
-y = writeSubheading(y, 'El costo de mantener esta situación');
-y = writeParagraph(y, 'Si esta dimensión continúa siendo tu principal limitación, estos son algunos efectos probables sobre tu crecimiento:');
-y = writeBulletList(y, [ 'Competirás cada vez más por precio.', 'Los clientes seguirán comparándote con alternativas similares.', 'Tu propuesta perderá fuerza frente a competidores mejor posicionados.', 'El crecimiento dependerá de más esfuerzo comercial para lograr los mismos resultados.' ]);
+y = writeSectionTitle(y, 7, 'Costo de la Inacción');
+y = writeSubheading(y, 'El costo de la inacción');
+y = writeParagraph(y, 'El impacto proyectado si la dimensión crítica no se corrige:');
+y = writeBulletList(y, [ '[Efecto negativo dinámico 1]', '[Efecto negativo dinámico 2]', '[Efecto negativo dinámico 3]' ]);
 
 y = startContentPage();
-y = writeSectionTitle(y, 8, 'Oportunidad si lo Corriges');
-y = writeSubheading(y, 'La oportunidad si lo corriges');
-y = writeParagraph(y, 'Cuando esta dimensión mejora, el impacto suele extenderse a todo el negocio:');
-y = writeBulletList(y, [ 'Aumentarás el valor percibido de tu oferta.', 'Reducirás la comparación directa con competidores.', 'Facilitarás la decisión de compra.', 'Mejorarás la conversión sin depender únicamente de más tráfico.' ]);
-y = writeParagraph(y, 'Si se resuelve la debilidad en Diferenciación, se estima una mejora potencial de hasta un 28% en preferencia de marca y reducción de competencia por precio.');
+y = writeSectionTitle(y, 8, 'Ventana de Oportunidad');
+y = writeSubheading(y, 'La ventana de oportunidad');
+y = writeParagraph(y, 'El efecto multiplicador al resolver la fricción:');
+y = writeBulletList(y, [ '[Efecto positivo dinámico 1]', '[Efecto positivo dinámico 2]', '[Efecto positivo dinámico 3]' ]);
+y = writeParagraph(y, '[Métrica de mejora potencial calculada dinámicamente según la dimensión corregida]');
 
 y = startContentPage();
 y = writeSectionTitle(y, 9, 'Prioridad Número 1');
 y = writeSubheading(y, 'Qué deberías hacer primero');
-y = writeParagraph(y, 'Reformular tu diferenciación.');
-y = writeParagraph(y, 'Antes de invertir más en publicidad o contenido, asegúrate de que el mercado entienda por qué eres diferente y por qué elegirte a ti es la mejor decisión.');
+y = writeParagraph(y, '[Acción Estratégica Principal]');
+y = writeParagraph(y, '[Racional dinámico justificando por qué esta acción precede a cualquier otra iniciativa.]');
 
 y = startContentPage();
-y = writeSectionTitle(y, 10, 'Conclusión');
-y = writeParagraph(y, 'El diagnóstico KIP-001 ha identificado que el negocio presenta una brecha importante en la dimensión de Diferenciación. Esta debilidad está generando que el mercado no perciba claramente el valor diferencial, lo que deriva en decisiones de compra basadas principalmente en precio.');
+y = writeSectionTitle(y, 10, 'Conclusión Estratégica');
+y = writeParagraph(y, '[Conclusión dinámica que resume el diagnóstico y el camino a seguir adaptado a la puntuación del usuario.]');
 y = writeParagraph(y, 'La recomendación estratégica es priorizar la reformulación de la diferenciación antes de invertir en otras áreas de crecimiento.');
 y = writeParagraph(y, 'Este informe representa el primer paso de una arquitectura diagnóstica más amplia. KIP-001 es la puerta de entrada al Ecosistema KLEOS.');
 addPageFooter();
@@ -754,5 +756,5 @@ doc.save('KIP-001_Informe_Ejecutivo.pdf');
 window.generarPDF = generarPDF;
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1725948db9e14a0',t:'MTc4MzM4MDExNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1781a862d61e845',t:'MTc4MzQ0MDQ2MQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1725948db9e14a0',t:'MTc4MzM4MDExNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1785d42ce3290c1',t:'MTc4MzQ0MzE5NQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>
