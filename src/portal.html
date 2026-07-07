@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal KLEOS | Acceso a Protocolos</title>
+    
+    <!-- Tipografías KLEOS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,300;0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <!-- Variables Core y Utilidades Base -->
+    <link rel="stylesheet" href="assets/css/styles.css">
+    
+    <style>
+        /* ===================== CONFIGURACIÓN PORTAL ===================== */
+        body { 
+            background-color: #000000; /* Obsidiana puro */
+            color: #F5F5F5; 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+            margin: 0;
+            padding: 0;
+            background-image: radial-gradient(circle at 50% 0%, rgba(212, 175, 55, 0.03) 0%, transparent 70%);
+        }
+        
+        .portal-wrapper { 
+            max-width: 640px; 
+            margin: 0 auto; 
+            padding: 7rem 2rem 5rem; 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            justify-content: center; 
+        }
+
+        /* ===================== HERO ===================== */
+        .portal-hero { 
+            text-align: center; 
+            margin-bottom: 4.5rem; 
+        }
+        .portal-label { 
+            font-family: 'JetBrains Mono', Consolas, monospace; 
+            font-size: 0.75rem; 
+            letter-spacing: 0.4em; 
+            color: var(--gold); 
+            text-transform: uppercase; 
+            margin-bottom: 1.8rem; 
+            display: block; 
+            font-weight: 500;
+        }
+        .portal-title { 
+            font-family: 'Playfair Display', Georgia, serif; 
+            font-size: 3.4rem; 
+            font-weight: 400; 
+            margin-bottom: 1.8rem; 
+            line-height: 1.1; 
+            color: #FFFFFF; 
+            letter-spacing: -0.02em;
+        }
+        .portal-subtitle { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            font-size: 1.05rem; 
+            color: rgba(255,255,255,0.65); 
+            line-height: 1.6; 
+            max-width: 480px; 
+            margin: 0 auto; 
+            font-weight: 300; 
+        }
+
+        /* ===================== FORMULARIO ===================== */
+        .portal-form-card { 
+            background: #070707; 
+            border: 1px solid var(--gold-15); 
+            border-radius: 20px; 
+            padding: 4rem 3.5rem; 
+            margin-bottom: 5rem; 
+            box-shadow: 0 20px 50px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.02) inset; 
+        }
+        .portal-form-group { 
+            margin-bottom: 2.5rem; 
+            text-align: left; 
+        }
+        .portal-form-label { 
+            display: block; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            font-size: 0.85rem; 
+            color: rgba(255,255,255,0.8); 
+            margin-bottom: 1rem; 
+            font-weight: 500; 
+            letter-spacing: 0.02em;
+        }
+        .portal-input { 
+            width: 100%; 
+            background: #0B0B0B; 
+            border: 1px solid rgba(255,255,255,0.08); 
+            border-radius: 12px; 
+            padding: 1.25rem 1.5rem; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            font-size: 1.05rem; 
+            color: #FFFFFF; 
+            transition: all 0.3s ease; 
+            outline: none; 
+            box-sizing: border-box;
+        }
+        .portal-input:focus { 
+            border-color: var(--gold-30); 
+            background: #111111; 
+            box-shadow: 0 0 0 1px rgba(197, 160, 89, 0.15); 
+        }
+        .portal-input::placeholder { 
+            color: rgba(255,255,255,0.2); 
+            font-weight: 300;
+        }
+        .portal-btn { 
+            width: 100%; 
+            background: var(--gold); 
+            color: #000000; 
+            border: none; 
+            border-radius: 100px; 
+            padding: 1.25rem; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            font-size: 1rem; 
+            font-weight: 600; 
+            cursor: pointer; 
+            transition: all 0.3s ease; 
+            letter-spacing: 0.02em; 
+            box-sizing: border-box;
+        }
+        .portal-btn:hover { 
+            background: #E5C383; 
+            transform: translateY(-2px); 
+            box-shadow: 0 10px 25px rgba(212, 175, 55, 0.2); 
+        }
+
+        /* ===================== CÓMO FUNCIONA ===================== */
+        .portal-how { 
+            margin-bottom: 5rem; 
+            padding: 0 1.5rem;
+        }
+        .portal-how-title { 
+            font-family: 'Playfair Display', Georgia, serif; 
+            font-size: 1.8rem; 
+            font-weight: 400; 
+            margin-bottom: 2.5rem; 
+            color: var(--gold); 
+            text-align: center; 
+        }
+        .portal-how-list { 
+            display: flex; 
+            flex-direction: column; 
+            gap: 1.5rem; 
+        }
+        .portal-how-item { 
+            display: flex; 
+            align-items: flex-start; 
+            gap: 1.2rem; 
+            font-family: 'Inter', system-ui, sans-serif; 
+            font-size: 0.95rem; 
+            color: rgba(255,255,255,0.65); 
+            line-height: 1.6; 
+            font-weight: 300; 
+        }
+        .portal-how-num { 
+            font-family: 'JetBrains Mono', Consolas, monospace; 
+            font-size: 0.75rem; 
+            color: var(--gold); 
+            background: rgba(212, 175, 55, 0.1); 
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            width: 26px; 
+            height: 26px; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            border-radius: 50%; 
+            flex-shrink: 0; 
+            margin-top: 0.15rem; 
+        }
+
+        /* ===================== PIE DE PÁGINA ===================== */
+        .portal-footer { 
+            text-align: center; 
+            border-top: 1px solid var(--gold-15); 
+            padding-top: 3.5rem; 
+            margin-top: 2rem; 
+        }
+        .portal-footer-note { 
+            font-family: 'Inter', system-ui, sans-serif; 
+            font-size: 0.85rem; 
+            color: rgba(255,255,255,0.4); 
+            line-height: 1.6; 
+            max-width: 420px; 
+            margin: 0 auto; 
+            font-weight: 300;
+        }
+        
+        /* ===================== RESPONSIVE ===================== */
+        @media (max-width: 768px) {
+            .portal-wrapper { padding: 4rem 1.5rem 3rem; }
+            .portal-title { font-size: 2.6rem; }
+            .portal-form-card { padding: 3rem 2rem; }
+            .portal-how { padding: 0; }
+        }
+        
+        /* ===================== KLEOS INTELLIGENCE TRANSITION™ ===================== */
+        .kleos-transition {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background-color: #050505;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.6s ease;
+        }
+        .kleos-transition.is-active {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .kt-isotype {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 3.5rem;
+        }
+        .kt-ring {
+            transform-origin: 105px 105px;
+        }
+        @keyframes rotateRingCW { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        @keyframes rotateRingCCW { from { transform: rotate(0deg); } to { transform: rotate(-360deg); } }
+        .kt-ring-1 { animation: rotateRingCW 35s linear infinite; }
+        .kt-ring-2 { animation: rotateRingCCW 45s linear infinite; }
+        .kt-ring-3 { animation: rotateRingCW 55s linear infinite; }
+        .kt-ring-4 { animation: rotateRingCCW 65s linear infinite; }
+        .kt-ring-5 { animation: rotateRingCW 75s linear infinite; }
+        .kt-ring-6 { animation: rotateRingCCW 85s linear infinite; }
+        .kt-ring-7 { animation: rotateRingCW 95s linear infinite; }
+        
+        .kt-circle { 
+            fill: none; 
+            stroke: rgba(197, 160, 89, 0.12); 
+            stroke-width: 0.6; 
+        }
+        .kt-star { 
+            fill: rgba(197, 160, 89, 0.85); 
+            animation: starPulse 4s ease-in-out infinite alternate; 
+            opacity: 0; 
+        }
+        @keyframes starPulse { 
+            0%, 20% { opacity: 0; filter: drop-shadow(0 0 0 rgba(197,160,89,0)); } 
+            100% { opacity: 1; filter: drop-shadow(0 0 4px rgba(197,160,89,0.8)); } 
+        }
+        /* Distribuimos el encendido de las estrellas */
+        .kt-ring-1 .kt-star { animation-delay: 0.5s; }
+        .kt-ring-2 .kt-star { animation-delay: 1.8s; }
+        .kt-ring-3 .kt-star { animation-delay: 3.2s; }
+        .kt-ring-4 .kt-star { animation-delay: 1.1s; }
+        .kt-ring-5 .kt-star { animation-delay: 2.7s; }
+        .kt-ring-6 .kt-star { animation-delay: 4.5s; }
+        .kt-ring-7 .kt-star { animation-delay: 0.2s; }
+
+        .kt-text-container {
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            min-height: 80px; 
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+        }
+        .kt-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 1.7rem;
+            color: #F5F5F5;
+            font-weight: 400;
+            margin: 0 0 0.7rem 0;
+            letter-spacing: 0.01em;
+        }
+        .kt-subtitle {
+            font-family: 'JetBrains Mono', Consolas, monospace;
+            font-size: 0.75rem;
+            color: var(--gold);
+            font-weight: 500;
+            margin: 0;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+        }
+        .kt-k {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 58px;
+            fill: #C5A059;
+            font-weight: 400;
+        }
+    </style>
+</head>
+<body>
+
+    <main class="portal-wrapper">
+        
+        <!-- HEADER -->
+        <header class="portal-hero">
+            <span class="portal-label">PORTAL KLEOS</span>
+            <h1 class="portal-title">Bienvenido nuevamente.</h1>
+            <p class="portal-subtitle">Accede a tus protocolos utilizando el mismo correo electrónico con el que realizaste tu diagnóstico.</p>
+        </header>
+
+        <!-- FORMULARIO DE ACCESO -->
+        <section class="portal-form-card">
+            <!-- No hay lógica real aún, onsubmit previene recarga -->
+            <form id="portal-form" class="portal-form">
+                <div class="portal-form-group">
+                    <label for="email" class="portal-form-label">Correo electrónico</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        class="portal-input" 
+                        placeholder="nombre@correo.com" 
+                        required 
+                        autocomplete="email"
+                    >
+                </div>
+                <button type="submit" class="portal-btn">Continuar</button>
+            </form>
+        </section>
+
+        <!-- EXPLICACIÓN: CÓMO FUNCIONA -->
+        <section class="portal-how">
+            <h2 class="portal-how-title">¿Cómo funciona?</h2>
+            <div class="portal-how-list">
+                <div class="portal-how-item">
+                    <div class="portal-how-num">1</div>
+                    <div>Introduce el correo utilizado durante tu diagnóstico.</div>
+                </div>
+                <div class="portal-how-item">
+                    <div class="portal-how-num">2</div>
+                    <div>Localizaremos automáticamente tus protocolos disponibles.</div>
+                </div>
+                <div class="portal-how-item">
+                    <div class="portal-how-num">3</div>
+                    <div>Si tu Lectura Completa está desbloqueada accederás directamente a ella.</div>
+                </div>
+                <div class="portal-how-item">
+                    <div class="portal-how-num">4</div>
+                    <div>A medida que adquieras nuevos protocolos aparecerán disponibles dentro del mismo portal.</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FOOTER -->
+        <footer class="portal-footer">
+            <p class="portal-footer-note">El Portal KLEOS será el punto de acceso permanente a todos tus diagnósticos, informes y protocolos.</p>
+        </footer>
+
+    </main>
+
+    <!-- KLEOS INTELLIGENCE TRANSITION™ -->
+    <div id="kleos-transition" class="kleos-transition">
+        <svg viewBox="0 0 210 210" class="kt-isotype">
+            <g class="kt-ring kt-ring-1">
+                <circle cx="105" cy="105" r="35" class="kt-circle"/>
+                <circle cx="105" cy="70" r="1.5" class="kt-star"/>
+            </g>
+            <g class="kt-ring kt-ring-2">
+                <circle cx="105" cy="105" r="46" class="kt-circle"/>
+                <circle cx="151" cy="105" r="1.5" class="kt-star"/>
+            </g>
+            <g class="kt-ring kt-ring-3">
+                <circle cx="105" cy="105" r="57" class="kt-circle"/>
+                <circle cx="105" cy="162" r="1.5" class="kt-star"/>
+            </g>
+            <g class="kt-ring kt-ring-4">
+                <circle cx="105" cy="105" r="68" class="kt-circle"/>
+                <circle cx="37" cy="105" r="1.5" class="kt-star"/>
+            </g>
+            <g class="kt-ring kt-ring-5">
+                <circle cx="105" cy="105" r="79" class="kt-circle"/>
+                <circle cx="160.86" cy="49.14" r="1.5" class="kt-star"/>
+            </g>
+            <g class="kt-ring kt-ring-6">
+                <circle cx="105" cy="105" r="90" class="kt-circle"/>
+                <circle cx="41.36" cy="168.64" r="1.5" class="kt-star"/>
+            </g>
+            <g class="kt-ring kt-ring-7">
+                <circle cx="105" cy="105" r="101" class="kt-circle"/>
+                <circle cx="105" cy="4" r="1.5" class="kt-star"/>
+            </g>
+            <text x="105" y="124" text-anchor="middle" class="kt-k">K</text>
+        </svg>
+        <div id="kt-text-container" class="kt-text-container">
+            <h2 id="kt-title" class="kt-title"></h2>
+            <p id="kt-subtitle" class="kt-subtitle"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('portal-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const btn = this.querySelector('.portal-btn');
+            btn.textContent = 'Comprobando acceso...';
+            btn.style.opacity = '0.7';
+            btn.style.pointerEvents = 'none';
+            
+            // Paso 1: Botón carga suavemente, luego inicia fundido
+            setTimeout(() => {
+                const overlay = document.getElementById('kleos-transition');
+                overlay.classList.add('is-active');
+                
+                // Iniciar secuencia de mensajes
+                runIntelligenceSequence();
+            }, 400); 
+        });
+
+        function runIntelligenceSequence() {
+            const titleEl = document.getElementById('kt-title');
+            const subEl = document.getElementById('kt-subtitle');
+            const textContainer = document.getElementById('kt-text-container');
+            
+            const steps = [
+                { t: "Estamos localizando tu diagnóstico.", s: "Recuperando tu perfil estratégico...", d: 2000 },
+                { t: "Analizando protocolos disponibles.", s: "Preparando la información asociada a tu perfil.", d: 2000 },
+                { t: "Preparando tu experiencia KLEOS.", s: "Todo está listo.", d: 1500 }
+            ];
+            
+            let i = 0;
+            
+            function showStep() {
+                if (i >= steps.length) {
+                    // Finalización: Navegar a la Lectura Completa con fundido
+                    document.body.style.transition = "opacity 0.8s ease";
+                    document.body.style.opacity = "0";
+                    setTimeout(() => {
+                        window.location.href = 'lectura.html?test=true';
+                    }, 800);
+                    return;
+                }
+                
+                // Fade out del texto
+                textContainer.style.opacity = 0;
+                
+                setTimeout(() => {
+                    titleEl.textContent = steps[i].t;
+                    subEl.textContent = steps[i].s;
+                    
+                    // Fade in del texto
+                    textContainer.style.opacity = 1;
+                    
+                    setTimeout(() => {
+                        i++;
+                        showStep();
+                    }, steps[i].d);
+                }, 500); // Duración del fade out
+            }
+            
+            // Pequeño retraso para que termine de entrar el overlay
+            setTimeout(showStep, 400);
+        }
+    </script>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1793cba293ed7ef',t:'MTc4MzQ1MjM0OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
