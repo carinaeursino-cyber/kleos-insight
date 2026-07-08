@@ -533,7 +533,7 @@
             btn.style.pointerEvents = 'all';
         }
 
-        function runIntelligenceSequence(data) {
+                function runIntelligenceSequence(data) {
             const titleEl = document.getElementById('kt-title');
             const subEl = document.getElementById('kt-subtitle');
             const textContainer = document.getElementById('kt-text-container');
@@ -542,6 +542,48 @@
                 { t: "Autenticando identidad.", s: "Localizando perfil estratégico...", d: 1800 },
                 { t: "Analizando arquitectura.", s: "Desbloqueando protocolos asociados.", d: 1800 },
                 { t: "Preparando entorno KLEOS.", s: "Todo está listo.", d: 1200 }
+            ];
+            
+            let i = 0;
+            let transitionFinished = false;
+            
+            function showStep() {
+                if (transitionFinished) return;
+                
+                if (i >= steps.length) {
+                    transitionFinished = true;
+                    // La transición terminó. Cambiamos las vistas por detrás del telón.
+                    document.getElementById('view-login').style.display = 'none';
+                    document.getElementById('view-dashboard').style.display = 'flex';
+                    
+                    // Inyectar datos del perfil en el Dashboard
+                    prepararPerfil(data);
+
+                    // Hacer fade out al overlay
+                    const overlay = document.getElementById('kleos-transition');
+                    overlay.style.opacity = '0';
+                    setTimeout(() => {
+                        overlay.classList.remove('is-active');
+                        overlay.style.display = 'none';
+                    }, 600);
+                    return;
+                }
+                
+                textContainer.style.opacity = 0;
+                setTimeout(() => {
+                    if (transitionFinished) return;
+                    titleEl.textContent = steps[i].t;
+                    subEl.textContent = steps[i].s;
+                    textContainer.style.opacity = 1;
+                    
+                    setTimeout(() => {
+                        i++;
+                        showStep();
+                    }, steps[i].d);
+                }, 500);
+            }
+            setTimeout(showStep, 400);
+        }
             ];
             
             let i = 0;
