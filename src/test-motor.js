@@ -1,77 +1,103 @@
-document.addEventListener("DOMContentLoaded", () => {
-    // Inject testing button
-    const btn = document.createElement("button");
-    btn.innerHTML = "🧪 SIMULAR RESULTADOS (TEST)";
-    btn.style.cssText = "position: fixed; bottom: 20px; right: 20px; z-index: 9999; background: #D95B4F; color: white; border: none; padding: 10px 20px; border-radius: 100px; font-family: 'JetBrains Mono', monospace; font-size: 12px; font-weight: bold; cursor: pointer; box-shadow: 0 4px 15px rgba(0,0,0,0.5);";
-    document.body.appendChild(btn);
-
-    // Auto-inject if ?test=true
+document.addEventListener("DOMContentLoaded", async () => {
     const urlParams = new URLSearchParams(window.location.search);
-    if (urlParams.get('test') === 'true') {
-        setTimeout(() => inyectarDatosPrueba(true), 300);
-        btn.remove();
+    const token = urlParams.get('token');
+    const isTest = urlParams.get('test') === 'true';
+
+    // FASE 2: Consultar al servidor usando el Token (Cero LocalStorage)
+    if (token) {
+        try {
+            const response = await fetch('/api/get-reading', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+            });
+
+            const data = await response.json();
+
+            if (data.success && data.reading) {
+                inyectarDatosPrueba({ serverData: data.reading });
+            } else {
+                mostrarErrorAcceso();
+            }
+        } catch (err) {
+            console.error(err);
+            mostrarErrorAcceso();
+        }
+        return;
     }
 
-    btn.addEventListener("click", () => {
-        inyectarDatosPrueba(false);
-        btn.innerHTML = "✅ DATOS INYECTADOS";
-        btn.style.background = "#D4A24E";
-        setTimeout(() => btn.remove(), 3000);
-    });
+    // Mantenemos esto temporalmente solo por si quieres probar "a la fuerza" sin token en local
+    if (isTest) {
+        setTimeout(() => inyectarDatosPrueba({ fallbackLocal: true }), 300);
+        return;
+    }
+
+    mostrarErrorAcceso();
 });
 
-function inyectarDatosPrueba(fromStorage = false) {
-    let savedData = null;
-    if(fromStorage) {
-        try {
-            const raw = localStorage.getItem('kleos_kip001_result');
-            if(raw) savedData = JSON.parse(raw);
-        } catch(e) {}
+function mostrarErrorAcceso() {
+    document.body.innerHTML = '';
+    const errorDiv = document.createElement('div');
+    errorDiv.style.cssText = "display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; background: #000; color: #F5F5F5; font-family: 'Inter', sans-serif;";
+    errorDiv.innerHTML = `
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 2.2rem; color: #C5A059; margin-bottom: 1rem; font-weight: 400;">Sesión Expirada</h2>
+        <p style="color: rgba(255,255,255,0.6); margin-bottom: 2.5rem; text-align: center; line-height: 1.6;">Su token de acceso es inválido o ha caducado.<br>Por seguridad, los accesos deben generarse desde su Portal KLEOS.</p>
+        <button onclick="window.location.href='portal.html'" style="background: #C5A059; color: #000; padding: 1rem 2rem; border-radius: 100px; border: none; font-weight: 600; cursor: pointer; font-size: 0.95rem; font-family: 'Inter', sans-serif;">Volver al Portal</button>
+    `;
+    document.body.appendChild(errorDiv);
+}
+
+function inyectarDatosPrueba({ serverData = null, fallbackLocal = false }) {
+    let raw = null;
+    if (serverData) {
+        raw = serverData;
+    } else if (fallbackLocal) {
+        try { raw = JSON.parse(localStorage.getItem('kleos_kip001_result') || '{}'); } catch(e) {}
     }
 
+    if (!raw) raw = {}; 
+    
     // 1. KPI Principales
-    const idxVal = savedData ? savedData.index : "63";
-    const lvlVal = savedData ? savedData.level.name.toUpperCase() : "MEDIO";
-    const dimVal = savedData && savedData.prescription ? savedData.prescription.dimension.toUpperCase() : "DIFERENCIACIÓN";
-    const dimScore = savedData && savedData.weakestFinding ? "8" : "8"; 
+    const idxVal = raw.kleosIndex || raw.index || "63";
+    const rawLvl = raw.perceptionLevel || (raw.level ? raw.level.name : "NIVEL II — PERCEPCIÓN DIFUSA");
+    const lvlVal = rawLvl.split("—")[1] ? rawLvl.split("—")[1].trim().toUpperCase() : rawLvl.toUpperCase();
+    
+    // Asumimos Diferenciación como default si no viene prescripción
+    const dimVal = raw.prescription ? raw.prescription.dimension.toUpperCase() : "DIFERENCIACIÓN";
+    
+    const dimList = raw.dimensions || [];
+    let dimScore = "8";
+    if (dimList.length > 0) {
+        const sorted = [...dimList].sort((a,b) => a.score - b.score);
+        dimScore = sorted[0].score.toString();
+    }
 
-    const vI = document.getElementById("val-indice");
-    if(vI) vI.textContent = idxVal;
-    
-    const lI = document.getElementById("lbl-indice");
-    if(lI) lI.textContent = lvlVal;
-    
-    const vP = document.getElementById("val-performance");
-    if(vP) vP.textContent = "72";
-    
-    const vB = document.getElementById("val-brecha");
-    if(vB) vB.textContent = "37";
-    
-    const vC = document.getElementById("val-critica");
-    if(vC) vC.textContent = dimScore;
-    
-    const lC = document.getElementById("lbl-critica");
-    if(lC) lC.textContent = dimVal;
-    
-    const vPo = document.getElementById("val-potencial");
-    if(vPo) vPo.textContent = "42";
+    const vI = document.getElementById("val-indice"); if(vI) vI.textContent = idxVal;
+    const lI = document.getElementById("lbl-indice"); if(lI) lI.textContent = lvlVal;
+    const vP = document.getElementById("val-performance"); if(vP) vP.textContent = "72";
+    const vB = document.getElementById("val-brecha"); if(vB) vB.textContent = "37";
+    const vC = document.getElementById("val-critica"); if(vC) vC.textContent = dimScore;
+    const lC = document.getElementById("lbl-critica"); if(lC) lC.textContent = dimVal;
+    const vPo = document.getElementById("val-potencial"); if(vPo) vPo.textContent = "42";
 
-    // 2. Espejo de Percepción
+    // 2. Espejo de Percepción 
+    let sPercep = ["Innovador", "Profesional", "Confiable"];
+    let cPercep = ["Similar a opciones", "Poco claro", "Difícil comprender"];
+    
+    if (raw.respuestas) {
+        if (raw.respuestas.self_perception) sPercep = String(raw.respuestas.self_perception).split(',');
+        if (raw.respuestas.client_perception) cPercep = String(raw.respuestas.client_perception).split(',');
+    }
+
     const listCrees = document.getElementById("list-crees");
-    if(listCrees) listCrees.innerHTML = `
-        <div class="kip-espejo-item"><span class="icon check">✓</span> Innovador</div>
-        <div class="kip-espejo-item"><span class="icon check">✓</span> Profesional</div>
-        <div class="kip-espejo-item"><span class="icon check">✓</span> Confiable</div>
-        <div class="kip-espejo-item"><span class="icon check">✓</span> Comprometido</div>
-    `;
+    if(listCrees) {
+        listCrees.innerHTML = sPercep.map(w => `<div class="kip-espejo-item"><span class="icon check">✓</span> ${w.trim()}</div>`).join('');
+    }
 
     const listMercado = document.getElementById("list-mercado");
-    if(listMercado) listMercado.innerHTML = `
-        <div class="kip-espejo-item"><span class="icon cross">✕</span> Similar a otras opciones</div>
-        <div class="kip-espejo-item"><span class="icon cross">✕</span> Poco diferenciado</div>
-        <div class="kip-espejo-item"><span class="icon cross">✕</span> Difícil de comprender</div>
-        <div class="kip-espejo-item"><span class="icon cross">✕</span> Comunicación poco clara</div>
-    `;
+    if(listMercado) {
+        listMercado.innerHTML = cPercep.map(w => `<div class="kip-espejo-item"><span class="icon cross">✕</span> ${w.trim()}</div>`).join('');
+    }
 
     // 3. Fuga de Crecimiento
     const fugaTit = document.getElementById("fuga-titulo");
@@ -79,47 +105,49 @@ function inyectarDatosPrueba(fromStorage = false) {
     const fugaSc = document.getElementById("fuga-score");
     if (fugaSc) fugaSc.textContent = dimScore;
     const fugaDesc = document.getElementById("fuga-desc");
-    if (fugaDesc) fugaDesc.textContent = savedData && savedData.weakestFinding ? savedData.weakestFinding.meaning : "Alto valor interno, baja tracción externa. El producto supera a su comunicación. El reto no es construir algo mejor, sino proyectar verdadera autoridad.";
+    if (fugaDesc) fugaDesc.textContent = raw.weakestFinding ? raw.weakestFinding.meaning : "Alto valor interno, baja tracción externa. El producto supera a su comunicación. El reto no es construir algo mejor, sino proyectar verdadera autoridad.";
 
-    // 4. Perfil Estratégico (Radar)
-    const rcFill = document.getElementById("radar-claridad-fill");
-    if (rcFill) rcFill.style.width = "75%";
-    const rcSc = document.getElementById("radar-claridad-score");
-    if (rcSc) rcSc.textContent = "15/20";
-    
-    const rvFill = document.getElementById("radar-valor-fill");
-    if (rvFill) rvFill.style.width = "70%";
-    const rvSc = document.getElementById("radar-valor-score");
-    if (rvSc) rvSc.textContent = "14/20";
-    
-    const rcoFill = document.getElementById("radar-confianza-fill");
-    if (rcoFill) rcoFill.style.width = "65%";
-    const rcoSc = document.getElementById("radar-confianza-score");
-    if (rcoSc) rcoSc.textContent = "13/20";
-    
-    const rdFill = document.getElementById("radar-diferenciacion-fill");
-    if (rdFill) rdFill.style.width = "40%";
-    const rdSc = document.getElementById("radar-diferenciacion-score");
-    if (rdSc) rdSc.textContent = "8/20";
-    
-    const rrFill = document.getElementById("radar-recorrido-fill");
-    if (rrFill) rrFill.style.width = "65%";
-    const rrSc = document.getElementById("radar-recorrido-score");
-    if (rrSc) rrSc.textContent = "13/20";
+    // 4. Perfil Estratégico (Radar con datos reales)
+    if(dimList.length === 5) {
+        const dmap = {};
+        dimList.forEach(d => dmap[d.name.toLowerCase()] = d.score);
+        
+        const setRadar = (id, score) => {
+            const fill = document.getElementById(`radar-${id}-fill`);
+            const sc = document.getElementById(`radar-${id}-score`);
+            if(fill) fill.style.width = Math.round((score/20)*100) + "%";
+            if(sc) sc.textContent = `${score}/20`;
+        };
+
+        setRadar('claridad', dmap['comprensión'] || dmap['claridad'] || 15);
+        setRadar('valor', dmap['autoridad'] || dmap['valor percibido'] || 14);
+        setRadar('confianza', dmap['confianza'] || 13);
+        setRadar('diferenciacion', dmap['diferenciación'] || dmap['diferenciacion'] || 8);
+        setRadar('recorrido', dmap['conversión'] || dmap['recorrido de compra'] || 13);
+    } else {
+        if (document.getElementById("radar-claridad-fill")) document.getElementById("radar-claridad-fill").style.width = "75%";
+        if (document.getElementById("radar-claridad-score")) document.getElementById("radar-claridad-score").textContent = "15/20";
+        if (document.getElementById("radar-valor-fill")) document.getElementById("radar-valor-fill").style.width = "70%";
+        if (document.getElementById("radar-valor-score")) document.getElementById("radar-valor-score").textContent = "14/20";
+        if (document.getElementById("radar-confianza-fill")) document.getElementById("radar-confianza-fill").style.width = "65%";
+        if (document.getElementById("radar-confianza-score")) document.getElementById("radar-confianza-score").textContent = "13/20";
+        if (document.getElementById("radar-diferenciacion-fill")) document.getElementById("radar-diferenciacion-fill").style.width = "40%";
+        if (document.getElementById("radar-diferenciacion-score")) document.getElementById("radar-diferenciacion-score").textContent = "8/20";
+        if (document.getElementById("radar-recorrido-fill")) document.getElementById("radar-recorrido-fill").style.width = "65%";
+        if (document.getElementById("radar-recorrido-score")) document.getElementById("radar-recorrido-score").textContent = "13/20";
+    }
 
     const diagTxt = document.getElementById("diagnosis-text");
-    if (diagTxt) diagTxt.textContent = savedData ? savedData.diagnosis : "Tu negocio presenta una base sólida de claridad, confianza y valor percibido. Sin embargo, la baja diferenciación está limitando el impacto del resto de tus fortalezas. Actualmente este es el principal cuello de botella del sistema.";
+    if (diagTxt) diagTxt.textContent = raw.diagnosis || raw.mainDiagnosis || "Tu negocio presenta una base sólida de claridad, confianza y valor percibido. Sin embargo, la baja diferenciación está limitando el impacto del resto de tus fortalezas.";
     
     const insTxt = document.getElementById("insight-text");
-    if (insTxt) insTxt.textContent = savedData ? `"${savedData.insight}"` : '"La percepción de tu negocio es superior a su capacidad de diferenciarse."';
+    if (insTxt) insTxt.textContent = raw.insight || raw.insightDetected ? `"${raw.insight || raw.insightDetected}"` : '"La percepción de tu negocio es superior a su capacidad de diferenciarse."';
 
     // 5. Verdad Incómoda
     const verTit = document.getElementById("verdad-title");
-    if (verTit) verTit.innerHTML = savedData ? savedData.truth : "El mercado no percibe el valor real de tu oferta.";
-    
+    if (verTit) verTit.innerHTML = raw.truth || "El mercado no percibe el valor real de tu oferta.";
     const verBod = document.getElementById("verdad-body");
     if (verBod) verBod.innerHTML = "Compites en desventaja. El problema no radica en el producto, sino en su envoltura estratégica. Ante la ausencia de un diferencial claro, tu cliente decide por precio.";
-    
     const verCon = document.getElementById("verdad-consecuencia");
     if (verCon) verCon.innerHTML = "<strong>CONSECUENCIA OPERATIVA:</strong><br>Fuga de capital hacia competidores de menor valor pero mayor claridad comercial.";
 
@@ -140,12 +168,11 @@ function inyectarDatosPrueba(fromStorage = false) {
 
     // 7. Prioridad
     const prioTit = document.getElementById("prioridad-title");
-    if (prioTit) prioTit.textContent = savedData && savedData.prescription ? savedData.prescription.cause : "Redefinir la matriz de diferenciación.";
+    if (prioTit) prioTit.textContent = (raw.prescription ? raw.prescription.cause : null) || raw.priorityNumberOne || "Redefinir la matriz de diferenciación.";
     
     const prioTxt = document.getElementById("prioridad-text");
     if (prioTxt) prioTxt.textContent = "Antes de escalar en difusión, asegura el mensaje. El mercado debe entender inmediatamente por qué elegirte es la única decisión lógica.";
     
-    // Iniciar Gráficos (Si existen los canvas)
     initTestCharts();
 }
 
@@ -158,15 +185,12 @@ function initTestCharts() {
     };
     
     if(typeof Chart !== 'undefined') {
-        // Performance
         const ctxPerf = document.getElementById('chart-performance');
         if(ctxPerf) new Chart(ctxPerf, { type: 'doughnut', data: { datasets: [{ data: [72, 28], backgroundColor: ['#C5A059', 'rgba(255,255,255,0.05)'], borderWidth: 0, borderRadius: 20 }] }, options: commonOptions });
         
-        // Brecha
         const ctxBrecha = document.getElementById('chart-brecha');
         if(ctxBrecha) new Chart(ctxBrecha, { type: 'doughnut', data: { datasets: [{ data: [37, 63], backgroundColor: ['#C5A059', 'rgba(255,255,255,0.05)'], borderWidth: 0, borderRadius: 20 }] }, options: commonOptions });
         
-        // Potencial
         const ctxPotencial = document.getElementById('chart-potencial');
         if(ctxPotencial) new Chart(ctxPotencial, { type: 'doughnut', data: { datasets: [{ data: [42, 58], backgroundColor: ['#C5A059', 'rgba(255,255,255,0.05)'], borderWidth: 0, borderRadius: 20 }] }, options: commonOptions });
     }
