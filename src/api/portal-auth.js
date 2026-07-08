@@ -1,8 +1,6 @@
 /* =========================================================
    KLEOS INSIGHT™ — Portal Auth
    NUEVA ARQUITECTURA: USER-CENTRIC (Fase 1.5)
-   
-   Identifica al Usuario y comprueba qué protocolos posee.
    ========================================================= */
 
 function creds() {
@@ -27,110 +25,58 @@ async function redis(cmd) {
 }
 
 module.exports = async (req, res) => {
-  if (req.method !== "POST") {
-    return res.status(405).json({ error: "method_not_allowed" });
-  }
+  if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
 
   try {
     const { email } = req.body || {};
     const normalizedEmail = String(email || "").trim().toLowerCase();
 
     if (!normalizedEmail) {
-      return res.status(200).json({ 
-        success: false, 
-        exists: false, 
-        message: "No se proporcionó un correo electrónico válido." 
-      });
+      return res.status(200).json({ success: false, exists: false, message: "No se proporcionó un correo electrónico válido." });
     }
 
     const c = creds();
     if (!c) {
-      // Mock para testeo local
       if (normalizedEmail === "test@kleos.com" || normalizedEmail === "carina@kleos.com") {
-        return res.status(200).json({
-          success: true,
-          exists: true,
-          user: { id: "usr_mock123", email: normalizedEmail, name: "Usuario" },
-          protocols: ["KIP-001"],
-          token: "mock-user-token-12345"
-        });
+        return res.status(200).json({ success: true, exists: true, user: { id: "usr_mock123", email: normalizedEmail, name: "Usuario" }, protocols: ["KIP-001"], token: "mock-user-token-12345" });
       }
-      return res.status(200).json({
-          success: false,
-          exists: false,
-          message: "No se encontró ninguna cuenta asociada a este correo."
-      });
+      return res.status(200).json({ success: false, exists: false, message: "No se encontró ninguna cuenta asociada a este correo." });
     }
 
-    // 1. Encontrar el USUARIO por su correo
     const idResp = await redis(["GET", `kleos:email:${normalizedEmail}`]);
     const userId = idResp && idResp.result;
 
     if (!userId) {
-      // Verificamos si existe en el modelo legacy (para migraciones suaves)
-      const legacyResp = await redis(["GET", `kip001:email:${normalizedEmail}`]);
-      if (!legacyResp || !legacyResp.result) {
-         return res.status(200).json({ 
-           success: false, 
-           exists: false, 
-           message: "No se encontró ninguna cuenta asociada a este correo en el ecosistema KLEOS." 
-         });
-      }
-      return res.status(200).json({ 
-        success: false, 
-        exists: false, 
-        message: "Su cuenta se encuentra en un sistema heredado. Por favor contacte a soporte." 
-      });
+      return res.status(200).json({ success: false, exists: false, message: "No se encontró ninguna cuenta asociada a este correo en el ecosistema KLEOS." });
     }
 
-    // 2. Traer la Entidad Usuario
     const userResp = await redis(["GET", `kleos:user:${userId}`]);
     const userData = userResp && userResp.result ? JSON.parse(userResp.result) : null;
 
     if (!userData) {
-      return res.status(200).json({ 
-        success: false, 
-        exists: false, 
-        message: "Error recuperando la cuenta del usuario." 
-      });
+      return res.status(200).json({ success: false, exists: false, message: "Error recuperando la cuenta del usuario." });
     }
 
-    // 3. Traer los Protocolos del Usuario
     const protocolsResp = await redis(["SMEMBERS", `kleos:user:${userId}:protocols`]);
     const userProtocols = (protocolsResp && protocolsResp.result) || [];
 
     if (userProtocols.length === 0) {
-      return res.status(200).json({ 
-        success: false, 
-        exists: false, 
-        message: "Esta cuenta no posee protocolos activos." 
-      });
+      return res.status(200).json({ success: false, exists: false, message: "Esta cuenta no posee protocolos activos." });
     }
 
-    // 4. Generar Token de Sesión de Usuario (No de un diagnóstico específico)
-    // El token ahora otorga acceso al USUARIO a su portal completo
     const token = Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
-    await redis(["SET", `kleos:session:${token}`, userId, "EX", "7200"]); // 2 horas
+    await redis(["SET", `kleos:session:${token}`, userId, "EX", "7200"]); 
 
-    // 5. Devolvemos el estado del Portal del usuario
     return res.status(200).json({
       success: true,
       exists: true,
-      user: {
-          id: userData.id,
-          name: userData.nombre,
-          email: userData.email
-      },
+      user: { id: userData.id, name: userData.nombre, email: userData.email },
       protocols: userProtocols,
       token: token
     });
 
   } catch (error) {
     console.error("portal-auth error:", error);
-    return res.status(500).json({ 
-      success: false, 
-      exists: false, 
-      message: "Error interno al procesar la solicitud." 
-    });
+    return res.status(500).json({ success: false, exists: false, message: "Error interno al procesar la solicitud." });
   }
 };

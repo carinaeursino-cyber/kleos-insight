@@ -41,14 +41,11 @@ module.exports = async (req, res) => {
   const clean = (s, n) => String(s == null ? "" : s).slice(0, n).trim();
 
   try {
-    /* ---- Eventos analíticos (ignorar cambios aquí por ahora) ---- */
     if (d.action === "event" || d.action === "question" || d.action === "partial" || d.action === "mark_paid") {
       res.status(200).json({ ok: true });
       return;
     }
 
-    /* ---- NUEVA ARQUITECTURA: USER-CENTRIC ---- */
-    
     // 1. Normalizamos los datos de entrada
     const rawEmail = clean(d.email, 120).toLowerCase();
     const nombre = clean(d.nombre, 80);
@@ -60,15 +57,11 @@ module.exports = async (req, res) => {
     }
 
     // 2. Gestionar la ENTIDAD USUARIO
-    // Buscamos si el usuario ya existe por su correo
     let userId;
     const userLookup = await redis(["GET", `kleos:email:${rawEmail}`]);
     
     if (userLookup && userLookup.result) {
-      // El usuario ya existe, recuperamos su ID
       userId = userLookup.result;
-      
-      // Actualizamos su último acceso/datos si es necesario
       const userDataStr = await redis(["GET", `kleos:user:${userId}`]);
       if (userDataStr && userDataStr.result) {
          try {
@@ -80,9 +73,7 @@ module.exports = async (req, res) => {
          } catch(e) {}
       }
     } else {
-      // Es un USUARIO NUEVO
       userId = "usr_" + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-      
       const newUser = {
         id: userId,
         email: rawEmail,
@@ -91,16 +82,11 @@ module.exports = async (req, res) => {
         created_at: now,
         last_access: now
       };
-      
-      // Guardamos la entidad usuario
       await redis(["SET", `kleos:user:${userId}`, JSON.stringify(newUser)]);
-      
-      // Creamos el índice correo -> userId
       await redis(["SET", `kleos:email:${rawEmail}`, userId]);
     }
 
     // 3. Gestionar la ENTIDAD PROTOCOLO (Resultados)
-    // El ID del resultado ahora indica qué protocolo es y a qué usuario pertenece
     const protocolCode = "KIP-001";
     const resultId = `res_${protocolCode.toLowerCase().replace('-','')}_${userId}`;
     
@@ -122,18 +108,14 @@ module.exports = async (req, res) => {
       paid: false,
     };
 
-    // Guardamos el resultado del protocolo individual
     const json = JSON.stringify(protocolResult);
     if (json.length > 20000) return res.status(400).json({ error: "too_large" });
-    
     await redis(["SET", `kleos:result:${resultId}`, json]);
 
     // 4. Vincular el protocolo al historial del usuario
-    // Agregamos este Result ID a la lista de protocolos ejecutados por el usuario
-    await redis(["SADD", `kleos:user:${userId}:protocols`, protocolCode]); // Para saber rápido qué protocolos tiene habilitados
-    await redis(["LPUSH", `kleos:user:${userId}:history`, resultId]); // Para mantener el historial de ejecuciones
+    await redis(["SADD", `kleos:user:${userId}:protocols`, protocolCode]);
+    await redis(["LPUSH", `kleos:user:${userId}:history`, resultId]);
 
-    // Retrocompatibilidad con el motor antiguo (por si acaso durante la migración)
     const legacyId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     await redis(["SET", `kip001:rec:${legacyId}`, json]);
 

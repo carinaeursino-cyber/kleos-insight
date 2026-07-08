@@ -395,7 +395,7 @@
             <h2 class="dash-section-title">Tus Protocolos</h2>
             
             <div class="protocols-grid" id="protocols-grid">
-                <!-- Se inyecta dinámicamente con JS, aquí va el template base del HTML -->
+                <!-- Se inyecta dinámicamente con JS -->
                 
                 <!-- KIP-001 (Activo por defecto si el servidor lo autoriza) -->
                 <a href="#" class="protocol-card unlocked" id="card-kip001" style="display:none;">
@@ -496,12 +496,10 @@
             btn.style.opacity = '0.7';
             btn.style.pointerEvents = 'none';
 
-            // Limpiar error anterior
             const oldErr = document.getElementById('portal-error');
             if(oldErr) oldErr.remove();
             
             try {
-                // LLAMADA AL ENDPOINT CREADO EN LA ETAPA ANTERIOR
                 const response = await fetch('/api/portal-auth', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -511,7 +509,6 @@
                 const data = await response.json();
 
                 if (data.success && data.exists) {
-                    // EL USUARIO EXISTE: Ocultar login, lanzar transición y luego mostrar el Dashboard
                     const overlay = document.getElementById('kleos-transition');
                     overlay.classList.add('is-active');
                     runIntelligenceSequence(data);
@@ -551,19 +548,16 @@
             
             function showStep() {
                 if (i >= steps.length) {
-                    // La transición terminó. Cambiamos las vistas por detrás del telón.
                     document.getElementById('view-login').style.display = 'none';
                     document.getElementById('view-dashboard').style.display = 'flex';
                     
-                    // Inyectar datos del perfil en el Dashboard
                     prepararPerfil(data);
 
-                    // Hacer fade out al overlay
                     const overlay = document.getElementById('kleos-transition');
                     overlay.style.opacity = '0';
                     setTimeout(() => {
                         overlay.classList.remove('is-active');
-                        overlay.style.opacity = '1'; // Reset for future
+                        overlay.style.opacity = '1'; 
                     }, 600);
                     return;
                 }
@@ -584,21 +578,17 @@
         }
 
         function prepararPerfil(data) {
-            // Llenar metadatos del header
             const firstName = data.user.name ? data.user.name.split(' ')[0] : "Usuario";
             document.getElementById('dash-name').textContent = `Hola, ${firstName}`;
             document.getElementById('dash-email').textContent = data.user.email;
             document.getElementById('dash-id').textContent = data.user.id.toUpperCase();
 
-            // Configurar la fecha (Hoy)
             const dateOpts = { day: '2-digit', month: 'short', year: 'numeric' };
             document.getElementById('dash-last-access').textContent = new Date().toLocaleDateString('es-ES', dateOpts).toUpperCase();
 
-            // Activar las tarjetas de los protocolos que posee
             const cardKip001 = document.getElementById('card-kip001');
             if (data.protocols && data.protocols.includes("KIP-001")) {
                 cardKip001.style.display = "flex";
-                // Este enlace sí debe llamar a la lectura pasándole el token por seguridad
                 cardKip001.href = `lectura.html?token=${data.token}`;
             }
         }
