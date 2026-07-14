@@ -116,3 +116,5 @@ service-account-key.json
 .eslintcache
 .stylelintcache
 .node_repl_history
+.vercel
+.env*

@@ -343,29 +343,29 @@
 <div class="kip-metrics-grid">
 <div class="kip-metric-card special-first">
 <div class="kip-metric-label">ÍNDICE KLEOS</div>
-<div class="kip-metric-big"><span class="big-number">63</span><span class="big-sub">/100</span></div>
-<div class="metric-row"><span class="metric-label-small">Nivel de percepción</span><span class="kip-metric-badge">MEDIO</span></div>
+<div class="kip-metric-big"><span class="big-number" id="val-indice">--</span><span class="big-sub">/100</span></div>
+<div class="metric-row"><span class="metric-label-small">Nivel de percepción</span><span class="kip-metric-badge" id="lbl-indice">--</span></div>
 <div class="kip-metric-desc-bottom">Posición frente a la media del mercado.</div>
 </div>
 <div class="kip-metric-card">
 <div class="kip-metric-label">PERFORMANCE</div>
-<div class="kip-metric-chart"><canvas id="chart-performance" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value">72</span><span class="chart-unit">%</span></div></div>
+<div class="kip-metric-chart"><canvas id="chart-performance" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value" id="val-performance">--</span><span class="chart-unit">%</span></div></div>
 <div class="kip-metric-desc-bottom" style="text-align:center!important;width:100%!important;display:block!important;margin:0 auto!important;">Rendimiento competitivo percibido.</div>
 </div>
 <div class="kip-metric-card">
 <div class="kip-metric-label">BRECHA DE PERCEPCIÓN</div>
-<div class="kip-metric-chart"><canvas id="chart-brecha" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value">37</span><span class="chart-unit">%</span></div></div>
+<div class="kip-metric-chart"><canvas id="chart-brecha" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value" id="val-brecha">--</span><span class="chart-unit">%</span></div></div>
 <div class="kip-metric-desc-bottom" style="text-align:center!important;width:100%!important;display:block!important;margin:0 auto!important;">Diferencia entre valor real y lo que el mercado percibe</div>
 </div>
 <div class="kip-metric-card alert special-alert">
 <div class="kip-metric-label" style="display:flex!important;justify-content:center!important;align-items:center!important;width:100%!important;text-align:center!important;margin:0 auto 1.4rem auto!important;">DIMENSIÓN MÁS BAJA</div>
-<div class="kip-metric-big"><span class="big-number" style="color:#f87171;">8</span><span class="big-sub" style="color:#f87171;">/20</span></div>
-<div class="metric-row"><span class="metric-label-small">Diferenciación</span><span class="kip-metric-badge alert-badge">CRÍTICA</span></div>
+<div class="kip-metric-big"><span class="big-number" id="val-critica" style="color:#f87171;">--</span><span class="big-sub" style="color:#f87171;">/20</span></div>
+<div class="metric-row"><span class="metric-label-small" id="lbl-critica">--</span><span class="kip-metric-badge alert-badge">CRÍTICA</span></div>
 <div class="kip-metric-desc-bottom" style="color:#f87171;">Principal punto que limita tu crecimiento.</div>
 </div>
 <div class="kip-metric-card">
 <div class="kip-metric-label">POTENCIAL SIN LIBERAR</div>
-<div class="kip-metric-chart"><canvas id="chart-potencial" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value">42</span><span class="chart-unit">%</span></div></div>
+<div class="kip-metric-chart"><canvas id="chart-potencial" width="128" height="128"></canvas><div class="chart-center"><span class="chart-value" id="val-potencial">--</span><span class="chart-unit">%</span></div></div>
 <div class="kip-metric-desc-bottom">De tu potencial actual no está siendo capturado</div>
 </div>
 </div>
@@ -378,23 +378,15 @@
 <div class="kip-espejo-comparison">
 <div class="kip-espejo-col left">
 <div class="kip-espejo-col-title">LO QUE TÚ CREES</div>
-<div class="kip-espejo-list">
-<div class="kip-espejo-item"><span class="icon check">✓</span> Innovador</div>
-<div class="kip-espejo-item"><span class="icon check">✓</span> Profesional</div>
-<div class="kip-espejo-item"><span class="icon check">✓</span> Confiable</div>
-<div class="kip-espejo-item"><span class="icon check">✓</span> Comprometido</div>
-<div class="kip-espejo-item"><span class="icon check">✓</span> Orientado a resultados</div>
+<div class="kip-espejo-list" id="list-crees">
+<div class="kip-espejo-item"><span class="icon check">✓</span> --</div>
 </div>
 </div>
 <div class="kip-espejo-divider"><div class="vs-circle">VS</div></div>
 <div class="kip-espejo-col right">
 <div class="kip-espejo-col-title">LO QUE EL MERCADO VE</div>
-<div class="kip-espejo-list">
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Similar a otras opciones</div>
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Poco diferenciado</div>
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Difícil de comprender</div>
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Falta de pruebas visibles</div>
-<div class="kip-espejo-item"><span class="icon cross">✕</span> Comunicación poco clara</div>
+<div class="kip-espejo-list" id="list-mercado">
+<div class="kip-espejo-item"><span class="icon cross">✕</span> --</div>
 </div>
 </div>
 </div>
@@ -402,8 +394,8 @@
 <div class="kip-fuga-panel">
 <div class="kip-fuga-header">TU PRINCIPAL FUGA DE CRECIMIENTO</div>
 <div class="kip-fuga-main">
-<div class="kip-fuga-title">DIFERENCIACIÓN</div>
-<div class="kip-fuga-score"><span class="score-main">8</span><span class="score-sub">/20</span></div>
+<div class="kip-fuga-title" id="fuga-titulo">--</div>
+<div class="kip-fuga-score"><span class="score-main" id="fuga-score">--</span><span class="score-sub">/20</span></div>
 </div>
 <div class="kip-fuga-desc" id="fuga-desc">[Diagnóstico de fuga generado por IA. Describe por qué esta dimensión en específico está causando pérdida de tracción en el mercado actual.]</div>
 <div class="kip-fuga-info"><span class="info-icon">◆</span><span>Esta es la dimensión que más está impactando tus resultados actualmente.</span></div>
@@ -562,8 +554,8 @@
 </div>
 <div class="kip-prioridad-content">
 <div class="kip-prioridad-pretitle">QUÉ DEBERÍAS HACER PRIMERO</div>
-<h3 class="kip-prioridad-title">Reformular tu diferenciación.</h3>
-<p class="kip-prioridad-text">Antes de invertir más en publicidad o contenido, asegúrate de que el mercado entienda por qué eres diferente y por qué elegirte a ti es la mejor decisión.</p>
+<h3 class="kip-prioridad-title" id="prioridad-title">--</h3>
+<p class="kip-prioridad-text" id="prioridad-text">--</p>
 </div>
 <div class="kip-prioridad-icon">
 <img src="assets/images/icono.png" alt="Icono estratégico" width="180" height="180">
@@ -637,21 +629,8 @@ Tu diagnóstico ya está listo.<br><br>Ahora puedes acceder al análisis complet
 </div>
 
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
 <script>
-window.onload = function() { drawDonutCharts(); };
-
-function drawDonutCharts() { createDonut('chart-performance', 72, 'rgba(197, 160, 89, 0.4)'); createDonut('chart-brecha', 37, 'rgba(197, 160, 89, 0.4)'); createDonut('chart-potencial', 42, 'rgba(197, 160, 89, 0.4)'); }
-
-function createDonut(canvasId, percentage, color) {
-const ctx = document.getElementById(canvasId);
-if (!ctx) return;
-new Chart(ctx, {
-type: 'doughnut',
-data: { datasets: [{ data: [percentage, 100 - percentage], backgroundColor: [color, 'rgba(197, 160, 89, 0.04)'], borderWidth: 0, borderColor: 'transparent' }] },
-options: { cutout: '76%', responsive: false, maintainAspectRatio: true, aspectRatio: 1, plugins: { legend: { display: false }, tooltip: { enabled: false } } }
-});
-}
-
 function generarPDF() {
 const { jsPDF } = window.jspdf;
 const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
@@ -697,71 +676,35 @@ addPageFooter();
 
 y = startContentPage();
 y = writeSectionTitle(y, 2, 'Resumen Ejecutivo');
-y = writeMetricRow(y, 'Índice KLEOS', '63 / 100', 'Nivel de percepción: MEDIO — Superas al 68% de los negocios');
-y = writeMetricRow(y, 'Performance', '72%', 'Tu rendimiento percibido');
-y = writeMetricRow(y, 'Brecha de Percepción', '37%', 'Diferencia entre valor real y percibido');
-y = writeMetricRow(y, 'Dimensión más baja', '8 / 20 — Diferenciación', 'Principal punto que limita tu crecimiento');
-y = writeMetricRow(y, 'Potencial sin liberar', '42%', 'Tu potencial actual no está siendo capturado');
-y += 4;
-y = writeParagraph(y, '[El resumen ejecutivo dinámico generado por el motor de interpretación se inyectará aquí, evaluando el Índice General y la brecha principal detectada.]');
+y = writeParagraph(y, '[El resumen ejecutivo dinámico generado por el motor de interpretación se inyectará aquí.]');
 
 y = startContentPage();
 y = writeSectionTitle(y, 3, 'Espejo de Percepción');
-y = writeSubheading(y, 'Lo que tú crees');
-y = writeBulletList(y, [ '[Atributo interno detectado 1]', '[Atributo interno detectado 2]', '[Atributo interno detectado 3]' ]);
-y = writeSubheading(y, 'Lo que el mercado ve');
-y = writeBulletList(y, [ '[Percepción externa detectada 1]', '[Percepción externa detectada 2]', '[Percepción externa detectada 3]' ]);
-y = writeSubheading(y, 'Brecha Detectada');
 y = writeParagraph(y, '[Análisis dinámico de la brecha entre la identidad interna y la percepción externa.]');
 
 y = startContentPage();
 y = writeSectionTitle(y, 4, 'Principal Fuga de Crecimiento');
-y = writeMetricRow(y, 'Dimensión crítica', '[DIMENSIÓN] — [--]/20', 'Principal punto de fuga detectado');
-y = writeSubheading(y, '¿Por qué esto importa?');
-y = writeParagraph(y, '[Racional dinámico explicando por qué esta dimensión en específico está frenando el crecimiento comercial.]');
+y = writeParagraph(y, '[Racional dinámico de la dimensión crítica.]');
 
 y = startContentPage();
 y = writeSectionTitle(y, 5, 'Radar Completo — Perfil Estratégico KLEOS');
-y = writeParagraph(y, 'Visualización del estado actual del negocio en las cinco dimensiones clave del framework KLEOS.');
-const dimensions = [ { name: 'Claridad', score: '[--]/20', level: '[Nivel]' }, { name: 'Valor Percibido', score: '[--]/20', level: '[Nivel]' }, { name: 'Confianza', score: '[--]/20', level: '[Nivel]' }, { name: 'Diferenciación', score: '[--]/20', level: '[Nivel]' }, { name: 'Recorrido de Compra', score: '[--]/20', level: '[Nivel]' } ];
-dimensions.forEach(function(dim) { y = ensureSpace(y, 10); doc.setFont('times', 'bold'); doc.setFontSize(10); doc.setTextColor(...dark); doc.text(dim.name, margin, y); doc.setFont('helvetica', 'normal'); doc.setFontSize(10); doc.setTextColor(...gold); doc.text(dim.score, pageW - margin, y, { align: 'right' }); y += 5; doc.setFontSize(8); doc.setTextColor(...gray); doc.text(dim.level, margin, y); y += 8; });
+y = writeParagraph(y, 'Visualización del estado actual en las cinco dimensiones clave.');
 
 y = startContentPage();
 y = writeSectionTitle(y, 6, 'Verdad Incómoda');
-y = writeParagraph(y, '[Título dinámico de la Verdad Incómoda]');
-y = writeParagraph(y, '[Desarrollo dinámico de la Verdad Incómoda explicando la raíz del problema principal.]');
-y = writeParagraph(y, 'CONSECUENCIA OPERATIVA: [Consecuencia dinámica generada por el motor]');
+y = writeParagraph(y, '[La verdad incómoda generada por el motor de análisis.]');
 
 y = startContentPage();
-y = writeSectionTitle(y, 7, 'Costo de la Inacción');
-y = writeSubheading(y, 'El costo de la inacción');
-y = writeParagraph(y, 'El impacto proyectado si la dimensión crítica no se corrige:');
-y = writeBulletList(y, [ '[Efecto negativo dinámico 1]', '[Efecto negativo dinámico 2]', '[Efecto negativo dinámico 3]' ]);
+y = writeSectionTitle(y, 7, 'Prioridad Número 1');
+y = writeParagraph(y, '[La acción estratégica principal.]');
 
 y = startContentPage();
-y = writeSectionTitle(y, 8, 'Ventana de Oportunidad');
-y = writeSubheading(y, 'La ventana de oportunidad');
-y = writeParagraph(y, 'El efecto multiplicador al resolver la fricción:');
-y = writeBulletList(y, [ '[Efecto positivo dinámico 1]', '[Efecto positivo dinámico 2]', '[Efecto positivo dinámico 3]' ]);
-y = writeParagraph(y, '[Métrica de mejora potencial calculada dinámicamente según la dimensión corregida]');
-
-y = startContentPage();
-y = writeSectionTitle(y, 9, 'Prioridad Número 1');
-y = writeSubheading(y, 'Qué deberías hacer primero');
-y = writeParagraph(y, '[Acción Estratégica Principal]');
-y = writeParagraph(y, '[Racional dinámico justificando por qué esta acción precede a cualquier otra iniciativa.]');
-
-y = startContentPage();
-y = writeSectionTitle(y, 10, 'Conclusión Estratégica');
-y = writeParagraph(y, '[Conclusión dinámica que resume el diagnóstico y el camino a seguir adaptado a la puntuación del usuario.]');
-
+y = writeSectionTitle(y, 8, 'Conclusión Estratégica');
 y = writeParagraph(y, 'Este informe representa el primer paso de una arquitectura diagnóstica más amplia. KIP-001 es la puerta de entrada al Ecosistema KLEOS.');
 addPageFooter();
 doc.save('KIP-001_Informe_Ejecutivo.pdf');
 }
 window.generarPDF = generarPDF;
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1725948db9e14a0',t:'MTc4MzM4MDExNw=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script><script src="test-motor.js"></script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a17961589da40ba0',t:'MTc4MzQ1Mzg0OA=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script src="assets/js/kleos-engine.js"></script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b34d41bfb411e8',t:'MTc4NDA2MTE5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

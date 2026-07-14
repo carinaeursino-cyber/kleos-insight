@@ -37,18 +37,19 @@ module.exports = async (req, res) => {
 
     const c = creds();
     if (!c) {
+      console.log("[get-reading] Redis no configurado. Usando modo mock.");
       if (cleanToken === "mock-user-token-12345") {
         const mockReading = {
-            id: "mock123", user_id: "usr_mock123", protocol_code: protocol,
-            respuestas: { company: "Empresa Test", self_perception: "premium, profesional, innovador", client_perception: "complicado, caro, frio" },
-            kleosIndex: 63, perceptionLevel: "NIVEL II — PERCEPCIÓN DIFUSA", mainDiagnosis: "El mercado no te entiende", priorityNumberOne: "Aclara tu propuesta",
-            dimensions: [
-                {name: "Comprensión", score: 15}, {name: "Autoridad", score: 14}, {name: "Confianza", score: 13}, {name: "Diferenciación", score: 8}, {name: "Conversión", score: 13}
-            ]
+          id: "mock123", user_id: "usr_mock123", protocol_code: protocol,
+          respuestas: { company: "Empresa Test", self_perception: "premium, profesional, innovador", client_perception: "complicado, caro, frio" },
+          kleosIndex: 63, perceptionLevel: "NIVEL II — PERCEPCIÓN DIFUSA", mainDiagnosis: "El mercado no te entiende", priorityNumberOne: "Aclara tu propuesta",
+          dimensions: [
+            {name: "Comprensión", score: 15}, {name: "Autoridad", score: 14}, {name: "Confianza", score: 13}, {name: "Diferenciación", score: 8}, {name: "Conversión", score: 13}
+          ]
         };
         return res.status(200).json({ success: true, reading: mockReading });
       }
-      return res.status(401).json({ success: false, message: "Sesión de usuario inválida" });
+      return res.status(401).json({ success: false, message: "Token no reconocido (modo desarrollo). Use 'mock-user-token-12345'." });
     }
 
     const tResp = await redis(["GET", `kleos:session:${cleanToken}`]);
