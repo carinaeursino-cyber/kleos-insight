@@ -146,7 +146,7 @@ module.exports = async (req, res) => {
         }
 
         const customerEmail = orderData.user_email;
-        const productId = event.data?.relationships?.['first-order-item']?.data?.['product_id'];
+        const productId = orderData.first_order_item?.product_id;
         const orderId = event.data?.id;
 
         if (!customerEmail || !productId || !orderId) {
