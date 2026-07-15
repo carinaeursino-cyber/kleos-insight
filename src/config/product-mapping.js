@@ -18,7 +18,7 @@
  */
 const PRODUCT_MAPPING = {
     // KIP-001: Diagnóstico Estratégico
-    "9f5dabcc-38f7-48d1-9cd1-c8e53337ef76": "KIP-001",
+    "1168656": "KIP-001",
     
     // Futuros protocolos (descomentar cuando estén disponibles):
     // "xxx-product-id": "KIP-002",  // Posicionamiento
