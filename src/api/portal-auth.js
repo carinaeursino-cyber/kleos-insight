@@ -1,6 +1,9 @@
 /* =========================================================
    KLEOS INSIGHT™ — Portal Auth
-   NUEVA ARQUITECTURA: USER-CENTRIC (Fase 1.5)
+   ARQUITECTURA v2: Protocol-Agnostic + User-Centric
+   
+   Autentica al usuario por email y devuelve el estado
+   completo de cada protocolo en su Perfil KLEOS.
    ========================================================= */
 
 function creds() {
@@ -37,12 +40,30 @@ module.exports = async (req, res) => {
 
     const c = creds();
     if (!c) {
+      // Modo mock para desarrollo local
       if (normalizedEmail === "test@kleos.com" || normalizedEmail === "carina@kleos.com") {
-        return res.status(200).json({ success: true, exists: true, user: { id: "usr_mock123", email: normalizedEmail, name: "Usuario" }, protocols: ["KIP-001"], token: "mock-user-token-12345" });
+        return res.status(200).json({
+          success: true,
+          exists: true,
+          user: { id: "usr_mock123", email: normalizedEmail, name: "Usuario" },
+          protocols: ["KIP-001"],
+          protocolsState: [{
+            code: "KIP-001",
+            completed: true,
+            purchased: true,
+            purchaseDate: "2026-07-15T10:00:00Z",
+            purchaseOrderId: "mock-order-123",
+            purchaseProvider: "lemon_squeezy",
+            reportGenerated: true,
+            reportId: "res_kip001_usr_mock123"
+          }],
+          token: "mock-user-token-12345"
+        });
       }
       return res.status(200).json({ success: false, exists: false, message: "No se encontró ninguna cuenta asociada a este correo." });
     }
 
+    // 1. Buscar usuario por email
     const idResp = await redis(["GET", `kleos:email:${normalizedEmail}`]);
     const userId = idResp && idResp.result;
 
@@ -50,6 +71,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: false, exists: false, message: "No se encontró ninguna cuenta asociada a este correo en el ecosistema KLEOS." });
     }
 
+    // 2. Obtener datos del usuario
     const userResp = await redis(["GET", `kleos:user:${userId}`]);
     const userData = userResp && userResp.result ? JSON.parse(userResp.result) : null;
 
@@ -57,6 +79,7 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: false, exists: false, message: "Error recuperando la cuenta del usuario." });
     }
 
+    // 3. Obtener lista de protocolos completados (SET, compatibilidad)
     const protocolsResp = await redis(["SMEMBERS", `kleos:user:${userId}:protocols`]);
     const userProtocols = (protocolsResp && protocolsResp.result) || [];
 
@@ -64,6 +87,25 @@ module.exports = async (req, res) => {
       return res.status(200).json({ success: false, exists: false, message: "Esta cuenta no posee protocolos activos." });
     }
 
+    // 4. NUEVO v2: Leer estado individual de cada protocolo
+    const protocolsState = [];
+    for (const protocolCode of userProtocols) {
+        const stateResp = await redis(["GET", `kleos:user:${userId}:protocol:${protocolCode}`]);
+        const state = stateResp && stateResp.result ? JSON.parse(stateResp.result) : null;
+        
+        protocolsState.push({
+            code: protocolCode,
+            completed: state?.completed ?? true,
+            purchased: state?.purchased ?? false,
+            purchaseDate: state?.purchaseDate ?? null,
+            purchaseOrderId: state?.purchaseOrderId ?? null,
+            purchaseProvider: state?.purchaseProvider ?? null,
+            reportGenerated: state?.reportGenerated ?? false,
+            reportId: state?.reportId ?? null
+        });
+    }
+
+    // 5. Generar token de sesión
     const token = Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
     await redis(["SET", `kleos:session:${token}`, userId, "EX", "7200"]); 
 
@@ -71,7 +113,8 @@ module.exports = async (req, res) => {
       success: true,
       exists: true,
       user: { id: userData.id, name: userData.nombre, email: userData.email },
-      protocols: userProtocols,
+      protocols: userProtocols,           // Legacy: array de strings (compatibilidad)
+      protocolsState: protocolsState,      // NUEVO v2: array de objetos con estado completo
       token: token
     });
 

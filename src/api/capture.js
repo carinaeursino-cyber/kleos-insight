@@ -1,9 +1,10 @@
 /* =========================================================
    KLEOS INSIGHT™ — Captura de diagnósticos
-   NUEVA ARQUITECTURA: USER-CENTRIC (Fase 1.5)
+   ARQUITECTURA v2: Protocol-Agnostic + User-Centric
 
    El usuario es la entidad principal. Los diagnósticos son
    protocolos almacenados dentro de la cuenta del usuario.
+   Cada protocolo tiene su propio estado independiente.
    ========================================================= */
 
 function creds() {
@@ -105,17 +106,31 @@ module.exports = async (req, res) => {
           name: clean(x.name, 30),
           score: Math.max(0, Math.min(20, Math.round(x.score || 0))),
       })) : [],
-      paid: false,
+      paid: false, // Legacy: mantener para compatibilidad
     };
 
     const json = JSON.stringify(protocolResult);
     if (json.length > 20000) return res.status(400).json({ error: "too_large" });
     await redis(["SET", `kleos:result:${resultId}`, json]);
 
-    // 4. Vincular el protocolo al historial del usuario
+    // 4. Vincular el protocolo al historial del usuario (SET y LIST para compatibilidad)
     await redis(["SADD", `kleos:user:${userId}:protocols`, protocolCode]);
     await redis(["LPUSH", `kleos:user:${userId}:history`, resultId]);
 
+    // 5. NUEVO v2: Crear estado individual del protocolo
+    // Este es el estado que evoluciona de forma independiente por protocolo
+    const protocolState = {
+        completed: true,
+        purchased: false,
+        purchaseDate: null,
+        purchaseOrderId: null,
+        purchaseProvider: null,
+        reportGenerated: false,
+        reportId: resultId
+    };
+    await redis(["SET", `kleos:user:${userId}:protocol:${protocolCode}`, JSON.stringify(protocolState)]);
+
+    // 6. Legacy: guardar registro adicional (compatibilidad con sistema anterior)
     const legacyId = Date.now().toString(36) + Math.random().toString(36).slice(2, 8);
     await redis(["SET", `kip001:rec:${legacyId}`, json]);
 

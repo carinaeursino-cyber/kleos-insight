@@ -254,7 +254,7 @@
 .kip-costo-list.loss li::before { content: "╳"; position: absolute; left: 0; color: rgba(248, 113, 113, 0.5); font-size: 0.75rem; }
 .kip-costo-list.opportunity li::before { content: "✓"; position: absolute; left: 0; color: var(--gold); font-size: 0.75rem; font-weight: 700; }
 
-.kip-prioridad { background: #0B0B0C; border: 1px solid rgba(197,160,89,0.12); border-radius: 20px; padding: 2.2rem 3.5rem; margin-top: 3.5rem; margin-bottom: 3.5rem; display: grid; grid-template-columns: 110px 1fr 240px; gap: 3rem; align-items: center; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+.kip-prioridad { background: #0B0B0C; border: 1px solid rgba(197,160,89,0.12); border-radius: 20px; padding: 2.2rem 3.5rem; margin-bottom: 3.5rem; display: grid; grid-template-columns: 110px 1fr 240px; gap: 3rem; align-items: center; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
 .kip-prioridad:hover { border-color: rgba(197,160,89,0.25); box-shadow: 0 0 40px rgba(197,160,89,0.05); }
 .kip-prioridad-circle { width: 108px; height: 108px; border: 1.5px solid var(--gold); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gold); font-weight: 600; box-shadow: 0 0 24px rgba(197, 160, 89, 0.18); text-align: center; }
 .kip-prioridad-circle .label { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 0.6rem; letter-spacing: 0.28em; text-transform: uppercase; display: block; text-align: center; line-height: 1; margin-bottom: 4px; }
@@ -312,6 +312,27 @@
 .kip-ecosistema-footer { text-align: center; margin-top: 3rem; }
 .kip-ecosistema-footer .brand { font-size: 1.35rem; font-weight: 600; color: var(--gold); margin-bottom: 0.3rem; }
 .kip-ecosistema-footer .tagline { font-size: 0.85rem; color: var(--text-60); letter-spacing: 0.2em; }
+
+/* ===================== PREMIUM LOCKED/UNLOCKED ===================== */
+.premium-locked {
+    position: relative;
+    overflow: hidden;
+}
+.premium-locked::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0) 0%, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.95) 100%);
+    pointer-events: none;
+    z-index: 2;
+}
+.premium-unlocked {
+    position: relative;
+    overflow: visible;
+}
+.premium-unlocked::after {
+    display: none;
+}
 </style>
 </head>
 <body>
@@ -507,19 +528,19 @@
 </div>
 
 <!-- VERDAD INCÓMODA -->
-<div class="kip-verdad">
+<div class="kip-verdad premium-locked">
 <div class="kip-verdad-text">
 <div class="kip-verdad-pretitle"><span class="pretitle-dot"></span> LA VERDAD INCÓMODA</div>
-<h3 class="kip-verdad-title" id="verdad-title">[Título Dinámico: La Verdad Incómoda]</h3>
-<div class="kip-verdad-body" id="verdad-body">[Desarrollo dinámico explicando la raíz del problema principal detectado y su impacto en la percepción del mercado.]</div>
+<h3 class="kip-verdad-title" id="ai-truth-title">[Título Dinámico: La Verdad Incómoda]</h3>
+<div class="kip-verdad-body" id="ai-truth-body">[Desarrollo dinámico explicando la raíz del problema principal detectado y su impacto en la percepción del mercado.]</div>
 <div class="kip-verdad-divider"></div>
-<div class="kip-verdad-footer-card"><div id="verdad-consecuencia"><strong>CONSECUENCIA OPERATIVA:</strong><br>[Consecuencia dinámica de la dimensión afectada]</div></div>
+<div class="kip-verdad-footer-card"><div id="ai-truth-consequence"><strong>CONSECUENCIA OPERATIVA:</strong><br>[Consecuencia dinámica de la dimensión afectada]</div></div>
 </div>
 <img src="assets/images/kleos.png" alt="Representación visual de sabiduría estratégica" class="kip-verdad-image">
 </div>
 
 <!-- COSTO DE NO RESOLVERLO -->
-<div class="kip-costo">
+<div class="kip-costo premium-locked">
 <div class="kip-costo-header">
 <h2 class="kip-costo-title">El Costo de No Resolverlo</h2>
 <p class="kip-costo-subtitle">Decidir tiene un costo. La inacción, también.</p>
@@ -529,7 +550,7 @@
 <div class="kip-costo-card loss">
 <h3 class="kip-costo-card-title">El costo de la inacción</h3>
 <p class="kip-costo-intro">El impacto proyectado si la dimensión crítica no se corrige:</p>
-<ul class="kip-costo-list loss" id="list-costo">
+<ul class="kip-costo-list loss" id="ai-cost-list">
 <li>[Efecto negativo dinámico 1]</li>
 <li>[Efecto negativo dinámico 2]</li>
 <li>[Efecto negativo dinámico 3]</li>
@@ -538,7 +559,7 @@
 <div class="kip-costo-card opportunity">
 <h3 class="kip-costo-card-title">La ventana de oportunidad</h3>
 <p class="kip-costo-intro">El efecto multiplicador al resolver la fricción:</p>
-<ul class="kip-costo-list opportunity" id="list-oportunidad">
+<ul class="kip-costo-list opportunity" id="ai-opportunity-list">
 <li>[Efecto positivo dinámico 1]</li>
 <li>[Efecto positivo dinámico 2]</li>
 <li>[Efecto positivo dinámico 3]</li>
@@ -602,7 +623,7 @@ Tu diagnóstico ya está listo.<br><br>Ahora puedes acceder al análisis complet
     </div>
 </div>
 
-<button class="btn-ruta" onclick="window.open('https://kleosstudio.lemonsqueezy.com/checkout/buy/9f5dabcc-38f7-48d1-9cd1-c8e53337ef76', '_blank')">Adquirir Lectura Completa</button>
+<button id="cta-purchase" class="btn-ruta" onclick="window.open('https://kleosstudio.lemonsqueezy.com/checkout/buy/9f5dabcc-38f7-48d1-9cd1-c8e53337ef76', '_blank')">Adquirir Lectura Completa</button>
 <p class="cta-footnote">EL ACCESO SE VINCULARÁ AUTOMÁTICAMENTE A TU CORREO</p>
 </div>
 
@@ -706,5 +727,5 @@ doc.save('KIP-001_Informe_Ejecutivo.pdf');
 }
 window.generarPDF = generarPDF;
 </script>
-<script src="assets/js/kleos-engine.js"></script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b34d41bfb411e8',t:'MTc4NDA2MTE5OQ=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+<script src="assets/js/kleos-engine.js"></script><script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b93d954ae152c9',t:'MTc4NDEyMzQ3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

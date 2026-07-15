@@ -1,12 +1,13 @@
 /* =========================================================
    KLEOS INSIGHT™ — Motor Compartido (kleos-engine.js)
-   Arquitectura User-Centric | Escalable a KIP-002 → KIP-006
+   ARQUITECTURA v2: Protocol-Agnostic + User-Centric
    
    Responsabilidades:
    1. Gestionar la sesión del usuario (sessionStorage)
    2. Validar el token contra el servidor
    3. Inyectar datos dinámicos en la página de lectura
-   4. Inicializar visualizaciones (Chart.js)
+   4. Inyectar contenido del informe IA (si purchased)
+   5. Inicializar visualizaciones (Chart.js)
    ========================================================= */
 
 (function() {
@@ -26,10 +27,6 @@
 
     // ─── GESTIÓN DE SESIÓN ───────────────────────────────
     
-    /**
-     * Guarda la sesión completa en sessionStorage.
-     * Usado por portal.html después del login exitoso.
-     */
     function saveSession(data) {
         try {
             sessionStorage.setItem(KLEOS.SESSION_KEY, data.token);
@@ -37,26 +34,23 @@
             if (data.protocols) {
                 sessionStorage.setItem(KLEOS.PROTOCOL_KEY, JSON.stringify(data.protocols));
             }
+            // NUEVO v2: Guardar estado de protocolos si existe
+            if (data.protocolsState) {
+                sessionStorage.setItem('kleos_protocols_state', JSON.stringify(data.protocolsState));
+            }
             console.log('[KLEOS] Sesión guardada para:', data.user.email);
         } catch (e) {
             console.error('[KLEOS] Error guardando sesión:', e);
         }
     }
 
-    /**
-     * Obtiene el token de la sesión activa.
-     * Prioridad: sessionStorage > URL (legacy fallback)
-     */
     function getToken() {
-        // 1. sessionStorage (método correcto)
         const sessionToken = sessionStorage.getItem(KLEOS.SESSION_KEY);
         if (sessionToken) return sessionToken;
 
-        // 2. URL query parameter (fallback para compatibilidad)
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get('token');
         if (urlToken) {
-            // Migrar automáticamente a sessionStorage
             sessionStorage.setItem(KLEOS.SESSION_KEY, urlToken);
             return urlToken;
         }
@@ -64,18 +58,13 @@
         return null;
     }
 
-    /**
-     * Limpia la sesión completa.
-     */
     function clearSession() {
         sessionStorage.removeItem(KLEOS.SESSION_KEY);
         sessionStorage.removeItem(KLEOS.USER_KEY);
         sessionStorage.removeItem(KLEOS.PROTOCOL_KEY);
+        sessionStorage.removeItem('kleos_protocols_state');
     }
 
-    /**
-     * Obtiene los datos del usuario de la sesión.
-     */
     function getUser() {
         try {
             return JSON.parse(sessionStorage.getItem(KLEOS.USER_KEY) || 'null');
@@ -84,9 +73,6 @@
         }
     }
 
-    /**
-     * Obtiene los protocolos activos del usuario.
-     */
     function getProtocols() {
         try {
             return JSON.parse(sessionStorage.getItem(KLEOS.PROTOCOL_KEY) || '[]');
@@ -99,8 +85,7 @@
 
     /**
      * Valida la sesión y carga los datos del protocolo desde el servidor.
-     * @param {string} protocolCode - Código del protocolo (ej: "KIP-001")
-     * @returns {Promise<{success: boolean, reading?: object, error?: string}>}
+     * NUEVO v2: También devuelve purchased y ai_report
      */
     async function loadProtocolData(protocolCode) {
         const token = getToken();
@@ -119,10 +104,14 @@
             const data = await response.json();
 
             if (data.success && data.reading) {
-                return { success: true, reading: data.reading };
+                return {
+                    success: true,
+                    reading: data.reading,
+                    purchased: data.purchased || false,
+                    ai_report: data.ai_report || null
+                };
             }
 
-            // Si la sesión expiró, limpiar sessionStorage
             if (response.status === 401) {
                 clearSession();
             }
@@ -141,20 +130,19 @@
     // ─── INYECCIÓN DE DATOS EN KIP-001 ───────────────────
 
     /**
-     * Inyecta los datos del servidor en los elementos HTML de lectura.html
-     * Esta función es específica para KIP-001. Futuros protocolos tendrán
-     * su propia función de inyección.
+     * Inyecta los datos del servidor en los elementos HTML de lectura.html.
+     * NUEVO v2: Recibe ai_report y lo inyecta si existe.
      */
-    function injectKIP001(raw) {
+    function injectKIP001(raw, aiReport) {
         try {
             // 1. KPI Principales
-            const idxVal = raw.kleosIndex || raw.index || "63";
+            const idxVal = raw.kleosIndex || raw.index || "--";
             const rawLvl = raw.perceptionLevel || (raw.level ? raw.level.name : "NIVEL II — PERCEPCIÓN DIFUSA");
             const lvlVal = rawLvl.split("—")[1] ? rawLvl.split("—")[1].trim().toUpperCase() : rawLvl.toUpperCase();
 
             const dimVal = raw.prescription ? raw.prescription.dimension.toUpperCase() : "DIFERENCIACIÓN";
             const dimList = raw.dimensions || [];
-            let dimScore = "8";
+            let dimScore = "--";
             if (dimList.length > 0) {
                 const sorted = [...dimList].sort((a, b) => a.score - b.score);
                 dimScore = sorted[0].score.toString();
@@ -194,9 +182,15 @@
             // 3. Fuga de Crecimiento
             setElementText("fuga-titulo", dimVal);
             setElementText("fuga-score", dimScore);
-            setElementText("fuga-desc", raw.weakestFinding
-                ? raw.weakestFinding.meaning
-                : "Alto valor interno, baja tracción externa. El producto supera a su comunicación. El reto no es construir algo mejor, sino proyectar verdadera autoridad.");
+            
+            // Si hay informe IA, usar leak_description; si no, usar fallback
+            if (aiReport && aiReport.leak_description) {
+                setElementText("fuga-desc", aiReport.leak_description);
+            } else {
+                setElementText("fuga-desc", raw.weakestFinding
+                    ? raw.weakestFinding.meaning
+                    : "Alto valor interno, baja tracción externa. El producto supera a su comunicación. El reto no es construir algo mejor, sino proyectar verdadera autoridad.");
+            }
 
             // 4. Perfil Estratégico (Radar de dimensiones)
             if (dimList.length === 5) {
@@ -216,7 +210,6 @@
                 setRadar('diferenciacion', dmap['diferenciación'] || dmap['diferenciacion'] || 8);
                 setRadar('recorrido', dmap['conversión'] || dmap['recorrido de compra'] || 13);
             } else {
-                // Datos mock si no hay dimensiones reales
                 const setRadarMock = (id, pct, sc) => {
                     const fill = document.getElementById(`radar-${id}-fill`);
                     if (fill) fill.style.width = pct;
@@ -230,7 +223,7 @@
                 setRadarMock('recorrido', "65%", "13/20");
             }
 
-            // 5. Diagnóstico e Insight
+            // 5. Diagnóstico e Insight (datos básicos)
             setElementText("diagnosis-text",
                 raw.diagnosis || raw.mainDiagnosis ||
                 "Tu negocio presenta una base sólida de claridad, confianza y valor percibido. Sin embargo, la baja diferenciación está limitando el impacto del resto de tus fortalezas.");
@@ -240,40 +233,106 @@
                     ? `"${raw.insight || raw.insightDetected}"`
                     : '"La percepción de tu negocio es superior a su capacidad de diferenciarse."');
 
-            // 6. Verdad Incómoda
-            setElementHTML("verdad-title", raw.truth || "El mercado no percibe el valor real de tu oferta.");
-            setElementHTML("verdad-body", "Compites en desventaja. El problema no radica en el producto, sino en su envoltura estratégica. Ante la ausencia de un diferencial claro, tu cliente decide por precio.");
-            setElementHTML("verdad-consecuencia", "<strong>CONSECUENCIA OPERATIVA:</strong><br>Fuga de capital hacia competidores de menor valor pero mayor claridad comercial.");
-
-            // 7. Costo / Oportunidad
-            setElementHTML("list-costo", `
-                <li>Competirás cada vez más por precio.</li>
-                <li>Los clientes seguirán comparándote con alternativas similares.</li>
-                <li>Tu propuesta perderá fuerza frente a competidores mejor posicionados.</li>
-            `);
-
-            setElementHTML("list-oportunidad", `
-                <li>Aumentarás el valor percibido de tu oferta.</li>
-                <li>Reducirás la comparación directa con competidores.</li>
-                <li>Facilitarás la decisión de compra sin depender de descuentos.</li>
-            `);
-
-            // 8. Prioridad
+            // 6. Prioridad (datos básicos)
             setElementText("prioridad-title",
                 (raw.prescription ? raw.prescription.cause : null) || raw.priorityNumberOne || "Redefinir la matriz de diferenciación.");
 
             setElementText("prioridad-text",
                 "Antes de escalar en difusión, asegura el mensaje. El mercado debe entender inmediatamente por qué elegirte es la única decisión lógica.");
 
-            // 9. Inicializar charts con datos reales
+            // 7. Inicializar charts
             initCharts();
 
-            console.log('[KLEOS] Datos de KIP-001 inyectados correctamente');
+            console.log('[KLEOS] Datos básicos de KIP-001 inyectados');
+
+            // 8. NUEVO v2: Inyectar informe IA si existe
+            if (aiReport) {
+                injectAIReport(aiReport);
+            }
 
         } catch (err) {
             console.error('[KLEOS] Error inyectando datos:', err);
             showError();
         }
+    }
+
+    // ─── NUEVO v2: INYECCIÓN DE INFORME IA ───────────────
+
+    /**
+     * Inyecta el contenido del informe IA en las secciones premium.
+     * Solo se ejecuta si el usuario compró el protocolo.
+     */
+    function injectAIReport(report) {
+        console.log('[KLEOS] Inyectando informe IA...');
+
+        try {
+            // Verdad Incómoda
+            if (report.truth_title) setElementText("ai-truth-title", report.truth_title);
+            if (report.truth_body) setElementText("ai-truth-body", report.truth_body);
+            if (report.truth_consequence) setElementText("ai-truth-consequence", report.truth_consequence);
+
+            // Costo de la Inacción
+            if (report.cost_items && Array.isArray(report.cost_items)) {
+                const listCosto = document.getElementById("ai-cost-list");
+                if (listCosto) {
+                    listCosto.innerHTML = report.cost_items.map(item =>
+                        `<li>${item}</li>`
+                    ).join('');
+                }
+            }
+
+            // Ventana de Oportunidad
+            if (report.opportunity_items && Array.isArray(report.opportunity_items)) {
+                const listOp = document.getElementById("ai-opportunity-list");
+                if (listOp) {
+                    listOp.innerHTML = report.opportunity_items.map(item =>
+                        `<li>${item}</li>`
+                    ).join('');
+                }
+            }
+
+            // Diagnóstico Ejecutivo (reemplaza el básico si existe)
+            if (report.diagnosis_executive) {
+                setElementText("diagnosis-text", report.diagnosis_executive);
+            }
+
+            // Insight Principal (reemplaza el básico si existe)
+            if (report.insight_main) {
+                setElementText("insight-text", `"${report.insight_main}"`);
+            }
+
+            // Prioridad #1 (descripción expandida)
+            if (report.priority_description) {
+                setElementText("prioridad-text", report.priority_description);
+            }
+
+            // Mostrar secciones premium (quitar estado bloqueado)
+            unlockPremiumSections();
+
+            console.log('[KLEOS] ✓ Informe IA inyectado correctamente');
+
+        } catch (err) {
+            console.error('[KLEOS] Error inyectando informe IA:', err);
+        }
+    }
+
+    /**
+     * Desbloquea las secciones premium quitando clases de bloqueo.
+     */
+    function unlockPremiumSections() {
+        const lockedElements = document.querySelectorAll('.premium-locked');
+        lockedElements.forEach(el => {
+            el.classList.remove('premium-locked');
+            el.classList.add('premium-unlocked');
+        });
+
+        // Ocultar CTA de compra si existe
+        const ctaPurchase = document.getElementById('cta-purchase');
+        if (ctaPurchase) {
+            ctaPurchase.style.display = 'none';
+        }
+
+        console.log('[KLEOS] ✓ Secciones premium desbloqueadas');
     }
 
     // ─── VISUALIZACIONES ─────────────────────────────────
@@ -300,7 +359,6 @@
         const ctx = document.getElementById(canvasId);
         if (!ctx) return;
 
-        // Destruir instancia previa si existe
         const existingChart = Chart.getChart(ctx);
         if (existingChart) existingChart.destroy();
 
@@ -349,30 +407,23 @@
 
     // ─── INICIALIZACIÓN ──────────────────────────────────
 
-    /**
-     * Punto de entrada principal. Se ejecuta cuando el DOM está listo.
-     * Detecta en qué página estamos y actúa en consecuencia.
-     */
     async function init() {
         const path = window.location.pathname;
 
-        // Si estamos en lectura.html
         if (path.includes('lectura')) {
             const urlParams = new URLSearchParams(window.location.search);
             const isTest = urlParams.get('test') === 'true';
 
-            // Modo test local (sin servidor)
             if (isTest) {
                 console.log('[KLEOS] Modo test activado');
-                setTimeout(() => injectKIP001({ fallbackLocal: true }), 300);
+                setTimeout(() => injectKIP001({ fallbackLocal: true }, null), 300);
                 return;
             }
 
-            // Cargar datos del servidor
             const result = await loadProtocolData('KIP-001');
 
             if (result.success) {
-                injectKIP001(result.reading);
+                injectKIP001(result.reading, result.ai_report);
             } else {
                 console.error('[KLEOS] Error:', result.error);
                 showError();
@@ -382,7 +433,6 @@
 
     // ─── API PÚBLICA ─────────────────────────────────────
     
-    // Exponer funciones necesarias globalmente
     window.KLEOS = {
         saveSession: saveSession,
         clearSession: clearSession,
@@ -391,12 +441,12 @@
         getProtocols: getProtocols,
         loadProtocolData: loadProtocolData,
         injectKIP001: injectKIP001,
+        injectAIReport: injectAIReport,
         initCharts: initCharts,
         showError: showError,
         MOCK_TOKEN: KLEOS.MOCK_TOKEN
     };
 
-    // Auto-inicializar cuando el DOM esté listo
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', init);
     } else {
