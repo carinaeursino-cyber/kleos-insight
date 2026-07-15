@@ -16,6 +16,29 @@
 const crypto = require('crypto');
 const { getProtocolCode } = require('../config/product-mapping');
 
+// Deshabilitar body parser automático de Vercel para recibir body raw
+export const config = {
+    api: {
+        bodyParser: false
+    }
+};
+
+/**
+ * Lee el body raw de la request como string
+ */
+async function getRawBody(req) {
+    return new Promise((resolve, reject) => {
+        let body = '';
+        req.on('data', chunk => {
+            body += chunk.toString();
+        });
+        req.on('end', () => {
+            resolve(body);
+        });
+        req.on('error', reject);
+    });
+}
+
 /**
  * Conecta a Redis usando variables de entorno de Vercel KV
  */
@@ -66,7 +89,7 @@ function validateSignature(payload, signature) {
 
     const hmac = crypto.createHmac('sha256', secret);
     const digest = hmac.update(payload).digest('hex');
-
+    
     return crypto.timingSafeEqual(
         Buffer.from(signature),
         Buffer.from(digest)
@@ -85,25 +108,29 @@ module.exports = async (req, res) => {
     }
 
     try {
-        // 1. Validar firma HMAC
+        // 1. Leer body raw (ANTES de parsear)
+        const rawBody = await getRawBody(req);
+        console.log('[Webhook] Body raw length:', rawBody.length);
+
+        // 2. Validar firma HMAC sobre body raw
         const signature = req.headers['x-signature'];
         if (!signature) {
             console.error('[Webhook] Falta header X-Signature');
             return res.status(401).json({ error: 'Missing signature' });
         }
 
-        const rawBody = JSON.stringify(req.body);
         if (!validateSignature(rawBody, signature)) {
             console.error('[Webhook] Firma HMAC inválida');
+            console.error('[Webhook] Signature recibida:', signature);
+            console.error('[Webhook] Body raw (primeros 200 chars):', rawBody.substring(0, 200));
             return res.status(401).json({ error: 'Invalid signature' });
         }
 
         console.log('[Webhook] ✓ Firma validada');
 
-        // 2. Extraer datos del evento
-        const event = req.body;
+        // 3. Parsear JSON manualmente
+        const event = JSON.parse(rawBody);
         const eventName = event.meta?.event_name;
-
         console.log('[Webhook] Evento:', eventName);
 
         // Solo procesar eventos de orden creada
@@ -119,7 +146,7 @@ module.exports = async (req, res) => {
         }
 
         const customerEmail = orderData.user_email;
-        const productId = event.data?.relationships?.product?.data?.id;
+        const productId = event.data?.relationships?.['first-order-item']?.data?.['product_id'];
         const orderId = event.data?.id;
 
         if (!customerEmail || !productId || !orderId) {
@@ -129,8 +156,8 @@ module.exports = async (req, res) => {
 
         console.log('[Webhook] Datos extraídos:', { customerEmail, productId, orderId });
 
-        // 3. Mapear producto → protocolo KIP
-        const protocolCode = getProtocolCode(productId);
+        // 4. Mapear producto → protocolo KIP
+        const protocolCode = getProtocolCode(String(productId));
         if (!protocolCode) {
             console.error('[Webhook] Producto no mapeado:', productId);
             return res.status(400).json({ error: 'Unknown product' });
@@ -138,7 +165,7 @@ module.exports = async (req, res) => {
 
         console.log('[Webhook] Protocolo KIP:', protocolCode);
 
-        // 4. Buscar usuario por email
+        // 5. Buscar usuario por email
         const redis = getRedisClient();
         const userId = await redis.get(`kleos:email:${customerEmail}`);
 
@@ -151,7 +178,7 @@ module.exports = async (req, res) => {
 
         console.log('[Webhook] Usuario encontrado:', userId);
 
-        // 5. Actualizar estado del protocolo
+        // 6. Actualizar estado del protocolo
         const protocolKey = `kleos:user:${userId}:protocol:${protocolCode}`;
         let protocolState = await redis.get(protocolKey);
 
@@ -184,7 +211,7 @@ module.exports = async (req, res) => {
 
         console.log('[Webhook] ✓ Estado del protocolo actualizado:', protocolCode);
 
-        // 6. Responder 200 OK rápidamente
+        // 7. Responder 200 OK rápidamente
         // NO generamos el informe IA aquí (lo hará get-reading.js lazy)
         return res.status(200).json({
             status: 'success',
