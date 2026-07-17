@@ -1,17 +1,22 @@
 /* =========================================================
    KLEOS INSIGHT™ — Get Reading
-   ARQUITECTURA v2: Protocol-Agnostic + Generación Lazy
+   ARQUITECTURA v2: Protocol-Agnostic + Generación Lazy + Sliding Expiration
 
    Responsabilidades:
    1. Validar token de sesión
-   2. Verificar que el protocolo está comprado (purchased: true)
-   3. Cargar resultado del diagnóstico
-   4. Si purchased y NO hay informe IA → generar lazy + guardar
-   5. Si purchased y SÍ hay informe IA → cargar desde Redis
-   6. Devolver datos básicos + informe IA
+   2. Renovar TTL a 30 días (sliding expiration)
+   3. Verificar que el protocolo está comprado (purchased: true)
+   4. Cargar resultado del diagnóstico
+   5. Si purchased y NO hay informe IA → generar lazy + guardar
+   6. Si purchased y SÍ hay informe IA → cargar desde Redis
+   7. Devolver datos básicos + informe IA
+   
+   Principio: La sesión pertenece al Perfil KLEOS, nunca a un protocolo individual.
    ========================================================= */
 
 const { generateReport } = require('../lib/ai-generator');
+
+const SESSION_TTL = 2592000; // 30 días en segundos
 
 function creds() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
@@ -103,13 +108,17 @@ module.exports = async (req, res) => {
       return res.status(401).json({ success: false, message: "La sesión del portal expiró" });
     }
 
-    // 2. Verificar que el protocolo existe en el perfil del usuario
+    // 2. NUEVO: Renovar TTL (sliding expiration)
+    await redis(["EXPIRE", `kleos:session:${cleanToken}`, SESSION_TTL]);
+    console.log(`[get-reading] ✓ TTL renovado a 30 días para sesión: ${cleanToken.substring(0, 8)}...`);
+
+    // 3. Verificar que el protocolo existe en el perfil del usuario
     const protocolsResp = await redis(["SISMEMBER", `kleos:user:${userId}:protocols`, protocol]);
     if (!protocolsResp || protocolsResp.result !== 1) {
       return res.status(403).json({ success: false, message: "No posee acceso a este protocolo" });
     }
 
-    // 3. NUEVO v2: Leer estado individual del protocolo
+    // 4. NUEVO v2: Leer estado individual del protocolo
     const stateResp = await redis(["GET", `kleos:user:${userId}:protocol:${protocol}`]);
     const protocolState = stateResp && stateResp.result ? JSON.parse(stateResp.result) : null;
 
@@ -117,7 +126,7 @@ module.exports = async (req, res) => {
     const isReportGenerated = protocolState?.reportGenerated ?? false;
     const reportId = protocolState?.reportId ?? null;
 
-    // 4. Obtener el resultado del diagnóstico
+    // 5. Obtener el resultado del diagnóstico
     const histResp = await redis(["LRANGE", `kleos:user:${userId}:history`, "0", "-1"]);
     const history = (histResp && histResp.result) || [];
     
@@ -145,10 +154,10 @@ module.exports = async (req, res) => {
     const reading = JSON.parse(dResult);
     let aiReport = null;
 
-    // 5. Si el protocolo está comprado, gestionar informe IA
+    // 6. Si el protocolo está comprado, gestionar informe IA
     if (isPurchased) {
         if (isReportGenerated && reportId) {
-            // 5a. Informe ya existe → cargar desde Redis
+            // 6a. Informe ya existe → cargar desde Redis
             console.log(`[get-reading] Cargando informe existente: kleos:report:${reportId}`);
             const reportResp = await redis(["GET", `kleos:report:${reportId}`]);
             if (reportResp && reportResp.result) {
@@ -160,7 +169,7 @@ module.exports = async (req, res) => {
         }
 
         if (!aiReport) {
-            // 5b. Informe NO existe → generar lazy
+            // 6b. Informe NO existe → generar lazy
             console.log(`[get-reading] Generando informe IA para ${protocol}...`);
             
             const generated = await generateReport(reading);
@@ -190,7 +199,7 @@ module.exports = async (req, res) => {
         }
     }
 
-    // 6. Devolver respuesta completa
+    // 7. Devolver respuesta completa
     return res.status(200).json({
       success: true,
       reading: reading,

@@ -23,8 +23,9 @@
             font-family: 'Inter', system-ui, sans-serif;
         }
 
-        #view-login { display: flex; flex-direction: column; flex: 1; justify-content: center; }
+        #view-login { display: none; flex-direction: column; flex: 1; justify-content: center; }
         #view-dashboard { display: none; flex-direction: column; flex: 1; padding-top: 4rem; }
+        #view-loading { display: flex; flex-direction: column; flex: 1; justify-content: center; align-items: center; }
         
         .portal-wrapper { max-width: 640px; margin: 0 auto; padding: 7rem 2rem 5rem; width: 100%; box-sizing: border-box; }
         .portal-hero { text-align: center; margin-bottom: 4.5rem; }
@@ -111,9 +112,33 @@
         .kt-title { font-family: 'Playfair Display', serif; font-size: 1.7rem; color: #F5F5F5; font-weight: 400; margin: 0 0 0.7rem 0; letter-spacing: 0.01em; }
         .kt-subtitle { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; color: var(--gold); font-weight: 500; margin: 0; letter-spacing: 0.15em; text-transform: uppercase; }
         .kt-k { font-family: 'Playfair Display', serif; font-size: 58px; fill: #C5A059; font-weight: 400; }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(197, 160, 89, 0.1);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 2rem;
+        }
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        .loading-text {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: rgba(255,255,255,0.6);
+            letter-spacing: 0.1em;
+        }
     </style>
 </head>
 <body>
+
+    <main id="view-loading">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">Verificando sesión...</div>
+    </main>
 
     <main id="view-login" class="portal-wrapper">
         <header class="portal-hero">
@@ -144,7 +169,7 @@
             <div class="dash-meta">
                 <div class="meta-col">
                     <span class="meta-label">CORREO ELECTRÓNICO</span>
-                    <span class="meta-value" id="dash-email"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4a3f393f2b3823250a292538382f2564292527">[email&#160;protected]</a></span>
+                    <span class="meta-value" id="dash-email">usuario@correo.com</span>
                 </div>
                 <div class="meta-col">
                     <span class="meta-label">ID DE PERFIL</span>
@@ -240,8 +265,37 @@
         </div>
     </div>
 
-    <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script src="assets/js/kleos-engine.js"></script>
+    <script src="assets/js/kleos-engine.js"></script>
     <script>
+        // ─── VALIDACIÓN AUTOMÁTICA DE SESIÓN ─────────────────
+        
+        window.addEventListener('kleos:session-valid', function(e) {
+            console.log('[Portal] Sesión válida detectada, mostrando dashboard');
+            const data = e.detail;
+            
+            // Ocultar loading y mostrar dashboard directamente
+            document.getElementById('view-loading').style.display = 'none';
+            document.getElementById('view-dashboard').style.display = 'flex';
+            
+            // Preparar perfil con los datos de la sesión
+            prepararPerfil({
+                user: data.user,
+                protocols: data.protocols,
+                protocolsState: data.protocolsState,
+                token: window.KLEOS.getToken()
+            });
+        });
+
+        window.addEventListener('kleos:session-invalid', function(e) {
+            console.log('[Portal] Sesión inválida detectada, mostrando formulario de login');
+            
+            // Ocultar loading y mostrar formulario de login
+            document.getElementById('view-loading').style.display = 'none';
+            document.getElementById('view-login').style.display = 'flex';
+        });
+
+        // ─── FORMULARIO DE LOGIN ─────────────────────────────
+
         document.getElementById('portal-form').addEventListener('submit', async function(e) {
             e.preventDefault();
             
@@ -267,10 +321,21 @@
                 const localData = {
                     user: { id: "usr_local123", name: email.split('@')[0], email: email },
                     protocols: ["KIP-001"],
-                    token: window.KLEOS ? window.KLEOS.MOCK_TOKEN : "mock-user-token-12345"
+                    protocolsState: [{
+                        code: "KIP-001",
+                        completed: true,
+                        purchased: true,
+                        purchaseDate: new Date().toISOString(),
+                        purchaseOrderId: "mock-order-123",
+                        purchaseProvider: "lemon_squeezy",
+                        reportGenerated: true,
+                        reportId: "res_kip001_usr_local123"
+                    }],
+                    token: window.KLEOS ? window.KLEOS.MOCK_TOKEN : "mock-user-token-12345",
+                    expiresAt: Date.now() + (2592000 * 1000) // 30 días
                 };
                 
-                // Guardar sesión en sessionStorage
+                // Guardar sesión en localStorage
                 if (window.KLEOS) window.KLEOS.saveSession(localData);
                 
                 runIntelligenceSequence(localData);
@@ -287,7 +352,7 @@
                 const data = await response.json();
 
                 if (data.success && data.exists) {
-                    // Guardar sesión en sessionStorage (no en URL)
+                    // Guardar sesión en localStorage (no en URL)
                     if (window.KLEOS) window.KLEOS.saveSession(data);
                     
                     const overlay = document.getElementById('kleos-transition');
@@ -322,7 +387,7 @@
             
             const steps = [
                 { t: "Autenticando identidad.", s: "Localizando perfil estratégico...", d: 1800 },
-                { t: "Analizando arquitectura.", s: "Desbloqueando protocolos asociados.", d: 1800 },
+                { t: "Analizando arquitectura.", s: "Desbloqueando protocolos asociados...", d: 1800 },
                 { t: "Preparando entorno KLEOS.", s: "Todo está listo.", d: 1200 }
             ];
             
@@ -333,9 +398,7 @@
                 if (isFinished) return;
 
                 if (i >= steps.length) {
-                    isFinished = true;
-                    document.getElementById('view-login').style.display = 'none';
-                    document.getElementById('view-dashboard').style.display = 'flex';
+                    isFinished = true';
                     
                     prepararPerfil(data);
 
@@ -343,7 +406,11 @@
                     overlay.style.opacity = '0';
                     setTimeout(() => {
                         overlay.classList.remove('is-active');
-                        overlay.style.display = 'none'; 
+                        overlay.style.display = 'none';
+                        
+                        // Ocultar login y mostrar dashboard
+                        document.getElementById('view-login').style.display = 'none';
+                        document.getElementById('view-dashboard').style.display = 'flex';
                     }, 600);
                     return;
                 }
@@ -376,10 +443,10 @@
             const cardKip001 = document.getElementById('card-kip001');
             if (data.protocols && data.protocols.includes("KIP-001")) {
                 cardKip001.style.display = "flex";
-                // El token ya está en sessionStorage — no se expone en la URL
+                // El token ya está en localStorage — no se expone en la URL
                 cardKip001.href = 'lectura.html';
             }
         }
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a1b34c9889de11e8',t:'MTc4NDA2MTE3Mg=='};var a=document.createElement('script');a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</body>
 </html>

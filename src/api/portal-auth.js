@@ -1,10 +1,14 @@
 /* =========================================================
    KLEOS INSIGHT™ — Portal Auth
-   ARQUITECTURA v2: Protocol-Agnostic + User-Centric
+   ARQUITECTURA v2: Protocol-Agnostic + User-Centric + Sliding Expiration
    
    Autentica al usuario por email y devuelve el estado
    completo de cada protocolo en su Perfil KLEOS.
+   
+   Principio: La sesión pertenece al Perfil KLEOS, nunca a un protocolo individual.
    ========================================================= */
+
+const SESSION_TTL = 2592000; // 30 días en segundos
 
 function creds() {
   const url = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
@@ -57,7 +61,8 @@ module.exports = async (req, res) => {
             reportGenerated: true,
             reportId: "res_kip001_usr_mock123"
           }],
-          token: "mock-user-token-12345"
+          token: "mock-user-token-12345",
+          expiresAt: Date.now() + (SESSION_TTL * 1000)
         });
       }
       return res.status(200).json({ success: false, exists: false, message: "No se encontró ninguna cuenta asociada a este correo." });
@@ -105,9 +110,12 @@ module.exports = async (req, res) => {
         });
     }
 
-    // 5. Generar token de sesión
+    // 5. Generar token de sesión con sliding expiration de 30 días
     const token = Date.now().toString(36) + Math.random().toString(36).slice(2, 12);
-    await redis(["SET", `kleos:session:${token}`, userId, "EX", "7200"]); 
+    await redis(["SET", `kleos:session:${token}`, userId, "EX", SESSION_TTL.toString()]);
+    
+    const expiresAt = Date.now() + (SESSION_TTL * 1000);
+    console.log(`[portal-auth] ✓ Sesión creada con TTL de 30 días para usuario: ${userId}`);
 
     return res.status(200).json({
       success: true,
@@ -115,7 +123,8 @@ module.exports = async (req, res) => {
       user: { id: userData.id, name: userData.nombre, email: userData.email },
       protocols: userProtocols,           // Legacy: array de strings (compatibilidad)
       protocolsState: protocolsState,      // NUEVO v2: array de objetos con estado completo
-      token: token
+      token: token,
+      expiresAt: expiresAt                // NUEVO: timestamp de expiración
     });
 
   } catch (error) {

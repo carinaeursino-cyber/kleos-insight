@@ -1,13 +1,15 @@
 /* =========================================================
    KLEOS INSIGHT™ — Motor Compartido (kleos-engine.js)
-   ARQUITECTURA v2: Protocol-Agnostic + User-Centric
+   ARQUITECTURA v2: Protocol-Agnostic + User-Centric + Sliding Expiration
    
    Responsabilidades:
-   1. Gestionar la sesión del usuario (sessionStorage)
-   2. Validar el token contra el servidor
+   1. Gestionar la sesión del usuario (localStorage)
+   2. Validar el token contra el servidor (con validación automática en portal)
    3. Inyectar datos dinámicos en la página de lectura
    4. Inyectar contenido del informe IA (si purchased)
    5. Inicializar visualizaciones (Chart.js)
+   
+   Principio: La sesión pertenece al Perfil KLEOS, nunca a un protocolo individual.
    ========================================================= */
 
 (function() {
@@ -21,7 +23,8 @@
         MOCK_TOKEN: 'mock-user-token-12345',
         API: {
             GET_READING: '/api/get-reading',
-            PORTAL_AUTH: '/api/portal-auth'
+            PORTAL_AUTH: '/api/portal-auth',
+            VALIDATE_SESSION: '/api/validate-session'
         }
     };
 
@@ -34,9 +37,13 @@
             if (data.protocols) {
                 localStorage.setItem(KLEOS.PROTOCOL_KEY, JSON.stringify(data.protocols));
             }
-            // NUEVO v2: Guardar estado de protocolos si existe
+            // Guardar estado de protocolos si existe
             if (data.protocolsState) {
                 localStorage.setItem('kleos_protocols_state', JSON.stringify(data.protocolsState));
+            }
+            // Guardar timestamp de expiración si existe
+            if (data.expiresAt) {
+                localStorage.setItem('kleos_expires_at', data.expiresAt.toString());
             }
             console.log('[KLEOS] Sesión guardada para:', data.user.email);
         } catch (e) {
@@ -63,6 +70,8 @@
         localStorage.removeItem(KLEOS.USER_KEY);
         localStorage.removeItem(KLEOS.PROTOCOL_KEY);
         localStorage.removeItem('kleos_protocols_state');
+        localStorage.removeItem('kleos_expires_at');
+        console.log('[KLEOS] Sesión limpiada');
     }
 
     function getUser() {
@@ -81,11 +90,67 @@
         }
     }
 
+    function getProtocolsState() {
+        try {
+            return JSON.parse(localStorage.getItem('kleos_protocols_state') || '[]');
+        } catch (e) {
+            return [];
+        }
+    }
+
+    // ─── VALIDACIÓN DE SESIÓN ─────────────────────────────
+
+    /**
+     * Valida la sesión contra el servidor y renueva el TTL (sliding expiration).
+     * Devuelve información completa del usuario y perfil si la sesión es válida.
+     * Si la sesión es inválida, limpia localStorage y devuelve valid: false.
+     */
+    async function validateSession() {
+        const token = getToken();
+
+        if (!token) {
+            return { valid: false, message: 'No hay sesión activa' };
+        }
+
+        try {
+            const response = await fetch(KLEOS.API.VALIDATE_SESSION, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token })
+            });
+
+            const data = await response.json();
+
+            if (data.valid) {
+                // Actualizar datos de sesión en localStorage
+                saveSession({
+                    token: token,
+                    user: { id: data.userId, email: data.email, name: data.name },
+                    protocols: data.protocols,
+                    protocolsState: data.protocolsState,
+                    expiresAt: data.expiresAt
+                });
+                
+                console.log('[KLEOS] ✓ Sesión válida, TTL renovado');
+                return { valid: true, ...data };
+            } else {
+                // Sesión inválida, limpiar localStorage
+                clearSession();
+                console.log('[KLEOS] Sesión inválida, localStorage limpiado');
+                return { valid: false, message: data.message || 'Sesión expirada' };
+            }
+
+        } catch (err) {
+            console.error('[KLEOS] Error validando sesión:', err);
+            return { valid: false, message: 'Error de conexión con el servidor' };
+        }
+    }
+
     // ─── VALIDACIÓN Y CARGA DE DATOS ─────────────────────
 
     /**
      * Valida la sesión y carga los datos del protocolo desde el servidor.
-     * NUEVO v2: También devuelve purchased y ai_report
+     * También devuelve purchased y ai_report
      */
     async function loadProtocolData(protocolCode) {
         const token = getToken();
@@ -131,7 +196,7 @@
 
     /**
      * Inyecta los datos del servidor en los elementos HTML de lectura.html.
-     * NUEVO v2: Recibe ai_report y lo inyecta si existe.
+     * Recibe ai_report y lo inyecta si existe.
      */
     function injectKIP001(raw, aiReport) {
         try {
@@ -245,7 +310,7 @@
 
             console.log('[KLEOS] Datos básicos de KIP-001 inyectados');
 
-            // 8. NUEVO v2: Inyectar informe IA si existe
+            // 8. Inyectar informe IA si existe
             if (aiReport) {
                 injectAIReport(aiReport);
             }
@@ -256,7 +321,7 @@
         }
     }
 
-    // ─── NUEVO v2: INYECCIÓN DE INFORME IA ───────────────
+    // ─── INYECCIÓN DE INFORME IA ─────────────────────────
 
     /**
      * Inyecta el contenido del informe IA en las secciones premium.
@@ -410,6 +475,38 @@
     async function init() {
         const path = window.location.pathname;
 
+        // Validación automática en portal.html
+        if (path.includes('portal')) {
+            console.log('[KLEOS] Detectado portal.html, validando sesión...');
+            
+            const token = getToken();
+            if (token) {
+                // Hay un token en localStorage, validar contra servidor
+                const validation = await validateSession();
+                
+                if (validation.valid) {
+                    // Sesión válida, disparar evento personalizado
+                    console.log('[KLEOS] ✓ Sesión válida en portal, usuario autenticado');
+                    window.dispatchEvent(new CustomEvent('kleos:session-valid', { 
+                        detail: { 
+                            user: { id: validation.userId, email: validation.email, name: validation.name },
+                            protocols: validation.protocols,
+                            protocolsState: validation.protocolsState
+                        } 
+                    }));
+                } else {
+                    // Sesión inválida, disparar evento personalizado
+                    console.log('[KLEOS] Sesión inválida en portal, mostrando formulario de login');
+                    window.dispatchEvent(new CustomEvent('kleos:session-invalid'));
+                }
+            } else {
+                // No hay token, disparar evento personalizado
+                console.log('[KLEOS] No hay sesión en portal, mostrando formulario de login');
+                window.dispatchEvent(new CustomEvent('kleos:session-invalid'));
+            }
+        }
+
+        // Carga de datos en lectura.html
         if (path.includes('lectura')) {
             const urlParams = new URLSearchParams(window.location.search);
             const isTest = urlParams.get('test') === 'true';
@@ -439,6 +536,8 @@
         getToken: getToken,
         getUser: getUser,
         getProtocols: getProtocols,
+        getProtocolsState: getProtocolsState,
+        validateSession: validateSession,
         loadProtocolData: loadProtocolData,
         injectKIP001: injectKIP001,
         injectAIReport: injectAIReport,
