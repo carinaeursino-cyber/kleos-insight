@@ -29,14 +29,14 @@
     
     function saveSession(data) {
         try {
-            sessionStorage.setItem(KLEOS.SESSION_KEY, data.token);
-            sessionStorage.setItem(KLEOS.USER_KEY, JSON.stringify(data.user));
+            localStorage.setItem(KLEOS.SESSION_KEY, data.token);
+            localStorage.setItem(KLEOS.USER_KEY, JSON.stringify(data.user));
             if (data.protocols) {
-                sessionStorage.setItem(KLEOS.PROTOCOL_KEY, JSON.stringify(data.protocols));
+                localStorage.setItem(KLEOS.PROTOCOL_KEY, JSON.stringify(data.protocols));
             }
             // NUEVO v2: Guardar estado de protocolos si existe
             if (data.protocolsState) {
-                sessionStorage.setItem('kleos_protocols_state', JSON.stringify(data.protocolsState));
+                localStorage.setItem('kleos_protocols_state', JSON.stringify(data.protocolsState));
             }
             console.log('[KLEOS] Sesión guardada para:', data.user.email);
         } catch (e) {
@@ -45,13 +45,13 @@
     }
 
     function getToken() {
-        const sessionToken = sessionStorage.getItem(KLEOS.SESSION_KEY);
+        const sessionToken = localStorage.getItem(KLEOS.SESSION_KEY);
         if (sessionToken) return sessionToken;
 
         const urlParams = new URLSearchParams(window.location.search);
         const urlToken = urlParams.get('token');
         if (urlToken) {
-            sessionStorage.setItem(KLEOS.SESSION_KEY, urlToken);
+            localStorage.setItem(KLEOS.SESSION_KEY, urlToken);
             return urlToken;
         }
 
@@ -59,15 +59,15 @@
     }
 
     function clearSession() {
-        sessionStorage.removeItem(KLEOS.SESSION_KEY);
-        sessionStorage.removeItem(KLEOS.USER_KEY);
-        sessionStorage.removeItem(KLEOS.PROTOCOL_KEY);
-        sessionStorage.removeItem('kleos_protocols_state');
+        localStorage.removeItem(KLEOS.SESSION_KEY);
+        localStorage.removeItem(KLEOS.USER_KEY);
+        localStorage.removeItem(KLEOS.PROTOCOL_KEY);
+        localStorage.removeItem('kleos_protocols_state');
     }
 
     function getUser() {
         try {
-            return JSON.parse(sessionStorage.getItem(KLEOS.USER_KEY) || 'null');
+            return JSON.parse(localStorage.getItem(KLEOS.USER_KEY) || 'null');
         } catch (e) {
             return null;
         }
@@ -75,7 +75,7 @@
 
     function getProtocols() {
         try {
-            return JSON.parse(sessionStorage.getItem(KLEOS.PROTOCOL_KEY) || '[]');
+            return JSON.parse(localStorage.getItem(KLEOS.PROTOCOL_KEY) || '[]');
         } catch (e) {
             return [];
         }
