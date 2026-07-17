@@ -126,17 +126,15 @@ module.exports = async (req, res) => {
     const isReportGenerated = protocolState?.reportGenerated ?? false;
     const reportId = protocolState?.reportId ?? null;
 
-    // 5. Obtener el resultado del diagnóstico
+    // 5. Obtener el resultado del diagnóstico (siempre buscar en history, NO usar reportId)
     const histResp = await redis(["LRANGE", `kleos:user:${userId}:history`, "0", "-1"]);
     const history = (histResp && histResp.result) || [];
     
-    let latestResultId = reportId;
-    if (!latestResultId) {
-        const protocolPrefix = `res_${protocol.toLowerCase().replace('-','')}_`;
-        for (const rid of history) {
-            if (rid.startsWith(protocolPrefix)) {
-                latestResultId = rid; break;
-            }
+    let latestResultId = null;
+    const protocolPrefix = `res_${protocol.toLowerCase().replace('-','')}_`;
+    for (const rid of history) {
+        if (rid.startsWith(protocolPrefix)) {
+            latestResultId = rid; break;
         }
     }
 
