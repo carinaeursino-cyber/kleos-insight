@@ -57,7 +57,22 @@ function getRedisClient() {
             });
             if (!response.ok) return null;
             const data = await response.json();
-            return data.result ? JSON.parse(data.result) : null;
+            
+            if (!data.result) return null;
+            
+            // Log temporal para diagnóstico
+            console.log('[Redis GET] Key:', key);
+            console.log('[Redis GET] Value:', data.result);
+            console.log('[Redis GET] Typeof:', typeof data.result);
+            
+            // Intentar parsear como JSON, si falla retornar el string tal cual
+            try {
+                return JSON.parse(data.result);
+            } catch (e) {
+                // No es JSON válido, retornar el string simple (ej: userId)
+                console.log('[Redis GET] Not JSON, returning as string');
+                return data.result;
+            }
         },
 
         async set(key, value) {
