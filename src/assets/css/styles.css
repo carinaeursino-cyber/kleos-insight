@@ -1306,3 +1306,19 @@ sup { font-size: 0.45em; color: var(--gold); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
+/* ============================================
+   NUEVO: Tarjetas del Protocolo (KIP-001)
+   ============================================ */
+
+.protocol-card {
+  background-color: #111111;
+  border: 1px solid rgba(197, 160, 89, 0.15);
+  border-radius: 12px;
+  padding: 1.75rem 1.5rem;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.protocol-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+}
